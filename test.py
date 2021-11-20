@@ -1,18 +1,14 @@
+from typing import Dict
 from API import Auth, WalletHistory, Wallet, Swap
-from pytest_bdd import scenario, given, when, then
-import pytest
-from random import choice
+from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
-@scenario('spot.feature', 'Make a swap')
-def test_arguments():
-    pass
+from ChangeBalance.change_balance import changeBalance
 
-@given('User logIn to account', target_fixture="auth")
-def auth():
-    token = Auth(settings.email, settings.password, 1).authenticate()
-    assert type(token) == list
-    return token[0]
+
+@scenario('features/swap.feature', 'Make a swap')
+def test_one_step_swap():
+    pass
 
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
@@ -22,24 +18,14 @@ def get_balance(auth):
     return balances
 
 
-@when('User gets 1 step swap quote', target_fixture="get_quote")
-def get_quote(auth, get_balance):
-    assetList = \
-        list(
-            filter(
-                    lambda a: a['assetId'] not in ['USD', 'EUR'], 
-                    get_balance
-                )
-        )
-    
-    assert len(assetList) > 0
-    asset = choice(assetList)['assetId']
+@when(parsers.parse('User gets swap quote from {fromAsset} to {toAsset}'), target_fixture="get_quote")
+def get_quote(auth, fromAsset, toAsset):
     swapApi = Swap(1)
     quote = swapApi.get_quote(
         auth,
-        asset,
-        'USD',
-        0.1
+        fromAsset,
+        toAsset,
+        settings.balance_asssets[fromAsset]
     )
     return [quote, swapApi]
 

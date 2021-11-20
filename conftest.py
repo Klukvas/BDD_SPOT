@@ -1,65 +1,40 @@
-from API import Wallet, Auth
+from API import Auth, Wallet
 import pytest
-
 import settings
+from ChangeBalance.change_balance import changeBalance
+from time import sleep
 
-import grpc
-from ChangeBalance.ISpotChangeBalanceService_pb2_grpc import SpotChangeBalanceServiceStub as ChangeBalanceStub
-from ChangeBalance.ISpotChangeBalanceService_pb2 import ManualChangeBalanceGrpcRequest
-from random import randint
-import json
-from requests_pkcs12 import get, post
-
-def changeBalance(clientId, amount, walletId, asset, BrokerId='jetwallet') -> None or str:
-    try:
-        channel = grpc.insecure_channel("change-balance-gateways.spot-services.svc.cluster.local:80")
-        client = ChangeBalanceStub(channel)
-        transactionId = randint(10**5, 10**25)
-        request = ManualChangeBalanceGrpcRequest(
-            TransactionId = f"{transactionId}",
-            ClientId      = f"{clientId}",
-            WalletId      = f"{walletId}",
-            Amount        = amount,
-            AssetSymbol   = f"{asset}",
-            Comment       =  "BaseTests",
-            BrokerId      =  f"{BrokerId}",
-            Officer       = "BaseTests",
-            Agent         =  {
-                "ApplicationName": "BaseTests",
-                "ApplicationEnvInfo": "BaseTests"
-            }
-
-        )
-    except Exception as err:
-        print(f'Can not make request object')
-    try:
-        response = client.ManualChangeBalance(request)
-        try:
-            result = response.Result
-            return result
-        except Exception as err:
-            print(f'Error with parse response in changeBalance function.\n{err}')
-            return None
-    except Exception as err:
-        print(f'Error with sending request in changeBalance function.\n{err}')
-        return None
+@pytest.fixture
+def auth():
+    token = Auth(settings.email, settings.password, 1).authenticate()
+    assert type(token) == list
+    return token[0]
 
 
-@pytest.fixture(scope="session", autouse=True)
-def upd_balance(): 
-    for item in settings.balance_asssets.items():
-        bl_change_result = changeBalance(
-            settings.client_Id,
-            item[1],
-            f'SP-{settings.client_Id}',
-            item[0]
-        )
-        assert bl_change_result != None, 'Ошибка при пополнении баланса'
 
-if __name__ == '__main__':
-    changeBalance(
-        'e66866aa8012430aa0d3302565333779',
-        0.2,
-        f'SP-e66866aa8012430aa0d3302565333779',
-        'BNB'
-    )
+def pytest_bdd_before_scenario(request, feature, scenario):
+    if scenario.name == 'Make a swap':
+        assets_for_update = []
+        token = Auth(settings.email, settings.password, 1).authenticate()
+        balances = Wallet(1).balances(token[0])
+        for item in balances:
+            if item['assetId'] in settings.balance_asssets.keys():
+                if item['balance'] < settings.balance_asssets[item['assetId']]:
+                    assets_for_update.append(
+                        [
+                            item['assetId'],
+                            balances[item['assetId']]
+                        ]
+                    )
+        for item in assets_for_update:
+            bl_change_result = changeBalance(
+                settings.client_Id,
+                item[1],
+                f'SP-{settings.client_Id}',
+                item[0]
+            )
+            assert bl_change_result != None, 'Ошибка при пополнении баланса'
+
+def pytest_bdd_after_scenario(request, feature, scenario):
+    if scenario.name == 'Make a swap':
+        sleep(10)
