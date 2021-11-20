@@ -1,1 +1,1 @@
-pipenv run pytest -v -s test.py
+pipenv run pytest -v -s test.py --gherkin-terminal-reporter

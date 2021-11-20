@@ -8,6 +8,8 @@ pytest-bdd = "*"
 pytest = "*"
 requests-pkcs12 = "*"
 requests = "*"
+grpcio = "*"
+protobuf = "*"
 
 [dev-packages]
 

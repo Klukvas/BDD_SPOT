@@ -1,4 +1,5 @@
 import json
+from typing import List
 from requests_pkcs12 import get, post
 from datetime import datetime
 import settings
@@ -130,8 +131,11 @@ class WalletHistory:
         else:
             return r.status_code
 
-    def operations_history(self, token, asset) -> dict or list[dict] or int:
-        url = f"{self.main_url}operation-history?assetId={asset}"
+    def operations_history(self, token, asset=None) -> dict or list[dict] or int:
+        if asset:
+            url = f"{self.main_url}operation-history?assetId={asset}"
+        else:
+            url = f"{self.main_url}operation-history"
         payload={}
         headers = {
             'Authorization': f'Bearer {token}'
@@ -235,7 +239,7 @@ class Swap:
         else:
             return r.status_code
 
-    def execute_quote(self, token, body) -> dict or int:
+    def execute_quote(self, token, body) -> dict or int or list:
         url = f"{self.main_url}execute-quote"
         payload = json.dumps( body )
         headers = {
@@ -457,7 +461,7 @@ class Transfer:
             return [parse_resp, r.status_code]
 
 if __name__ == '__main__':
-    tokens = Auth('trn1@mailinator.com', 'testpassword1', 1 ).authenticate()
+    tokens = Auth('basetestsusder@mailinator.com', 'testpassword1', 1 ).authenticate()
     print(tokens)
-    s = WalletHistory(1).balance(tokens[0])
+    s = WalletHistory(1).operations_history(tokens[0])
     print(s)
