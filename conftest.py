@@ -13,7 +13,7 @@ def auth():
 
 
 def pytest_bdd_before_scenario(request, feature, scenario):
-    if scenario.name == 'Make a swap':
+    if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False']:
         assets_for_update = []
         token = Auth(settings.email, settings.password, 1).authenticate()
         balances = Wallet(1).balances(token[0])
@@ -36,5 +36,5 @@ def pytest_bdd_before_scenario(request, feature, scenario):
             assert bl_change_result != None, 'Ошибка при пополнении баланса'
 
 def pytest_bdd_after_scenario(request, feature, scenario):
-    if scenario.name == 'Make a swap':
+    if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False']:
         sleep(10)

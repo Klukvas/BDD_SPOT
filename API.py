@@ -211,12 +211,20 @@ class Swap:
         else:
             self.main_url = "https://wallet-api-test.simple-spot.biz/api/v1/trading/swap/"
 
-    def get_quote(self, token, _from='EUR', to='BTC', fromVol=300, fix=True) -> dict or int:
+    def get_quote(self, token, _from='EUR', to='BTC', fromToVol=300, fix=True) -> dict or int:
         url = f"{self.main_url}get-quote"
-        payload = json.dumps({
+        if fix:
+            payload = json.dumps({
+                "fromAsset": f"{_from}",
+                "toAsset": f"{to}",
+                "fromAssetVolume": fromToVol,
+                "isFromFixed": fix
+            })
+        else:
+            payload = json.dumps({
             "fromAsset": f"{_from}",
             "toAsset": f"{to}",
-            "fromAssetVolume": fromVol,
+            "toAssetVolume": fromToVol,
             "isFromFixed": fix
         })
         headers = {
