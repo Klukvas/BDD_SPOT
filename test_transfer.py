@@ -26,7 +26,7 @@ def send_transfer(get_balance, asset):
         asset,
         settings.balance_asssets[asset] / 2
     )
-    assert type(transferData['transferId']) == int
+    assert type(transferData['transferId']) == str
     return [transferData, asset]
 
 @then('User has new record in operation history')
@@ -39,23 +39,23 @@ def hist(send_transfer, get_balance):
         assert type(op_history) == list
         sended_transfer = list(
             filter(
-                lambda x: send_transfer[0]['transferId'] in x['operationId'],
+                lambda x: send_transfer[0]['requestId'] == x['operationId'].split('|')[0],
                 op_history
             )
         )
-        assert len(sended_transfer) == 1
-        if sended_transfer[0]['status'] == 0 and \
-            sended_transfer[0]['balanceChange'] == 0:
-            break
+        if len(sended_transfer):
+            if sended_transfer[0]['status'] == 0 and \
+                sended_transfer[0]['balanceChange'] != 0:
+                break
         elif counter > 5:
             raise ValueError('Can not find operations with status 0 for 15 seconds') 
-
-        assert sended_transfer['operationType'] == 6
-        assert sended_transfer['assetId'] == send_transfer[1] == sended_transfer['transferByPhoneInfo']['withdrawalAssetId']
-        assert sended_transfer['balanceChange'] == ((settings.balance_asssets[send_transfer[1]] / 2 )* -1) == sended_transfer['transferByPhoneInfo']['withdrawalAmount']
-        assert sended_transfer['status'] == 0
-        assert type(sended_transfer['transferByPhoneInfo']) == dict
-        assert sended_transfer['transferByPhoneInfo']['toPhoneNumber'] == settings.transfer_to_phone
+    assert len(sended_transfer) == 1, f'Expected that operationId of transfer will be unique but gets:\nrequestId: {send_transfer[0]["requestId"]}\n{sended_transfer}\n'
+    assert sended_transfer[0]['operationType'] == 6
+    assert sended_transfer[0]['assetId'] == send_transfer[1] == sended_transfer[0]['transferByPhoneInfo']['withdrawalAssetId']
+    assert sended_transfer[0]['balanceChange'] == ((settings.balance_asssets[send_transfer[1]] / 2 )* -1) == sended_transfer[0]['transferByPhoneInfo']['withdrawalAmount'] * -1
+    assert sended_transfer[0]['status'] == 0
+    assert type(sended_transfer[0]['transferByPhoneInfo']) == dict
+    assert sended_transfer[0]['transferByPhoneInfo']['toPhoneNumber'] == settings.transfer_to_phone
 
 @then('User`s balance is changed')
 def hist2(get_balance, send_transfer):
@@ -65,18 +65,18 @@ def hist2(get_balance, send_transfer):
     assert len(new_balances) > 0
     new_balances = list(
         filter(
-            lambda x: x['assetId'] in send_transfer[1],
+            lambda x: x['assetId'] == send_transfer[1],
             new_balances
         )
     )
     
     old_balances = list(
         filter(
-            lambda x: x['assetId'] in send_transfer[1],
+            lambda x: x['assetId'] == send_transfer[1],
             get_balance[1]
         )
     )
-    assert old_balances[0]['balance'] < new_balances[0]['balance']
+    assert old_balances[0]['balance'] > new_balances[0]['balance']
 
 @then('Receive user has new record in operation history')
 def receive_operation_history(auth, send_transfer):
@@ -84,10 +84,10 @@ def receive_operation_history(auth, send_transfer):
     counter = 0 
     while True:
         counter += 1
-        op_history = WalletHistory(1).operations_history(get_balance[0])
+        op_history = WalletHistory(1).operations_history(token)
         received_transfer = list(
             filter(
-                lambda x: send_transfer[0]['transferId'] in x['operationId'],
+                lambda x: send_transfer[0]['requestId'] == x['operationId'].split('|')[0],
                 op_history
             )
         )
@@ -100,6 +100,6 @@ def receive_operation_history(auth, send_transfer):
         sleep(5)
     assert received_transfer[0]['operationType'] == 7
     assert received_transfer[0]['assetId'] == send_transfer[1]
-    assert received_transfer[0]['balanceChange'] == settings.balance_asssets[send_transfer[1]] / 2 == received_transfer[0]['receiveByPhoneInfo']['withdrawalAmount']
-    assert received_transfer[0]['fromPhoneNumber'] == settings.from_ph_number
+    assert received_transfer[0]['balanceChange'] == settings.balance_asssets[send_transfer[1]] / 2 == received_transfer[0]['receiveByPhoneInfo']['depositAmount']
+    assert received_transfer[0]['receiveByPhoneInfo']['fromPhoneNumber'] == settings.from_ph_number, f'Ar:\nEr: {received_transfer}'
     assert received_transfer[0]['newBalance'] > received_transfer[0]['newBalance'] - received_transfer[0]['balanceChange']

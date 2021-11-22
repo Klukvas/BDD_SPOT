@@ -386,9 +386,9 @@ class Transfer:
 
     def __init__(self, env):
         if env == 1:
-            self.main_url = 'https://wallet-api-uat.mnftx.biz/api/v1/transfer/'
+            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/v1/transfer/'
         else:
-            self.main_url = 'https://wallet-api-test.simple-spot.biz/api/v1/transfer/'
+            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/v1/transfer/'
     
     def create_transfer(self, token, phone, asset, amount) -> dict or list:
         url = f"{self.main_url}by-phone"
@@ -414,11 +414,14 @@ class Transfer:
                 verify = False,
                 headers=headers, data=payload)
 
-        parse_resp =  json.loads(r.text)
         try:
-            return {"transferId": parse_resp['data']['operationId'], "requestId": uniqId }
+            parse_resp =  json.loads(r.text)
+            try:
+                return {"transferId": parse_resp['data']['operationId'], "requestId": uniqId }
+            except:
+                return [parse_resp, r.status_code]
         except:
-            return [parse_resp, r.status_code]
+            return r.status_code
 
     def get_transfer_info(self, token, transferId) -> dict or list:
         url = f"{self.main_url}transfer-info"

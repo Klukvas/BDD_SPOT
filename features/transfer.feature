@@ -10,5 +10,5 @@ Feature: Transfer
         Examples:
             | asset |
             | LTC   |
-            # | BTC   |
-            # | ETH   |
+            | BTC   |
+            | ETH   |
