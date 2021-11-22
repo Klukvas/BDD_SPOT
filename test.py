@@ -1,4 +1,4 @@
-from API import Auth, WalletHistory, Wallet, Swap
+from API import WalletHistory, Wallet, Swap
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
@@ -86,10 +86,6 @@ def hist(auth, exec):
             assert item['swapInfo']['sellAmount'] == exec[1]['fromAssetVolume']
             assert item['swapInfo']['buyAssetId'] == exec[1]['toAsset']
 
-# @then('User has new record in balance history')
-# def hist1(auth):
-#     assert 2
-
 @then('User`s balance is changed')
 def hist2(auth, get_balance, exec):
     assets = [
@@ -121,6 +117,7 @@ def hist2(auth, get_balance, exec):
                     assert old_balances[jitem]['balance'] > new_balances[item]['balance']
                 else:
                     assert old_balances[jitem]['balance'] < new_balances[item]['balance']
+
 
 
 @scenario('features/swap.feature', 'Make a swap with fixed False')
@@ -205,10 +202,6 @@ def hist(auth, exec):
             assert item['swapInfo']['sellAssetId'] == exec[1]['fromAsset']
             assert item['swapInfo']['sellAmount'] == exec[1]['fromAssetVolume']
             assert item['swapInfo']['buyAssetId'] == exec[1]['toAsset']
-
-# @then('User has new record in balance history')
-# def hist1(auth):
-#     assert 2
 
 @then('User`s balance is changed')
 def hist2(auth, get_balance, exec):

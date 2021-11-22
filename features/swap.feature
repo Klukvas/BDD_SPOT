@@ -6,7 +6,6 @@ Feature: Swap
         When User gets swap quote from <fromAsset> to <toAsset>
         And User execute quote
         Then User has new record in operation history
-        # And User has new record in balance history
         And User`s balance is changed
         Examples:
             | fromAsset | toAsset   |
@@ -25,7 +24,6 @@ Feature: Swap
         When User gets swap quote from <fromAsset> to <toAsset>
         And User execute quote
         Then User has new record in operation history
-        # And User has new record in balance history
         And User`s balance is changed
         Examples:
             | fromAsset | toAsset   |
