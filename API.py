@@ -3,7 +3,7 @@ from typing import List
 from requests_pkcs12 import get, post
 from datetime import datetime
 import settings
-
+from uuid import uuid4
 
 cert_name = settings.cert_name
 cert_pass = settings.cert_pass
@@ -471,6 +471,45 @@ class Transfer:
         except:
             return [parse_resp, r.status_code]
 
+class Blockchain:
+    def __init__(self, env):
+        if env == 1:
+            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/'
+        else:
+            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/'
+    
+    def withdrawal(self, token, asset, amount, address):
+        url = f"{self.main_url}withdrawal"
+
+        uniqId = uuid4()
+
+        payload = json.dumps({
+                "requestId": f"{uniqId}",
+                "assetSymbol": f"{asset}",
+                "amount": amount,
+                "toAddress": f"{address}",
+                "lang": "En"
+            })
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers, data=payload)
+
+        try:
+            parse_resp =  json.loads(r.text)
+            try:
+                return {"operationId": parse_resp['data']['operationId'], "requestId": uniqId }
+            except:
+                return [parse_resp, r.status_code]
+        except:
+            return r.status_code
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1', 1 ).authenticate()
     print(tokens)
