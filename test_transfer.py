@@ -1,4 +1,4 @@
-from API import WalletHistory, Wallet, Swap
+from API import WalletHistory, Wallet, Swap, Transfer
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
@@ -10,112 +10,96 @@ def test_transfer_by_phone():
 
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
+    print(f'call get_balance ')
     token = auth(settings.email, settings.password)
     balances = Wallet(1).balances(token)
     assert type(balances) == list
     assert len(balances) > 0
     return [token, balances]
 
-@when(parsers.parse('User send {asset} to phone number'), target_fixture="get_quote")
-def send_transfer(get_balance, fromAsset, toAsset):
-    swapApi = Swap(1)
-    quote = swapApi.get_quote(
+@when(parsers.parse('User send {asset} to phone number'), target_fixture="send_transfer")
+def send_transfer(get_balance, asset):
+    transferApi = Transfer(1)
+    transferData = transferApi.create_transfer(
         get_balance[0],
-        fromAsset,
-        toAsset,
-        settings.balance_asssets[fromAsset]
+        settings.transfer_to_phone,
+        asset,
+        settings.balance_asssets[asset] / 2
     )
-    assert quote['fromAsset'] == fromAsset
-    assert quote['toAsset'] == toAsset
-    assert quote['fromAssetVolume'] == settings.balance_asssets[fromAsset]
-    assert quote['isFromFixed'] == False
-    return [quote, swapApi]
-
-@when('User execute quote', target_fixture="exec")
-def exec(get_balance, get_quote):
-    response = get_quote[1].execute_quote(get_balance[0], get_quote[0])
-    assert type(response) == dict
-    assert response['isExecuted'] == True
-    assert response['fromAsset'] == get_quote[0]['fromAsset']
-    assert response['toAsset'] == get_quote[0]['toAsset']
-    assert response['fromAssetVolume'] == get_quote[0]['fromAssetVolume']
-    assert response['isFromFixed'] == True 
-    operationId = response['operationId']
-    return [operationId, response]
+    assert type(transferData['transferId']) == int
+    return [transferData, asset]
 
 @then('User has new record in operation history')
-def hist(get_balance, exec):
+def hist(send_transfer, get_balance):
     counter = 0
     while True:
         sleep(5)
         counter += 1
         op_history = WalletHistory(1).operations_history(get_balance[0])
         assert type(op_history) == list
-        executed_swap = list(
+        sended_transfer = list(
             filter(
-                lambda x: x['operationId'] == exec[0],
+                lambda x: send_transfer[0]['transferId'] in x['operationId'],
                 op_history
             )
         )
-        assert len(executed_swap) == 2
-        if executed_swap[0]['status'] == 0 and \
-            executed_swap[1]['status'] == 0 and \
-            executed_swap[1]['balanceChange'] != 0 and \
-            executed_swap[0]['balanceChange'] !=  0 :
+        assert len(sended_transfer) == 1
+        if sended_transfer[0]['status'] == 0 and \
+            sended_transfer[0]['balanceChange'] == 0:
             break
         elif counter > 5:
             raise ValueError('Can not find operations with status 0 for 15 seconds') 
-            
-    for item in executed_swap:
-        if item['assetId'] == exec[1]['fromAsset']:
-            assert item['operationType'] == 2
-            assert item['assetId'] == exec[1]['fromAsset']
-            assert item['balanceChange'] == (exec[1]['fromAssetVolume'] * -1)
-            assert item['status'] == 0
-            assert type(item['swapInfo']) == dict
-            assert item['swapInfo']['isSell'] == True
-            assert item['swapInfo']['sellAssetId'] == exec[1]['fromAsset']
-            assert item['swapInfo']['sellAmount'] == exec[1]['fromAssetVolume']
-            assert item['swapInfo']['buyAssetId'] == exec[1]['toAsset']
-        elif item['assetId'] == exec[1]['toAsset']:
-            assert item['operationType'] == 2
-            assert item['assetId'] == exec[1]['toAsset']
-            assert item['status'] == 0
-            assert type(item['swapInfo']) == dict
-            assert item['swapInfo']['isSell'] == False
-            assert item['swapInfo']['sellAssetId'] == exec[1]['fromAsset']
-            assert item['swapInfo']['sellAmount'] == exec[1]['fromAssetVolume']
-            assert item['swapInfo']['buyAssetId'] == exec[1]['toAsset']
+
+        assert sended_transfer['operationType'] == 6
+        assert sended_transfer['assetId'] == send_transfer[1] == sended_transfer['transferByPhoneInfo']['withdrawalAssetId']
+        assert sended_transfer['balanceChange'] == ((settings.balance_asssets[send_transfer[1]] / 2 )* -1) == sended_transfer['transferByPhoneInfo']['withdrawalAmount']
+        assert sended_transfer['status'] == 0
+        assert type(sended_transfer['transferByPhoneInfo']) == dict
+        assert sended_transfer['transferByPhoneInfo']['toPhoneNumber'] == settings.transfer_to_phone
 
 @then('User`s balance is changed')
-def hist2(get_balance, exec):
-    assets = [
-            exec[1]['fromAsset'], 
-            exec[1]['toAsset']
-        ]
+def hist2(get_balance, send_transfer):
+
     new_balances = Wallet(1).balances(get_balance[0])
     assert type(new_balances) == list
     assert len(new_balances) > 0
     new_balances = list(
         filter(
-            lambda x: x['assetId'] in assets,
+            lambda x: x['assetId'] in send_transfer[1],
             new_balances
         )
     )
     
     old_balances = list(
         filter(
-            lambda x: x['assetId'] in assets,
+            lambda x: x['assetId'] in send_transfer[1],
             get_balance[1]
         )
     )
-    for item in range(len(new_balances)):
-        new_asset = new_balances[item]['assetId']
-        for jitem in range(len(old_balances)):
-            old_asset = old_balances[jitem]['assetId']
-            if new_asset == old_asset:
-                if new_asset == assets[0]:
-                    assert old_balances[jitem]['balance'] > new_balances[item]['balance']
-                else:
-                    assert old_balances[jitem]['balance'] < new_balances[item]['balance']
+    assert old_balances[0]['balance'] < new_balances[0]['balance']
 
+@then('Receive user has new record in operation history')
+def receive_operation_history(auth, send_transfer):
+    token = auth(settings.receive_email, settings.password)
+    counter = 0 
+    while True:
+        counter += 1
+        op_history = WalletHistory(1).operations_history(get_balance[0])
+        received_transfer = list(
+            filter(
+                lambda x: send_transfer[0]['transferId'] in x['operationId'],
+                op_history
+            )
+        )
+        assert len(received_transfer) == 1
+        if received_transfer[0]['status'] == 0 and \
+            received_transfer[0]['balanceChange']:
+            break
+        elif counter > 6:
+            raise ValueError('Can not find operations with status 0 for 15 seconds') 
+        sleep(5)
+    assert received_transfer[0]['operationType'] == 7
+    assert received_transfer[0]['assetId'] == send_transfer[1]
+    assert received_transfer[0]['balanceChange'] == settings.balance_asssets[send_transfer[1]] / 2 == received_transfer[0]['receiveByPhoneInfo']['withdrawalAmount']
+    assert received_transfer[0]['fromPhoneNumber'] == settings.from_ph_number
+    assert received_transfer[0]['newBalance'] > received_transfer[0]['newBalance'] - received_transfer[0]['balanceChange']

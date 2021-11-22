@@ -8,6 +8,10 @@ client_Id = os.environ['client_Id']
 
 transfer_to_phone = os.environ['transfer_to_phone']
 
+receive_email = os.environ['receive_email']
+
+from_ph_number = os.environ['from_phone_number']
+
 #1 - uat / 2 - test
 env = 2
 #используються для создания квоты свопа с fixed False

@@ -7,9 +7,8 @@ Feature: Transfer
         Then User has new record in operation history
         And User`s balance is changed
         And Receive user has new record in operation history
-        And Receive user`s balance is changed
         Examples:
             | asset |
             | LTC   |
-            | BTC   |
-            | ETH   |
+            # | BTC   |
+            # | ETH   |
