@@ -7,6 +7,7 @@ Feature: Transfer
         Then User has new record in operation history
         And User`s balance is changed
         And Receive user has new record in operation history
+        And Balance of receive user are correct
         Examples:
             | asset |
             | LTC   |

@@ -78,7 +78,7 @@ def hist2(get_balance, send_transfer):
     )
     assert old_balances[0]['balance'] > new_balances[0]['balance']
 
-@then('Receive user has new record in operation history')
+@then('Receive user has new record in operation history', target_fixture="receive_operation_history")
 def receive_operation_history(auth, send_transfer):
     token = auth(settings.receive_email, settings.password)
     counter = 0 
@@ -103,3 +103,17 @@ def receive_operation_history(auth, send_transfer):
     assert received_transfer[0]['balanceChange'] == settings.balance_asssets[send_transfer[1]] / 2 == received_transfer[0]['receiveByPhoneInfo']['depositAmount']
     assert received_transfer[0]['receiveByPhoneInfo']['fromPhoneNumber'] == settings.from_ph_number, f'Ar:\nEr: {received_transfer}'
     assert received_transfer[0]['newBalance'] > received_transfer[0]['newBalance'] - received_transfer[0]['balanceChange']
+   
+    return [received_transfer[0]['newBalance'], token, send_transfer[1]]
+
+@then('Balance of receive user are correct')
+def chek_balance(receive_operation_history):
+    balances = Wallet(1).balances(receive_operation_history[1])
+    receive_balance = list(
+        filter(
+            lambda x: x['assetId'] == receive_operation_history[2],
+            balances
+        )
+    )
+    assert len(receive_balance) == 1
+    assert receive_balance[0]['balance'] == receive_operation_history[0]
