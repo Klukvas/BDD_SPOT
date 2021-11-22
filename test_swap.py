@@ -10,16 +10,17 @@ def test_one_step_swap_fixed_true():
 
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
-    balances = Wallet(1).balances(auth)
+    token = auth(settings.email, settings.password)
+    balances = Wallet(1).balances(token)
     assert type(balances) == list
     assert len(balances) > 0
-    return balances
+    return [token, balances]
 
 @when(parsers.parse('User gets swap quote from {fromAsset} to {toAsset}'), target_fixture="get_quote")
-def get_quote(auth, fromAsset, toAsset):
+def get_quote(get_balance, fromAsset, toAsset):
     swapApi = Swap(1)
     quote = swapApi.get_quote(
-        auth,
+        get_balance[0],
         fromAsset,
         toAsset,
         settings.balance_asssets[fromAsset]
@@ -31,8 +32,8 @@ def get_quote(auth, fromAsset, toAsset):
     return [quote, swapApi]
 
 @when('User execute quote', target_fixture="exec")
-def exec(auth, get_quote):
-    response = get_quote[1].execute_quote(auth, get_quote[0])
+def exec(get_balance, get_quote):
+    response = get_quote[1].execute_quote(get_balance[0], get_quote[0])
     assert type(response) == dict
     assert response['isExecuted'] == True
     assert response['fromAsset'] == get_quote[0]['fromAsset']
@@ -43,12 +44,12 @@ def exec(auth, get_quote):
     return [operationId, response]
 
 @then('User has new record in operation history')
-def hist(auth, exec):
+def hist(get_balance, exec):
     counter = 0
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory(1).operations_history(auth)
+        op_history = WalletHistory(1).operations_history(get_balance[0])
         assert type(op_history) == list
         executed_swap = list(
             filter(
@@ -87,12 +88,12 @@ def hist(auth, exec):
             assert item['swapInfo']['buyAssetId'] == exec[1]['toAsset']
 
 @then('User`s balance is changed')
-def hist2(auth, get_balance, exec):
+def hist2(get_balance, exec):
     assets = [
             exec[1]['fromAsset'], 
             exec[1]['toAsset']
         ]
-    new_balances = Wallet(1).balances(auth)
+    new_balances = Wallet(1).balances(get_balance[0])
     assert type(new_balances) == list
     assert len(new_balances) > 0
     new_balances = list(
@@ -105,7 +106,7 @@ def hist2(auth, get_balance, exec):
     old_balances = list(
         filter(
             lambda x: x['assetId'] in assets,
-            get_balance
+            get_balance[1]
         )
     )
     for item in range(len(new_balances)):
@@ -126,16 +127,17 @@ def test_one_step_swap_fixed_false():
 
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
-    balances = Wallet(1).balances(auth)
+    token = auth(settings.email, settings.password)
+    balances = Wallet(1).balances(token)
     assert type(balances) == list
     assert len(balances) > 0
-    return balances
+    return [token,balances]
 
 @when(parsers.parse('User gets swap quote from {fromAsset} to {toAsset}'), target_fixture="get_quote")
-def get_quote(auth, fromAsset, toAsset):
+def get_quote(get_balance, fromAsset, toAsset):
     swapApi = Swap(1)
     quote = swapApi.get_quote(
-        auth,
+        get_balance[0],
         fromAsset,
         toAsset,
         settings.to_balance[toAsset],
@@ -148,8 +150,8 @@ def get_quote(auth, fromAsset, toAsset):
     return [quote, swapApi]
 
 @when('User execute quote', target_fixture="exec")
-def exec(auth, get_quote):
-    response = get_quote[1].execute_quote(auth, get_quote[0])
+def exec(get_balance, get_quote):
+    response = get_quote[1].execute_quote(get_balance[0], get_quote[0])
     assert type(response) == dict
     assert response['isExecuted'] == True
     assert response['fromAsset'] == get_quote[0]['fromAsset']
@@ -160,12 +162,12 @@ def exec(auth, get_quote):
     return [operationId, response]
 
 @then('User has new record in operation history')
-def hist(auth, exec):
+def hist(get_balance, exec):
     counter = 0
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory(1).operations_history(auth)
+        op_history = WalletHistory(1).operations_history(get_balance[0])
         assert type(op_history) == list
         executed_swap = list(
             filter(
@@ -204,12 +206,12 @@ def hist(auth, exec):
             assert item['swapInfo']['buyAssetId'] == exec[1]['toAsset']
 
 @then('User`s balance is changed')
-def hist2(auth, get_balance, exec):
+def hist2(get_balance, exec):
     assets = [
             exec[1]['fromAsset'], 
             exec[1]['toAsset']
         ]
-    new_balances = Wallet(1).balances(auth)
+    new_balances = Wallet(1).balances(get_balance[0])
     assert type(new_balances) == list
     assert len(new_balances) > 0
     new_balances = list(
@@ -222,7 +224,7 @@ def hist2(auth, get_balance, exec):
     old_balances = list(
         filter(
             lambda x: x['assetId'] in assets,
-            get_balance
+            get_balance[1]
         )
     )
     for item in range(len(new_balances)):

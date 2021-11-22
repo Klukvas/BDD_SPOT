@@ -6,6 +6,8 @@ email = os.environ['email']
 password = os.environ['password']
 client_Id = os.environ['client_Id']
 
+transfer_to_phone = os.environ['transfer_to_phone']
+
 #1 - uat / 2 - test
 env = 2
 #используються для создания квоты свопа с fixed False

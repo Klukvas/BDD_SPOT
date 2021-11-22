@@ -6,9 +6,11 @@ from time import sleep
 
 @pytest.fixture
 def auth():
-    token = Auth(settings.email, settings.password, 1).authenticate()
-    assert type(token) == list
-    return token[0]
+    def get_tokens(email, password):
+        token = Auth(email, password, 1).authenticate()
+        assert type(token) == list
+        return token[0]
+    return get_tokens
 
 
 

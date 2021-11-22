@@ -10,14 +10,14 @@ Feature: Swap
         Examples:
             | fromAsset | toAsset   |
             | LTC       | USD       |
-            | BTC       | USD       |
-            | BTC       | EUR       |
-            | ETH       | EUR       |
-            | BCH       | USD       |
-            | BTC       | ETH       |
-            | LTC       | BCH       |
-            | ETH       | LTC       |
-            | BCH       | BTC       |
+            # | BTC       | USD       |
+            # | BTC       | EUR       |
+            # | ETH       | EUR       |
+            # | BCH       | USD       |
+            # | BTC       | ETH       |
+            # | LTC       | BCH       |
+            # | ETH       | LTC       |
+            # | BCH       | BTC       |
     
     Scenario Outline: Make a swap with fixed False
         Given Some crypto on balance
@@ -28,14 +28,14 @@ Feature: Swap
         Examples:
             | fromAsset | toAsset   |
             | LTC       | USD       |
-            | BTC       | USD       |
-            | BTC       | EUR       |
-            | ETH       | EUR       |
-            | BCH       | USD       |
-            | BTC       | ETH       |
-            | LTC       | BCH       |
-            | ETH       | LTC       |
-            | BCH       | BTC       |
+            # | BTC       | USD       |
+            # | BTC       | EUR       |
+            # | ETH       | EUR       |
+            # | BCH       | USD       |
+            # | BTC       | ETH       |
+            # | LTC       | BCH       |
+            # | ETH       | LTC       |
+            # | BCH       | BTC       |
 
 
             

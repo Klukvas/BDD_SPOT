@@ -203,6 +203,44 @@ class Wallet:
         else:
             return r.status_code
     
+class Transfer:
+    
+    def __init__(self, env) -> None:
+        if env == 1:
+            self.main_url = "https://wallet-api-uat.simple-spot.biz/api/v1/transfer/"
+        else:
+            self.signalrUrl = "https://wallet-api-test.simple-spot.biz/api/v1/transfer/"
+
+    def send_transfer(self, token, asset, amount) -> dict or list or int:
+        url = f"{self.main_url}by-phone"
+        uniqId = str(datetime.strftime(datetime.today(), '%m%d%H%s%f'))
+        payload = json.dumps({
+                "requestId": f"{uniqId}",
+                "assetSymbol": f"{asset}",
+                "amount": amount,
+                "toPhoneNumber": f"{settings.transfer_to_phone}",
+                "lang": "En"
+            })
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers, data=payload)
+
+        if r.status_code == 200:
+            parse_resp =  json.loads(r.text)
+            try:
+                return parse_resp['data']
+            except:
+                return [parse_resp,]
+        else:
+            return r.status_code
+
 class Swap:
 
     def __init__(self, env) -> None:
