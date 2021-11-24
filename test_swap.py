@@ -3,11 +3,6 @@ from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
 
-
-@scenario('features/swap.feature', 'Make a swap with fixed True')
-def test_one_step_swap_fixed_true():
-    pass
-
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
     token = auth(settings.email, settings.password)
@@ -16,22 +11,27 @@ def get_balance(auth):
     assert len(balances) > 0
     return [token, balances]
 
-@when(parsers.parse('User gets swap quote from {fromAsset} to {toAsset}'), target_fixture="get_quote")
+@scenario('features/swap.feature', 'Make a swap with fixed True')
+def test_one_step_swap_fixed_true():
+    pass
+
+@when(parsers.parse('User gets swap quote with fixed True from {fromAsset} to {toAsset}'), target_fixture="get_quote")
 def get_quote(get_balance, fromAsset, toAsset):
     swapApi = Swap(1)
     quote = swapApi.get_quote(
         get_balance[0],
         fromAsset,
         toAsset,
-        settings.balance_asssets[fromAsset]
+        settings.balance_asssets[fromAsset]/2
     )
+    assert type(quote) == dict, f'Expected that quote will be dict, but returned:\n{quote}.\nFrom asset: {fromAsset}; Toasset: {toAsset}'
     assert quote['fromAsset'] == fromAsset
     assert quote['toAsset'] == toAsset
-    assert quote['fromAssetVolume'] == settings.balance_asssets[fromAsset]
-    assert quote['isFromFixed'] == False
+    assert quote['fromAssetVolume'] == settings.balance_asssets[fromAsset]/2
+    assert quote['isFromFixed'] == True
     return [quote, swapApi]
 
-@when('User execute quote', target_fixture="exec")
+@when('User execute quote (fixed True)', target_fixture="exec")
 def exec(get_balance, get_quote):
     response = get_quote[1].execute_quote(get_balance[0], get_quote[0])
     assert type(response) == dict
@@ -43,7 +43,7 @@ def exec(get_balance, get_quote):
     operationId = response['operationId']
     return [operationId, response]
 
-@then('User has new record in operation history')
+@then('User has new record in operation history (fixed True)')
 def hist(get_balance, exec):
     counter = 0
     while True:
@@ -87,7 +87,7 @@ def hist(get_balance, exec):
             assert item['swapInfo']['sellAmount'] == exec[1]['fromAssetVolume']
             assert item['swapInfo']['buyAssetId'] == exec[1]['toAsset']
 
-@then('User`s balance is changed')
+@then('User`s balance is changed (fixed True)')
 def hist2(get_balance, exec):
     assets = [
             exec[1]['fromAsset'], 
@@ -125,14 +125,6 @@ def hist2(get_balance, exec):
 def test_one_step_swap_fixed_false():
     pass
 
-@given('Some crypto on balance', target_fixture="get_balance")
-def get_balance(auth):
-    token = auth(settings.email, settings.password)
-    balances = Wallet(1).balances(token)
-    assert type(balances) == list
-    assert len(balances) > 0
-    return [token,balances]
-
 @when(parsers.parse('User gets swap quote from {fromAsset} to {toAsset}'), target_fixture="get_quote")
 def get_quote(get_balance, fromAsset, toAsset):
     swapApi = Swap(1)
@@ -140,12 +132,13 @@ def get_quote(get_balance, fromAsset, toAsset):
         get_balance[0],
         fromAsset,
         toAsset,
-        settings.to_balance[toAsset],
+        settings.to_balance[toAsset]/2,
         False,
     )
+    assert type(quote) == dict, f'Expected that quote will be dict, but returned:\n{quote}.\nFrom asset: {fromAsset}; Toasset: {toAsset}'
     assert quote['fromAsset'] == fromAsset
     assert quote['toAsset'] == toAsset
-    assert quote['toAssetVolume'] == settings.to_balance[toAsset]
+    assert quote['toAssetVolume'] == settings.to_balance[toAsset]/2
     assert quote['isFromFixed'] == False
     return [quote, swapApi]
 

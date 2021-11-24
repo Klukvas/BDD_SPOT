@@ -1,4 +1,5 @@
 .venv
 coverage
 .pytest_cache
-z.py
+test_z.py
+features/tz.feature

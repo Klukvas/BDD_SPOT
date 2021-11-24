@@ -26,6 +26,7 @@ def changeBalance(clientId, amount, walletId, asset, BrokerId='jetwallet') -> No
         )
     except Exception as err:
         print(f'Can not make request object')
+        return None
     try:
         response = client.ManualChangeBalance(request)
         try:

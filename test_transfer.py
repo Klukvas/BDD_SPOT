@@ -29,7 +29,7 @@ def send_transfer(get_balance, asset):
     assert type(transferData['transferId']) == str
     return [transferData, asset]
 
-@then('User has new record(by phone) in operation history')
+@then('User has new record in operation history')
 def check_operation_history_transfer(send_transfer, get_balance):
     counter = 0
     while True:
@@ -57,7 +57,7 @@ def check_operation_history_transfer(send_transfer, get_balance):
     assert type(sended_transfer[0]['transferByPhoneInfo']) == dict
     assert sended_transfer[0]['transferByPhoneInfo']['toPhoneNumber'] == settings.transfer_to_phone
 
-@then('User`s balance is changed after transfer to phone')
+@then('User`s balance is changed')
 def balance_change_after_transfer(get_balance, send_transfer):
 
     new_balances = Wallet(1).balances(get_balance[0])
@@ -121,7 +121,7 @@ def check_balance_after_receive(receive_operation_history):
 ######################################################################################################
 
 
-@scenario('features/transfer.feature', 'Make a transfer by address')
+@scenario('features/transfer.feature', 'Make a internalWithdrawal')
 def test_transfer_by_address():
     pass
 
@@ -137,7 +137,7 @@ def create_withdrawal(get_balance, asset, address):
     assert type(transferData['operationId']) == str
     return [transferData, asset, address]
 
-@then('User has new record in operation history')
+@then('User has new record(withdrawal) in operation history')
 def operation_history_withdrawal(create_withdrawal, get_balance):
     counter = 0
     while True:
@@ -165,7 +165,7 @@ def operation_history_withdrawal(create_withdrawal, get_balance):
     assert type(sended_transfer[0]['withdrawalInfo']) == dict
     assert sended_transfer[0]['withdrawalInfo']['toAddress'] == create_withdrawal[2]
 
-@then('User`s balance is changed after transfer to address')
+@then('User`s balance is changed after withdrawal')
 def change_balance_after_withdrawal(get_balance, create_withdrawal):
 
     new_balances = Wallet(1).balances(get_balance[0])
@@ -186,7 +186,7 @@ def change_balance_after_withdrawal(get_balance, create_withdrawal):
     )
     assert old_balances[0]['balance'] > new_balances[0]['balance']
 
-@then('Receive user has new record in operation history(deposit)', target_fixture="deposit_operation_history")
+@then('Receive user has new record(deposit) in operation history', target_fixture="deposit_operation_history")
 def deposit_operation_history(auth, create_withdrawal):
     token = auth(settings.receive_email, settings.password)
     counter = 0 

@@ -74,7 +74,7 @@ def check_op(get_enc_key, create_deposit):
                 break
         elif counter > 5:
             raise ValueError('Can not find operations with status 0 for 15 seconds') 
-    assert len(deposit) == 1, f'Expected that operationId of transfer will be unique but gets:\nrequestId: {send_transfer[0]["requestId"]}\n{deposit}\n'
+    assert len(deposit) == 1, f'Expected that operationId of transfer will be unique but gets:\nrequestId: {create_deposit["data"]["depositId"]}\n{deposit}\n'
     assert deposit[0]['operationType'] == 0
     assert deposit[0]['assetId'] == 'USD'
     assert deposit[0]['balanceChange'] == 11 == deposit[0]['depositInfo']['depositAmount']

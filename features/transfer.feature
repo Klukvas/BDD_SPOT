@@ -6,8 +6,8 @@ Feature: Transfer
 
     Scenario Outline: Make a transfer by phone
         When User send <asset> to phone number
-        Then User has new record(by phone) in operation history
-        And User`s balance is changed after transfer to phone
+        Then User has new record in operation history
+        And User`s balance is changed
         And Receive user has new record in operation history
         And Balance of receive user are correct
         Examples:
@@ -16,11 +16,11 @@ Feature: Transfer
             | BTC   |
             | ETH   |
     
-    Scenario Outline: Make a transfer by address
+    Scenario Outline: Make a internalWithdrawal
         When User send <assetId> to <address>
-        Then User has new record in operation history
-        And User`s balance is changed after transfer to address
-        And Receive user has new record in operation history(deposit)
+        Then User has new record(withdrawal) in operation history
+        And User`s balance is changed after withdrawal
+        And Receive user has new record(deposit) in operation history
         And Balance of deposited user are correct
         Examples:
             | assetId | address                                     |

@@ -1,12 +1,12 @@
 Feature: Swap
     Convert one crypto to anouther
-
-    Scenario Outline: Make a swap with fixed True
+    Background: Check balance
         Given Some crypto on balance
-        When User gets swap quote from <fromAsset> to <toAsset>
-        And User execute quote
-        Then User has new record in operation history
-        And User`s balance is changed
+    Scenario Outline: Make a swap with fixed True
+        When User gets swap quote with fixed True from <fromAsset> to <toAsset>
+        And User execute quote (fixed True)
+        Then User has new record in operation history (fixed True)
+        And User`s balance is changed (fixed True)
         Examples:
             | fromAsset | toAsset   |
             | LTC       | USD       |
@@ -22,7 +22,6 @@ Feature: Swap
             | EUR       | BTC       |
     
     Scenario Outline: Make a swap with fixed False
-        Given Some crypto on balance
         When User gets swap quote from <fromAsset> to <toAsset>
         And User execute quote
         Then User has new record in operation history
