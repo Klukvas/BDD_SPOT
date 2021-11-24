@@ -664,6 +664,55 @@ class Circle:
                 return [parse_resp, r.status_code]
         except:
             return r.status_code
+    
+    def get_card(self, token, cardId):
+        url = f"{self.main_url}get-card"
+        payload = json.dumps({
+                "cardId": f"{cardId}"
+            })
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers, data=payload)
+
+        try:
+            parse_resp =  json.loads(r.text)
+            try:
+                return {"data": parse_resp['data'] }
+            except:
+                return [parse_resp, r.status_code]
+        except:
+            return r.status_code
+
+    def get_all_cards(self, token):
+        url = f"{self.main_url}get-cards-all"
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = get(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers)
+
+        try:
+            parse_resp =  json.loads(r.text)
+            try:
+                return {"data": parse_resp['data']}
+            except:
+                return [parse_resp, r.status_code]
+        except:
+            return r.status_code
 
 
 if __name__ == '__main__':

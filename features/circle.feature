@@ -5,7 +5,7 @@ Feature: Circle
         Given User get encryption key
         And User encrypt data of his card
         When User add new card
-        Then User gets his card
-        And User create payment via card
+        Then User create deposit via card
+        And User has new record in operation history
         And Users`s balance are changed
         And User delete his card
