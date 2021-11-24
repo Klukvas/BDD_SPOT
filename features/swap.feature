@@ -17,7 +17,9 @@ Feature: Swap
             | BTC       | ETH       |
             | LTC       | BCH       |
             | ETH       | LTC       |
-            | BCH       | BTC       |
+            | USD       | LTC       |
+            | USD       | ETH       |
+            | EUR       | BTC       |
     
     Scenario Outline: Make a swap with fixed False
         Given Some crypto on balance

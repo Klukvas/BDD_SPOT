@@ -15,7 +15,8 @@ def auth():
 
 
 def pytest_bdd_before_scenario(request, feature, scenario):
-    if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False']:
+    if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False', 'Make a transfer by phone', 'Make a transfer by address']:
+        print('call upd balance')
         assets_for_update = []
         token = Auth(settings.email, settings.password, 1).authenticate()
         balances = Wallet(1).balances(token[0])
@@ -25,7 +26,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                     assets_for_update.append(
                         [
                             item['assetId'],
-                            balances[item['assetId']]
+                            settings.balance_asssets[item['assetId']]
                         ]
                     )
         for item in assets_for_update:
