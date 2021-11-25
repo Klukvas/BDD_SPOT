@@ -7,5 +7,5 @@ Feature: Circle
         When User add new card
         Then User create deposit via card
         And User has new record in operation history
-        And Users`s balance are changed
+        And User`s balance is changed
         And User delete his card

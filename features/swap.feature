@@ -1,5 +1,5 @@
 Feature: Swap
-    Convert one crypto to anouther
+    Convert one crypto to another
     Background: Check balance
         Given Some crypto on balance
     Scenario Outline: Make a swap with fixed True

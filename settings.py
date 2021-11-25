@@ -1,4 +1,5 @@
 import os
+
 cert_name = os.environ['cert_name']
 cert_pass = os.environ['cert_pass']
 
@@ -12,9 +13,9 @@ receive_email = os.environ['receive_email']
 
 from_ph_number = os.environ['from_phone_number']
 
-#1 - uat / 2 - test
+# 1 - uat / 2 - test
 env = 2
-#используються для создания квоты свопа с fixed False
+# используються для создания квоты свопа с fixed False
 balance_asssets = {
     'LTC': 1.3,
     'BTC': 0.06,
@@ -23,7 +24,7 @@ balance_asssets = {
     'EUR': 265,
     'BCH': 0.5
 }
-#используються для создания квоты свопа с fixed True
+# используються для создания квоты свопа с fixed True
 to_balance = {
     'LTC': 0.45,
     'BTC': 0.01,

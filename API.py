@@ -515,8 +515,10 @@ class Circle:
     def __init__(self, env):
         if env == 1:
             self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/circle/'
+            self.debug_url = 'https://wallet-api-uat.simple-spot.biz/api/debug/'
         else:
-            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/circle/'
+            self.main_url = 'https://wallet-api-test.simple-spot.biz/api/circle/'
+            self.debug_url = 'https://wallet-api-test.simple-spot.biz/api/debug/'
 
     def get_encryption_key(self, token):
         url = f"{self.main_url}get-encryption-key"
@@ -542,13 +544,12 @@ class Circle:
             return r.status_code
 
     def encrypt_data(self, token, enc_key):
-        url = f"{self.main_url}circle-encrypt-data"
+        url = f"{self.debug_url}circle-encrypt-data"
 
         payload = json.dumps({
-                "data": r"{\"number\":\"4007400000000007\",\"cvv\": \"123\"}",
+                "data": "{\"number\":\"4007400000000007\",\"cvv\": \"123\"}",
                 "encryptionKey": f"{enc_key}"
             })
-
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -586,7 +587,6 @@ class Circle:
                 "expMonth": 12,
                 "expYear": 2024
             })
-
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -611,14 +611,13 @@ class Circle:
         url = f"{self.main_url}create-payment"
         requestGuid = uuid4()
         payload = json.dumps({
-            "requestGuid": f"{requestGuid}",
-            "keyId": f"{keyId}",
-            "cardId": f"{cardId}",
+            "requestGuid": str(requestGuid),
+            "keyId": keyId,
+            "cardId": cardId,
             "amount": amount,
             "currency": "USD",
-            "encryptedData": f"{encryption_data}"
+            "encryptedData": encryption_data
         })
-
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'

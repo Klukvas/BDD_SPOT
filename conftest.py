@@ -15,6 +15,7 @@ def auth():
 
 
 def pytest_bdd_before_scenario(request, feature, scenario):
+    print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
     if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False', 'Make a transfer by phone', 'Make a transfer by address']:
         print('call upd balance')
         assets_for_update = []
@@ -48,8 +49,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                 assert bl_change_result != None, 'Ошибка при пополнении баланса'
 
 def pytest_bdd_after_scenario(request, feature, scenario):
-    if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False']:
-        sleep(10)
+    sleep(10)
 
 def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args) :
     print(f'Step: {step} of scenario: {scenario.name} PASSED')
