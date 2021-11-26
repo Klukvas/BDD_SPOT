@@ -2,9 +2,9 @@ from API import WalletHistory, Circle, Wallet
 from pytest_bdd import scenario, given, when, then
 from time import sleep
 import settings
+import os
 
-
-@scenario('features/circle.feature', 'Make a deposit by card')
+@scenario(f'{os.path.join(os.path.abspath(".."),"BaseTests","features","circle.feature")}', 'Make a deposit by card')
 def test_circle_deposit():
     pass
 

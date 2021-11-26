@@ -2,7 +2,7 @@ from API import WalletHistory, Wallet, Blockchain, Transfer
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
-
+import os
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
     print(f'call get_balance ')
@@ -12,7 +12,7 @@ def get_balance(auth):
     assert len(balances) > 0
     return [token, balances]
 
-@scenario('features/transfer.feature', 'Make a transfer by phone')
+@scenario(f'{os.path.join(os.path.abspath(".."),"BaseTests","features","transfer.feature")}', 'Make a transfer by phone')
 def test_transfer_by_phone():
     pass
 
@@ -121,7 +121,7 @@ def check_balance_after_receive(receive_operation_history):
 ######################################################################################################
 
 
-@scenario('features/transfer.feature', 'Make a internalWithdrawal')
+@scenario('../features/transfer.feature', 'Make a internalWithdrawal')
 def test_transfer_by_address():
     pass
 

@@ -8,7 +8,6 @@ password = os.environ['password']
 client_Id = os.environ['client_Id']
 
 transfer_to_phone = os.environ['transfer_to_phone']
-
 receive_email = os.environ['receive_email']
 
 from_ph_number = os.environ['from_phone_number']

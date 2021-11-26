@@ -2,7 +2,7 @@ from API import WalletHistory, Wallet, Swap
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
-
+import os
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
     token = auth(settings.email, settings.password)
@@ -11,7 +11,7 @@ def get_balance(auth):
     assert len(balances) > 0
     return [token, balances]
 
-@scenario('features/swap.feature', 'Make a swap with fixed True')
+@scenario(f'{os.path.join(os.path.abspath(".."),"BaseTests","features","swap.feature")}', 'Make a swap with fixed True')
 def test_one_step_swap_fixed_true():
     pass
 
@@ -121,7 +121,7 @@ def hist2(get_balance, exec):
 
 
 
-@scenario('features/swap.feature', 'Make a swap with fixed False')
+@scenario(f'{os.path.join(os.getcwd(),"features","swap.feature")}', 'Make a swap with fixed False')
 def test_one_step_swap_fixed_false():
     pass
 
