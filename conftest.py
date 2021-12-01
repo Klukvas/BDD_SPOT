@@ -28,7 +28,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                     assets_for_update.append(
                         [
                             item['assetId'],
-                            settings.balance_asssets[item['assetId']]
+                            correct_amount
                         ]
                     )
                 elif item['balance'] > settings.balance_asssets[item['assetId']]:

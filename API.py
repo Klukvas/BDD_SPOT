@@ -33,7 +33,7 @@ class Auth:
                 headers=self.headers, data=payload)
 
         if r.status_code == 200:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)['data']
             return [parse_resp['token'], parse_resp['refreshToken']] 
         else:
             return r.status_code
@@ -53,7 +53,7 @@ class Auth:
                 headers=self.headers, data=payload)
 
         if r.status_code == 200:
-            parse_resp =  json.loads(r.text)['data']
+            parse_resp = json.loads(r.text)['data']
             return [parse_resp['token'], parse_resp['refreshToken']] 
         else:
             return r.status_code

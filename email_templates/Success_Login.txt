@@ -1,0 +1,15 @@
+*Success login*
+
+We are detect new login to your account {{email}}
+Time: 2021-11-30 08:31:38 UTC
+IP address: 20.82.12.154
+
+If you did not try to login, then please change your password and notify customer support.
+
+If you have any questions our support team will be glad to help you. Just send your message to support@monfex.com ( support@monfex.com )
+
+( https://www.facebook.com/monfexofficial/ ) ( https://twitter.com/MonfexOfficial ) ( https://t.me/monfexofficial )
+
+Use of the service and website is subject to our Terms of Service ( https://www.monfex.com/terms-of-service ) and Privacy Policy ( https://www.monfex.com/privacy-policy )
+
+© 2020 Monfex. All rights reserved.

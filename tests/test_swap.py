@@ -139,7 +139,7 @@ def get_quote(get_balance, fromAsset, toAsset):
     assert quote['fromAsset'] == fromAsset
     assert quote['toAsset'] == toAsset
     assert quote['toAssetVolume'] == settings.to_balance[toAsset]/2
-    assert quote['isFromFixed'] == False
+    assert not quote['isFromFixed']
     return [quote, swapApi]
 
 @when('User execute quote', target_fixture="exec")

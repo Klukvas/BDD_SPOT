@@ -10,6 +10,7 @@ requests-pkcs12 = "*"
 requests = "*"
 grpcio = "*"
 protobuf = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 

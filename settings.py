@@ -26,9 +26,9 @@ balance_asssets = {
 # используються для создания квоты свопа с fixed True
 to_balance = {
     'LTC': 0.45,
-    'BTC': 0.01,
+    'BTC': 0.005,
     'ETH': 0.04,
     'USD': 100,
     'EUR': 95,
-    'BCH': 0.2
+    'BCH': 0.5
 }

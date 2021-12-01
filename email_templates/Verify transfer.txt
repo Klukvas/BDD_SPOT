@@ -1,0 +1,19 @@
+*Verify transfer*
+
+You tried to transfer 0.3 LTC
+To client with phone number: 380933602073
+
+Your IP: 213.110.153.125
+
+Approve transfer ( https://validation-api-uat.simple-spot.biz/api/v1/transfer-verification/verify?brand=simple&transferProcessId=165&code=183635 )
+
+If you did not try to transfer, then do not approve transaction
+and please change your password.
+
+If you have any questions our support team will be glad to help you. Just send your message to support@monfex.com ( support@monfex.com )
+
+( https://www.facebook.com/monfexofficial/ ) ( https://twitter.com/MonfexOfficial ) ( https://t.me/monfexofficial )
+
+Use of the service and website is subject to our Terms of Service ( https://www.monfex.com/terms-of-service ) and Privacy Policy ( https://www.monfex.com/privacy-policy )
+
+© 2020 Monfex. All rights reserved.
