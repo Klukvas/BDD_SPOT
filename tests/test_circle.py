@@ -4,7 +4,7 @@ from time import sleep
 import settings
 import os
 
-@scenario(f'{os.path.join(os.path.abspath(".."),"BaseTests","features","circle.feature")}', 'Make a deposit by card')
+@scenario(f'../features/circle.feature', 'Make a deposit by card')
 def test_circle_deposit():
     pass
 

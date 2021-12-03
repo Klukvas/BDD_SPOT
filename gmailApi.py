@@ -58,7 +58,6 @@ class MailParser:
                         if send_date >= self.date_time_action and \
                                 reason == self.mail_types[self.current_reason] or \
                                 self.mail_types[self.current_reason] in reason:
-                            print(f'63')
                             return {'from': _from, 'reason': reason, 'url': url_to_mail}
             if counter == 6:
                 print('Can not find needed email for 60s')
@@ -81,6 +80,14 @@ class MailParser:
             code = re.search('\d+', message_body.text.strip()).group(0)
             app_link = re.search('Open in Application \(.+\)',message_body.text.strip()).group(0)
             return {'message_body': message_body.text.strip(), 'code': code, 'app_link': app_link}
+        elif self.current_reason == 1:
+            ip = re.search(r'IP address: ([0-9]|\.)*',  message_body.text.strip()).group(0)
+            time = re.search(r'Time: ([0-9]|\-)*\s([0-9]|:)*\sUTC',  message_body.text.strip()).group(0)
+            return {'ip': ip, 'time': time, 'message_body': message_body.text.strip()}
+        elif self.current_reason == 2:
+            ip = re.search(r'Your IP: ([0-9]|\.)*',  message_body.text.strip()).group(0)
+            confirm_link = re.search(f'https:\/\/val([A-Z]|[a-z]|\-|[0-9]|\=|\.|\/|\?|&)*', message_body.text.strip()).group(0)
+            return {'ip': ip, 'message_body': message_body.text.strip(), 'confirm_link': confirm_link}
         else:
             return {'message_body': message_body.text.strip()}
 

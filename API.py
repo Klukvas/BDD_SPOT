@@ -713,6 +713,62 @@ class Circle:
         except:
             return r.status_code
 
+class Verify:
+
+    def __init__(self, env):
+        if env == 1:
+            self.main_url = 'https://validation-api-uat.simple-spot.biz/api/v1/'
+        else:
+            self.main_url = 'https://validation-api-test.simple-spot.biz/api/v1/'
+
+    def verify_email(self,token, code):
+        url = f"{self.main_url}email-verification/verify"
+
+        payload = json.dumps({
+                "code": f"{code}"
+            })
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers, data=payload)
+
+        try:
+            parse_resp =  json.loads(r.text)
+            try:
+                return {"data": parse_resp['result'] }
+            except:
+                return [parse_resp, r.status_code]
+        except:
+            return r.status_code   
+    
+    def client_data(self,token):
+        url = f"https://wallet-api-uat.simple-spot.biz/api/v1/info/session-info"
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = get(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers)
+
+        try:
+            parse_resp =  json.loads(r.text)
+            try:
+                return {"data": parse_resp['data'] }
+            except:
+                return [parse_resp, r.status_code]
+        except:
+            return r.status_code   
 
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1', 1 ).authenticate()

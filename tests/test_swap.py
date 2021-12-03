@@ -11,7 +11,7 @@ def get_balance(auth):
     assert len(balances) > 0
     return [token, balances]
 
-@scenario(f'{os.path.join(os.path.abspath(".."),"BaseTests","features","swap.feature")}', 'Make a swap with fixed True')
+@scenario(f'../features/swap.feature', 'Make a swap with fixed True')
 def test_one_step_swap_fixed_true():
     pass
 
@@ -34,7 +34,7 @@ def get_quote(get_balance, fromAsset, toAsset):
 @when('User execute quote (fixed True)', target_fixture="exec")
 def exec(get_balance, get_quote):
     response = get_quote[1].execute_quote(get_balance[0], get_quote[0])
-    assert type(response) == dict
+    assert type(response) == dict, f'Expected: type dict\nReturned: {type(response)}\nResponse: {response}'
     assert response['isExecuted'] == True
     assert response['fromAsset'] == get_quote[0]['fromAsset']
     assert response['toAsset'] == get_quote[0]['toAsset']
@@ -121,7 +121,7 @@ def hist2(get_balance, exec):
 
 
 
-@scenario(f'{os.path.join(os.getcwd(),"features","swap.feature")}', 'Make a swap with fixed False')
+@scenario(f'../features/swap.feature', 'Make a swap with fixed False')
 def test_one_step_swap_fixed_false():
     pass
 

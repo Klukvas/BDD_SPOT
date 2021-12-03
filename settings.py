@@ -6,12 +6,13 @@ cert_pass = os.environ['cert_pass']
 email = os.environ['email']
 password = os.environ['password']
 client_Id = os.environ['client_Id']
-
+template_email = os.environ['template_email']
 transfer_to_phone = os.environ['transfer_to_phone']
 receive_email = os.environ['receive_email']
-
+template_clientId = os.environ['template_clientId']
 from_ph_number = os.environ['from_phone_number']
-
+transfer_to_phone_with_confirm_email = os.environ['transfer_to_phone_with_confirm_email']
+asset_to_send = os.environ['asset_to_send']
 # 1 - uat / 2 - test
 env = 2
 # используються для создания квоты свопа с fixed False

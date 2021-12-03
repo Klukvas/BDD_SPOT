@@ -12,7 +12,7 @@ def get_balance(auth):
     assert len(balances) > 0
     return [token, balances]
 
-@scenario(f'{os.path.join(os.path.abspath(".."),"BaseTests","features","transfer.feature")}', 'Make a transfer by phone')
+@scenario(f'../features/transfer.feature', 'Make a transfer by phone')
 def test_transfer_by_phone():
     pass
 

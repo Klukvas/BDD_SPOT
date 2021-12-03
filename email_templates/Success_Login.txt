@@ -1,8 +1,8 @@
 *Success login*
 
 We are detect new login to your account {{email}}
-Time: 2021-11-30 08:31:38 UTC
-IP address: 20.82.12.154
+{{time}}
+{{ip}}
 
 If you did not try to login, then please change your password and notify customer support.
 

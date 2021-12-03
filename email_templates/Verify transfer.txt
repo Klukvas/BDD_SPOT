@@ -1,11 +1,11 @@
 *Verify transfer*
 
-You tried to transfer 0.3 LTC
-To client with phone number: 380933602073
+You tried to transfer {{amount}} {{asset}}
+To client with phone number: {{phone_to}}
 
-Your IP: 213.110.153.125
+{{ip}}
 
-Approve transfer ( https://validation-api-uat.simple-spot.biz/api/v1/transfer-verification/verify?brand=simple&transferProcessId=165&code=183635 )
+Approve transfer ( {{link}} )
 
 If you did not try to transfer, then do not approve transaction
 and please change your password.
