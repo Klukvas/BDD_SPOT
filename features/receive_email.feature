@@ -11,17 +11,25 @@ Feature: Emails receive
   Scenario: Success login
     Given  User has new Success login email after login
 
-  Scenario: Transfer
-    Given User send transfer
+  Scenario Outline: Transfer(waiting for user)
+    Given User send transfer with asset: <asset>, to phone <phone>
     When User has new email with appove link
     Then User approve transfer by link
+    Examples:
+      | asset | phone         |
+      | LTC   | +111111123123 |
 
-  Scenario: Withdrawal
-    Given User send withdrawal request
+  Scenario Outline: Internal withdrawal
+    Given User send withdrawal request wiht asset: <asset>, to address: <address>
     When User has new email with appove withdwal link
     Then User approve withdrawal by link
-  
+    Examples:
+        | asset |  address                             |
+        | LTC   |  QVTCAaqX8UUk8kf3VY6FRdicFkBuoDQ78P  |
+
+
   Scenario: PasswordRecovery
-    Given User send password recovery request
-    When User has new email with appove withdwal link
-    Then User approve withdrawal by link
+    Given User passed registration
+    When User change password
+    Then User can auth with new password
+    And User can not auth with old password
