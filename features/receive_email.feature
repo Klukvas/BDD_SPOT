@@ -15,3 +15,13 @@ Feature: Emails receive
     Given User send transfer
     When User has new email with appove link
     Then User approve transfer by link
+
+  Scenario: Withdrawal
+    Given User send withdrawal request
+    When User has new email with appove withdwal link
+    Then User approve withdrawal by link
+  
+  Scenario: PasswordRecovery
+    Given User send password recovery request
+    When User has new email with appove withdwal link
+    Then User approve withdrawal by link

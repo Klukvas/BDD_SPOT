@@ -16,10 +16,11 @@ def auth():
 
 def pytest_bdd_before_scenario(request, feature, scenario):
     print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
-    if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False', 'Make a transfer by phone', 'Make a transfer by address', 'Transfer']:
+    if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False', 'Make a transfer by phone', 
+        'Make a transfer by address', 'Transfer', 'Withdrawal']:
         print('call upd balance')
         assets_for_update = []
-        if scenario.name == 'Transfer':
+        if scenario.name in ['Transfer', 'Withdrawal']:
             token = Auth(settings.template_email, settings.password, 1).authenticate()
             client_Id = settings.template_clientId
         else:

@@ -1,14 +1,14 @@
 *Verify withdrawal*
 
-You tried to withdrawal 0.003 BTC
-Withdrawal Fee: 0 BTC
-To address: 2N9f6BXXWYVEv14eBWhBS5xA8wmpYe211SG
+You tried to withdrawal {{amount}} {{asset}}
+Withdrawal Fee: {{feeAmount}} {{feeAsset}}
+To address: {{address}}
 
-Your IP: 213.110.153.125
+{{ip}}
 
 Your transfer will be *processed off-chain* as internal to another client
 
-Approve withdrawal ( https://validation-api-uat.simple-spot.biz/api/v1/withdrawal-verification/verify?brand=simple&withdrawalProcessId=133&code=165217 )
+Approve withdrawal ( {{link}} )
 
 If you did not try to withdrawal, then do not approve transaction
 and please change your password.

@@ -504,7 +504,7 @@ class Blockchain:
         try:
             parse_resp =  json.loads(r.text)
             try:
-                return {"operationId": parse_resp['data']['operationId'], "requestId": uniqId }
+                return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId) }
             except:
                 return [parse_resp, r.status_code]
         except:

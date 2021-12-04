@@ -7,7 +7,9 @@ import re
 
 class MailParser:
 
-    def __init__(self, email_type, email, date_time_action):
+    def __init__(self, email_type, email, date_time_action, *args):
+        self.counter = 0
+        self.args = args
         self.date_time_action = date_time_action
         self.current_reason = email_type
         self.mail_types = {
@@ -63,33 +65,42 @@ class MailParser:
                 print('Can not find needed email for 60s')
                 return None
             counter += 1
-            print(f'counter: {counter}')
             sleep(10)
 
-    def parse_mail(self):
-        email_data = self.parse_inbox()
-        if not email_data:
-            print('here is no email data')
-            return None
-        response = requests.get(
-            f'{self.main_domain}{email_data["url"]}'
-        )
-        soup = BeautifulSoup(response.text, 'html.parser')
-        message_body = soup.find('p', id="messagebody")
-        if self.current_reason == 0:
-            code = re.search('\d+', message_body.text.strip()).group(0)
-            app_link = re.search('Open in Application \(.+\)',message_body.text.strip()).group(0)
-            return {'message_body': message_body.text.strip(), 'code': code, 'app_link': app_link}
-        elif self.current_reason == 1:
-            ip = re.search(r'IP address: ([0-9]|\.)*',  message_body.text.strip()).group(0)
-            time = re.search(r'Time: ([0-9]|\-)*\s([0-9]|:)*\sUTC',  message_body.text.strip()).group(0)
-            return {'ip': ip, 'time': time, 'message_body': message_body.text.strip()}
-        elif self.current_reason == 2:
-            ip = re.search(r'Your IP: ([0-9]|\.)*',  message_body.text.strip()).group(0)
-            confirm_link = re.search(f'https:\/\/val([A-Z]|[a-z]|\-|[0-9]|\=|\.|\/|\?|&)*', message_body.text.strip()).group(0)
-            return {'ip': ip, 'message_body': message_body.text.strip(), 'confirm_link': confirm_link}
+    def parse_mail(self, *args):
+        if self.counter > 5:
+            return 0
         else:
-            return {'message_body': message_body.text.strip()}
+            email_data = self.parse_inbox()
+            if not email_data:
+                print('here is no email data')
+                return None
+            response = requests.get(
+                f'{self.main_domain}{email_data["url"]}'
+            )
+            soup = BeautifulSoup(response.text, 'html.parser')
+            message_body = soup.find('p', id="messagebody")
+            if self.current_reason == 0:
+                code = re.search('\d+', message_body.text.strip()).group(0)
+                app_link = re.search('Open in Application \(.+\)',message_body.text.strip()).group(0)
+                return {'message_body': message_body.text.strip(), 'code': code, 'app_link': app_link}
+            elif self.current_reason == 1:
+                ip = re.search(r'IP address: ([0-9]|\.)*',  message_body.text.strip()).group(0)
+                time = re.search(r'Time: ([0-9]|\-)*\s([0-9]|:)*\sUTC',  message_body.text.strip()).group(0)
+                return {'ip': ip, 'time': time, 'message_body': message_body.text.strip()}
+            elif self.current_reason in [2,3]:
+                ip = re.search(r'Your IP: ([0-9]|\.)*',  message_body.text.strip()).group(0)
+                confirm_link = re.search(f'https:\/\/val([A-Z]|[a-z]|\-|[0-9]|\=|\.|\/|\?|&)*', message_body.text.strip()).group(0)
+                if self.args[0] in confirm_link:
+                    return {'ip': ip, 'message_body': message_body.text.strip(), 'confirm_link': confirm_link}
+                else:
+                    self.counter += 1
+                    sleep(8)
+                    return self.parse_mail()
+            else:
+                return {'message_body': message_body.text.strip()}
+
+            
 
 if __name__ == '__main__':
     datetime_today = dateTime.strptime(

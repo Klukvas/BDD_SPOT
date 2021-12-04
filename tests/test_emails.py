@@ -1,6 +1,6 @@
 from time import sleep
 from requests.api import request
-from API import Auth, Verify, Transfer, WalletHistory
+from API import Auth, Blockchain, Verify, Transfer, WalletHistory
 from pytest_bdd import scenario, given, then, when
 import uuid
 from gmailApi import MailParser
@@ -9,13 +9,12 @@ import settings
 import requests
 
 @scenario(f'../features/receive_email.feature', 'Email confirmation')
-def test_emails():
+def test_email_confirmation():
     pass
 
 @given('User registration', target_fixture="register")
 def register():
     email = 'emailtest' + str(uuid.uuid4()) + '@mailforspam.com'
-    print(f'email: {email}')
     datetime_today = datetime.strptime(
         datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
         '%d-%m-%Y %H:%M:%S'
@@ -28,6 +27,7 @@ def register():
 @given('User has new email with code', target_fixture="get_email_data")
 def get_email_data(register):
     mail_parser = MailParser(0, register[1],  register[2]).parse_mail()
+    assert mail_parser
     assert type(mail_parser) == dict
     assert len(mail_parser.keys()) == 3
     with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Email_confirmation_request_mock.txt') as f:
@@ -49,6 +49,9 @@ def check_email_verified(register):
     assert type(auth_data) == dict, f'Expected that email ll be verifyed but:{auth_data}'
     assert auth_data['data']['emailVerified'] == True
 
+
+
+
 @scenario(f'../features/receive_email.feature', 'Success login')
 def test_success_login():
     pass
@@ -61,6 +64,7 @@ def log_in(auth):
         '%d-%m-%Y %H:%M:%S'
     )
     mail_parser = MailParser(1, settings.template_email, datetime_today).parse_mail()
+    assert mail_parser
     assert type(mail_parser) == dict
     assert len(mail_parser.keys()) == 3
     with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Success_Login.txt') as f:
@@ -99,6 +103,7 @@ def make_transfer(auth):
 @when('User has new email with appove link', target_fixture='check_transfer_email')
 def check_transfer_email(make_transfer):
     mail_parser = MailParser(2, settings.template_email, make_transfer[2]).parse_mail()
+    assert mail_parser
     with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Verify transfer.txt') as f:
         template = f.read()
     template = template.\
@@ -126,4 +131,143 @@ def approve_transfer(check_transfer_email, make_transfer):
                 return
         if counter > 6:
             raise AttributeError(f'Can not find record operation history with status 1 and operationId like {make_transfer[0]["requestId"]}')
+        sleep(5)
+
+
+
+
+
+
+# @scenario(f'../features/receive_email.feature', 'Transfer')
+# def test_success_transfer_email():
+#     pass
+
+# @given('User send transfer', target_fixture='make_transfer')
+# def make_transfer(auth):
+#     token = auth(settings.template_email, settings.password )
+#     assert type(token) == str
+#     datetime_today = datetime.strptime(
+#         datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
+#         '%d-%m-%Y %H:%M:%S'
+#     )
+#     transferData = Transfer(1).create_transfer(
+#         token,
+#         settings.transfer_to_phone_with_confirm_email,
+#         settings.asset_to_send,
+#         settings.balance_asssets[settings.asset_to_send] / 2
+#     )
+#     assert type(transferData) == dict, f'Expected that response will be dict, but gets: {type(transferData)}\nTransferData: {transferData}.Asset:{"LTC"}\tAmount: {settings.balance_asssets["LTC"] / 2}'
+#     assert type(transferData['transferId']) == str
+#     return [transferData, 'LTC', datetime_today, token]
+
+# @when('User has new email with appove withdwal link', target_fixture='check_transfer_email')
+# def check_transfer_email(make_transfer):
+#     mail_parser = MailParser(2, settings.template_email, make_transfer[2]).parse_mail()
+#     with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Verify transfer.txt') as f:
+#         template = f.read()
+#     template = template.\
+#         replace('{{amount}}', str(settings.balance_asssets[settings.asset_to_send] / 2)).\
+#             replace('{{asset}}', settings.asset_to_send).\
+#                 replace('{{ip}}', mail_parser['ip']).\
+#                     replace('{{phone_to}}', settings.transfer_to_phone_with_confirm_email).\
+#                         replace('{{link}}', mail_parser['confirm_link'])
+#     assert template == \
+#            mail_parser['message_body'], \
+#                f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
+#     return [mail_parser['confirm_link']]
+
+# @then('User approve transfer by link')
+# def approve_transfer(check_transfer_email, make_transfer):
+#     counter = 0
+#     resp = requests.get(check_transfer_email[0])
+#     assert resp.status_code == 200
+#     while True:
+#         balances = WalletHistory(1).operations_history(make_transfer[3], settings.asset_to_send)
+#         counter += 1
+#         for item in balances:
+#             if make_transfer[0]['requestId'] in item['operationId'] or \
+#                 make_transfer[0]['requestId'] == item['operationId'] and item['status'] == 1:
+#                 assert item['operationType'] == 6
+#                 assert item['assetId'] == settings.asset_to_send
+#                 assert item['balanceChange'] == item['newBalance'] == \
+#                     item['avgOpenPrice'] == item['assetPriceInUsd']
+#                 assert item['transferByPhoneInfo'] !=  None
+#                 assert item['transferByPhoneInfo']['toPhoneNumber'] ==  settings.transfer_to_phone_with_confirm_email
+#                 assert item['transferByPhoneInfo']['withdrawalAssetId'] == settings.asset_to_send
+#                 assert item['transferByPhoneInfo']['withdrawalAmount'] == settings.balance_asssets[settings.asset_to_send] / 2
+#                 return
+#         if counter > 6:
+#             raise AttributeError(f'Can not find record operation history with status 1 and operationId like {make_transfer[0]["requestId"]}')
+#         sleep(5)
+
+
+
+
+
+@scenario(f'../features/receive_email.feature', 'Withdrawal')
+def test_success_withdrawal_email():
+    pass
+
+@given('User send withdrawal request', target_fixture='make_withdrawal')
+def make_withdrawal(auth):
+    token = auth(settings.template_email, settings.password )
+    assert type(token) == str
+    datetime_today = datetime.strptime(
+        datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
+        '%d-%m-%Y %H:%M:%S'
+    )
+    withdrawalData = Blockchain(1).withdrawal(
+        token,
+        settings.asset_to_send,
+        settings.balance_asssets[settings.asset_to_send] / 2,
+        settings.asset_blockchain_address
+    )
+    assert type(withdrawalData) == dict, f'Expected that response will be dict, but gets: {type(withdrawalData)}\nTransferData: {withdrawalData}.Asset:{settings.asset_to_send}\tAmount: {settings.balance_asssets[settings.asset_to_send] / 2}'
+    assert type(withdrawalData['operationId']) == str
+    return [withdrawalData, datetime_today, token]
+
+@when('User has new email with appove withdwal link', target_fixture='check_withdrawal_email')
+def check_withdrawal_email(make_withdrawal):
+    mail_parser = MailParser(3, settings.template_email, make_withdrawal[1], make_withdrawal[0]['operationId']).parse_mail()
+    assert mail_parser != None, f'Expected that email ll be finded'
+    with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Verify withdrawal.txt') as f:
+        template = f.read()
+    template = template.\
+        replace('{{amount}}', str(settings.balance_asssets[settings.asset_to_send] / 2)).\
+            replace('{{asset}}', settings.asset_to_send).\
+                replace('{{feeAmount}}', settings.fee_amount).\
+                    replace('{{feeAsset}}', settings.fee_asset).\
+                        replace('{{ip}}', mail_parser['ip']).\
+                            replace('{{link}}', mail_parser['confirm_link']).\
+                                replace('{{address}}', settings.asset_blockchain_address)
+    assert template == \
+           mail_parser['message_body'], \
+               f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
+    return [mail_parser['confirm_link']]
+
+@then('User approve withdrawal by link')
+def approve_withdrawal(check_withdrawal_email, make_withdrawal):
+    counter = 0
+    resp = requests.get(check_withdrawal_email[0])
+    assert resp.status_code == 200
+    while True:
+        balances = WalletHistory(1).operations_history(make_withdrawal[2], settings.asset_to_send)
+        counter += 1
+        for item in balances:
+            if ( make_withdrawal[0]['requestId'] in item['operationId'] or \
+                make_withdrawal[0]['requestId'] == item['operationId'] ) and \
+                item['status'] == 0 and \
+                    item['balanceChange'] != 0:
+                assert item['operationType'] == 1
+                assert item['assetId'] == settings.asset_to_send
+                assert item['balanceChange'] == (settings.balance_asssets[settings.asset_to_send] / 2)*-1, f'Expected: {(settings.balance_asssets[settings.asset_to_send] / 2)*-1}\nReturned: {item["balanceChange"]}\nItem: {item}'
+                assert item['withdrawalInfo'] !=  None
+                assert item['withdrawalInfo']['toAddress'] ==  settings.asset_blockchain_address
+                assert item['withdrawalInfo']['withdrawalAssetId'] == settings.asset_to_send
+                assert item['withdrawalInfo']['withdrawalAmount'] == settings.balance_asssets[settings.asset_to_send] / 2
+                assert item['withdrawalInfo']['isInternal'] == True
+                assert str(item['withdrawalInfo']['feeAmount']) == settings.fee_amount
+                return
+        if counter > 6:
+            raise AttributeError(f'Can not find record operation history with status 1 and operationId like {make_withdrawal[0]["requestId"]}')
         sleep(5)
