@@ -1,22 +1,22 @@
 {
     "env":{
         "Stage": {
-
+            "is_actual": true,
+            "template_tests":{
+                "email": "baseuser@mailforspam.com",
+                "client_id": "1f6829dc37aa4fd9a28799b6d36bc11b",
+                "password": "testpassword1",
+                "to_phone_transfer": "+111111010101"
+            },
+            "me_tests": {
+                "email": "baseuser1@mailinator.com",
+                "password": "testpassword1",
+                "client_id": "d5caeca8b1a944189dccb899ec1f8fc2",
+                "from_phone_number": "+380933342340",
+                "transfer_to_phone": "+380933333333",
+                "receive_email": "andrey.p@smplt.net"
+            }
         }
-    },
-    "template_tests":{
-        "email": "baseuser@mailforspam.com",
-        "client_id": "1f6829dc37aa4fd9a28799b6d36bc11b",
-        "password": "testpassword1",
-        "to_phone_transfer": "+111111010101"
-    },
-    "mE_tests": {
-        "email": "baseuser1@mailinator.com",
-        "password": "testpassword1",
-        "client_Ii": "d5caeca8b1a944189dccb899ec1f8fc2",
-        "from_phone_number": "+380933342340",
-        "transfer_to_phone": "+380933333333",
-        "receive_email": "andrey.p@smplt.net"
+    
     }
-
 }
