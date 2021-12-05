@@ -1,24 +1,43 @@
 import os
-
+import json
 cert_name = os.environ['cert_name']
 cert_pass = os.environ['cert_pass']
+with open('settings.json') as f:
+    data = json.load(f)
 
-email = os.environ['email']
-password = os.environ['password']
-client_Id = os.environ['client_Id']
-template_email = os.environ['template_email']
-transfer_to_phone = os.environ['transfer_to_phone']
-receive_email = os.environ['receive_email']
-template_clientId = os.environ['template_clientId']
-from_ph_number = os.environ['from_phone_number']
-transfer_to_phone_with_confirm_email = os.environ['transfer_to_phone_with_confirm_email']
-asset_to_send = os.environ['asset_to_send']
-asset_blockchain_address = os.environ['asset_blockchain_address']
-fee_amount = os.environ['fee_amount']
-fee_asset = os.environ['fee_asset']
+if data['env']['UAT']['is_actual']:
+    data = data['env']['UAT']
+elif data['env']['TEST']['is_actual']:
+    data = data['env']['TEST']
+else:
+    raise 'Can not find setting to start. All "is_actual" fields are eql false'
+me_tests_email = data['me_tests']['email']
+me_tests_password = data['me_tests']['password']
+me_tests_client_id = data['me_tests']['client_id']
+me_tests_from_phone_number = data['me_tests']['from_phone_number']
+me_tests_transfer_to_phone = data['me_tests']['transfer_to_phone']
+me_tests_receive_email = data['me_tests']['receive_email']
 
-# 1 - uat / 2 - test
-env = 2
+#Имейл на который прихоят письма
+template_tests_email = data['template_tests']['email']
+template_tests_client_id = data['template_tests']['client_id']
+template_tests_password = data['template_tests']['password']
+template_tests_fee_amoutn = data['template_tests']['fee_amount']
+
+template_tests_to_phone_transfer = data['template_tests']['to_phone_transfer']
+
+url_verify =  data['urls']['verify']
+url_auth = data['urls']['auth']
+url_wallet_history = data['urls']['wallet_history']
+url_wallet = data['urls']['wallet']
+url_signalR = data['urls']['signalR']
+url_swap = data['urls']['swap']
+url_trading = data['urls']['trading']
+url_transfer = data['urls']['transfer']
+url_blockchain = data['urls']['blockchain']
+url_circle = data['urls']['circle']
+url_debug = data['urls']['debug']
+        
 # используються для создания квоты свопа с fixed False
 balance_asssets = {
     'LTC': 1.3,

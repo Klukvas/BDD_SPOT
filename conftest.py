@@ -6,10 +6,13 @@ from time import sleep
 
 @pytest.fixture
 def auth():
-    def get_tokens(email, password):
-        token = Auth(email, password, 1).authenticate()
-        assert type(token) == list
-        return token[0]
+    def get_tokens(email, password, *args):
+        token = Auth(email, password).authenticate()
+        if args:
+            return token
+        else:
+            assert type(token) == list
+            return token[0]
     return get_tokens
 
 
@@ -17,17 +20,17 @@ def auth():
 def pytest_bdd_before_scenario(request, feature, scenario):
     print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
     if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False', 'Make a transfer by phone', 
-        'Make a transfer by address', 'Transfer', 'Withdrawal']:
+        'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal']:
         print('call upd balance')
         assets_for_update = []
-        if scenario.name in ['Transfer', 'Withdrawal']:
-            token = Auth(settings.template_email, settings.password, 1).authenticate()
-            client_Id = settings.template_clientId
+        if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal']:
+            token = Auth(settings.template_tests_email, settings.template_tests_password).authenticate()
+            client_Id = settings.template_tests_client_id
         else:
-            token = Auth(settings.email, settings.password, 1).authenticate()                    
-            client_Id = settings.client_Id
+            token = Auth(settings.me_tests_email, settings.me_tests_password).authenticate()                    
+            client_Id = settings.me_tests_client_id
 
-        balances = Wallet(1).balances(token[0])
+        balances = Wallet().balances(token[0])
         assets_not_in_balance = [
             asset
             for asset in settings.balance_asssets.keys()
