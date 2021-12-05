@@ -9,11 +9,8 @@ cert_pass = settings.cert_pass
 
 class Auth:
     
-    def __init__(self, email, password, env) -> None:
-        if env == 1:
-            self.main_url = 'https://wallet-api-uat.simple-spot.biz/auth/v1/Trader/'
-        else:
-            self.main_url = 'https://wallet-api-test.simple-spot.biz/auth/v1/trader/'
+    def __init__(self, email, password) -> None:
+        self.main_url = settings.url_auth
         self.headers = { 'Content-Type': 'application/json' }
         self.email = email
         self.password = password
@@ -60,11 +57,8 @@ class Auth:
 
 class WalletHistory:
 
-    def __init__(self, env) -> None:
-        if env == 1:
-            self.main_url = "https://wallet-api-uat.simple-spot.biz/api/v1/history/wallet-history/"
-        else:
-            self.main_url = "https://wallet-api-test.simple-spot.biz/api/v1/history/wallet-history/"
+    def __init__(self) -> None:
+        self.main_url = settings.url_wallet_history
 
     def balance(self, token) -> list[dict] or int:
         url = f"{self.main_url}balance-history"
@@ -157,25 +151,21 @@ class WalletHistory:
 
 class Wallet:
 
-    def __init__(self, env) -> None:
-        if env == 1:
-            self.main_url = "https://wallet-api-uat.mnftx.biz/api/v1/wallet/"
-            self.signalrUrl = "https://wallet-api-uat.simple-spot.biz/api/v1/signalr/wallet/wallet-balances"
-        else:
-            self.signalrUrl = "https://wallet-api-test.simple-spot.biz/api/v1/signalr/wallet/wallet-balances"
-            self.main_url = "https://wallet-api-test.simple-spot.biz/api/v1/wallet/"
+    def __init__(self) -> None:
+        self.main_url = settings.url_wallet
+        self.signalrUrl = settings.url_signalR
 
     def balances(self, token) -> list[dict] or int:
-        payload={}
+        url = self.signalrUrl + 'wallet/wallet-balances'
         headers = {
             'Authorization': f'Bearer {token}'
         }
 
-        r = get(self.signalrUrl, 
+        r = get(url, 
                 pkcs12_filename=cert_name, 
                 pkcs12_password=cert_pass,
                 verify = False,
-                headers=headers, data=payload)
+                headers=headers)
 
         if r.status_code == 200:
             parse_resp =  json.loads(r.text)
@@ -204,11 +194,8 @@ class Wallet:
 
 class Swap:
 
-    def __init__(self, env) -> None:
-        if env == 1:
-            self.main_url = "https://wallet-api-uat.simple-spot.biz/api/v1/trading/swap/"
-        else:
-            self.main_url = "https://wallet-api-test.simple-spot.biz/api/v1/trading/swap/"
+    def __init__(self) -> None:
+        self.main_url = settings.url_swap
 
     def get_quote(self, token, _from='EUR', to='BTC', fromToVol=300, fix=True) -> dict or int:
         url = f"{self.main_url}get-quote"
@@ -271,11 +258,8 @@ class Swap:
 
 class Trading:
 
-    def __init__(self, env) -> None:
-        if env == 1:
-            self.main_url = "https://wallet-api-uat.mnftx.biz/api/v1/trading/"
-        else:
-            self.main_url = "https://wallet-api-test.simple-spot.biz/api/v1/trading/"
+    def __init__(self) -> None:
+        self.main_url = settings.url_trading
 
     def limit_order(self, token, instrumentSymbol, side, price, volume) -> dict or int:
         url = f"{self.main_url}order/create-limit-order"
@@ -383,11 +367,8 @@ class Trading:
 
 class Transfer:
 
-    def __init__(self, env):
-        if env == 1:
-            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/v1/transfer/'
-        else:
-            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/v1/transfer/'
+    def __init__(self):
+        self.main_url = settings.url_transfer
     
     def create_transfer(self, token, phone, asset, amount) -> dict or list:
         url = f"{self.main_url}by-phone"
@@ -471,11 +452,8 @@ class Transfer:
             return [parse_resp, r.status_code]
 
 class Blockchain:
-    def __init__(self, env):
-        if env == 1:
-            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/'
-        else:
-            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/'
+    def __init__(self):
+        self.main_url = settings.url_blockchain
     
     def withdrawal(self, token, asset, amount, address):
         url = f"{self.main_url}withdrawal"
@@ -512,13 +490,9 @@ class Blockchain:
 
 class Circle:
 
-    def __init__(self, env):
-        if env == 1:
-            self.main_url = 'https://wallet-api-uat.simple-spot.biz/api/circle/'
-            self.debug_url = 'https://wallet-api-uat.simple-spot.biz/api/debug/'
-        else:
-            self.main_url = 'https://wallet-api-test.simple-spot.biz/api/circle/'
-            self.debug_url = 'https://wallet-api-test.simple-spot.biz/api/debug/'
+    def __init__(self):
+        self.main_url = settings.url_circle
+        self.debug_url = settings.url_debug
 
     def get_encryption_key(self, token):
         url = f"{self.main_url}get-encryption-key"
@@ -715,11 +689,8 @@ class Circle:
 
 class Verify:
 
-    def __init__(self, env):
-        if env == 1:
-            self.main_url = 'https://validation-api-uat.simple-spot.biz/api/v1/'
-        else:
-            self.main_url = 'https://validation-api-test.simple-spot.biz/api/v1/'
+    def __init__(self):
+        self.main_url = settings.url_verify
 
     def verify_email(self,token, code):
         url = f"{self.main_url}email-verification/verify"
@@ -771,7 +742,7 @@ class Verify:
             return r.status_code   
 
 if __name__ == '__main__':
-    tokens = Auth('basetestsusder@mailinator.com', 'testpassword1', 1 ).authenticate()
+    tokens = Auth('basetestsusder@mailinator.com', 'testpassword1').authenticate()
     print(tokens)
-    s = WalletHistory(1).operations_history(tokens[0])
+    s = Wallet().balances(tokens[0])
     print(s)
