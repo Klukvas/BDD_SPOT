@@ -38,23 +38,6 @@ url_blockchain = data['urls']['blockchain']
 url_circle = data['urls']['circle']
 url_debug = data['urls']['debug']
         
-
-
-email = os.environ['email']
-password = os.environ['password']
-client_Id = os.environ['client_Id']
-template_email = os.environ['template_email']
-transfer_to_phone = os.environ['transfer_to_phone']
-receive_email = os.environ['receive_email']
-template_clientId = os.environ['template_clientId']
-from_ph_number = os.environ['from_phone_number']
-transfer_to_phone_with_confirm_email = os.environ['transfer_to_phone_with_confirm_email']
-asset_to_send = os.environ['asset_to_send']
-asset_blockchain_address = os.environ['asset_blockchain_address']
-fee_amount = os.environ['fee_amount']
-fee_asset = os.environ['fee_asset']
-
-
 # используються для создания квоты свопа с fixed False
 balance_asssets = {
     'LTC': 1.3,

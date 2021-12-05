@@ -54,7 +54,72 @@ class Auth:
             return [parse_resp['token'], parse_resp['refreshToken']] 
         else:
             return r.status_code
+    
+    def change_password(self, token, oldPassword, newPassword) -> list[str] or int:
+        url = f"{self.main_url}ChangePassword"
 
+        payload = json.dumps({
+            "oldPassword": f"{oldPassword}",
+            "newPassword": f"{newPassword}",
+        })
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers, data=payload)
+
+        if r.status_code == 200:
+            parse_resp = json.loads(r.text)
+            return [parse_resp['result']]
+        else:
+            return r.status_code
+    
+    def forgot_password(self, email) -> list[str] or int:
+        url = f"{self.main_url}ForgotPassword"
+
+        payload = json.dumps({
+            "email": f"{email}",
+            "deviceType": "IOS"
+        })
+        
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=self.headers, data=payload)
+
+        if r.status_code == 200:
+            parse_resp = json.loads(r.text)
+            return [parse_resp['result']]
+        else:
+            return r.status_code
+    
+    def password_recovery(self, password, token) -> list[str] or int:
+        url = f"{self.main_url}PasswordRecovery"
+
+        payload = json.dumps({
+           "password": f"{password}",
+            "token": f"{token}"
+        })
+        
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=self.headers, data=payload)
+
+        if r.status_code == 200:
+            parse_resp = json.loads(r.text)
+            return [parse_resp['result']]
+        else:
+            return r.status_code
+    
 class WalletHistory:
 
     def __init__(self) -> None:
@@ -743,6 +808,5 @@ class Verify:
 
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1').authenticate()
-    print(tokens)
-    s = Wallet().balances(tokens[0])
+    s = Auth('basetestsusder@mailinator.com', 'testpassword1').change_password(tokens[0], 'testpassword1','testpassword1')
     print(s)

@@ -2,7 +2,7 @@ from API import WalletHistory, Circle, Wallet
 from pytest_bdd import scenario, given, when, then
 from time import sleep
 import settings
-import os
+
 
 @scenario(f'../features/circle.feature', 'Make a deposit by card')
 def test_circle_deposit():
@@ -10,22 +10,22 @@ def test_circle_deposit():
 
 @given('User get encryption key', target_fixture="get_enc_key")
 def get_enc_key(auth):
-    token = auth(settings.email, settings.password)
-    enc_key = Circle(1).get_encryption_key(token)
+    token = auth(settings.me_tests_email, settings.me_tests_password )
+    enc_key = Circle().get_encryption_key(token)
     assert type(enc_key) == dict
     assert len(enc_key['data'].keys()) == 2
     return [token, enc_key['data']]
 
 @given('User encrypt data of his card', target_fixture="enc_data")
 def enc_data(get_enc_key):
-    enc_data = Circle(1).encrypt_data(get_enc_key[0], get_enc_key[1]['encryptionKey'])
+    enc_data = Circle().encrypt_data(get_enc_key[0], get_enc_key[1]['encryptionKey'])
     assert type(enc_data) == dict, f'Expected type == dict, but returned: {enc_data}'
     assert type(enc_data['data']) == str
     return enc_data
 
 @when('User add new card', target_fixture='add_card')
 def add_card(enc_data, get_enc_key):
-    card_data = Circle(1).add_card(
+    card_data = Circle().add_card(
         get_enc_key[0],
         enc_data['data'],
         get_enc_key[1]['keyId']
@@ -46,7 +46,7 @@ def add_card(enc_data, get_enc_key):
 @then('User create deposit via card', target_fixture="create_deposit")
 def create_deposit(add_card, get_enc_key, enc_data):
     sleep(5)
-    deposit = Circle(1).create_payment(
+    deposit = Circle().create_payment(
         get_enc_key[0],
         enc_data['data'],
         get_enc_key[1]['keyId'],
@@ -62,7 +62,7 @@ def check_op(get_enc_key, create_deposit):
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory(1).operations_history(get_enc_key[0])
+        op_history = WalletHistory().operations_history(get_enc_key[0])
         assert type(op_history) == list
         deposit = list(
             filter(
@@ -87,7 +87,7 @@ def check_op(get_enc_key, create_deposit):
 
 @then('User`s balance is changed')
 def check_balance_changed(get_enc_key, check_op):
-    new_balances = Wallet(1).balances(get_enc_key[0])
+    new_balances = Wallet().balances(get_enc_key[0])
     usd_balance = list(
         filter(
             lambda x: x['assetId'] == 'USD',
@@ -99,9 +99,9 @@ def check_balance_changed(get_enc_key, check_op):
 
 @then('User delete his card')
 def delete_card(get_enc_key, add_card):
-    deleted_card = Circle(1).delete_card(get_enc_key[0], add_card['id'])
+    deleted_card = Circle().delete_card(get_enc_key[0], add_card['id'])
     assert deleted_card['data']['deleted'] == True
-    all_cards = Circle(1).get_all_cards(get_enc_key[0])
+    all_cards = Circle().get_all_cards(get_enc_key[0])
     assert len(
         list(
             filter(

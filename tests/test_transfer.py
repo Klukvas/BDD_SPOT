@@ -2,12 +2,14 @@ from API import WalletHistory, Wallet, Blockchain, Transfer
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
-import os
+
+
+
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
     print(f'call get_balance ')
-    token = auth(settings.email, settings.password)
-    balances = Wallet(1).balances(token)
+    token = auth(settings.me_tests_email, settings.me_tests_password)
+    balances = Wallet().balances(token)
     assert type(balances) == list
     assert len(balances) > 0
     return [token, balances]
@@ -18,10 +20,10 @@ def test_transfer_by_phone():
 
 @when(parsers.parse('User send {asset} to phone number'), target_fixture="send_transfer")
 def send_transfer(get_balance, asset):
-    transferApi = Transfer(1)
+    transferApi = Transfer()
     transferData = transferApi.create_transfer(
         get_balance[0],
-        settings.transfer_to_phone,
+        settings.me_tests_transfer_to_phone,
         asset,
         settings.balance_asssets[asset] / 2
     )
@@ -35,7 +37,7 @@ def check_operation_history_transfer(send_transfer, get_balance):
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory(1).operations_history(get_balance[0])
+        op_history = WalletHistory().operations_history(get_balance[0])
         assert type(op_history) == list
         sended_transfer = list(
             filter(
@@ -55,12 +57,12 @@ def check_operation_history_transfer(send_transfer, get_balance):
     assert sended_transfer[0]['balanceChange'] == ((settings.balance_asssets[send_transfer[1]] / 2 )* -1) == sended_transfer[0]['transferByPhoneInfo']['withdrawalAmount'] * -1
     assert sended_transfer[0]['status'] == 0
     assert type(sended_transfer[0]['transferByPhoneInfo']) == dict
-    assert sended_transfer[0]['transferByPhoneInfo']['toPhoneNumber'] == settings.transfer_to_phone
+    assert sended_transfer[0]['transferByPhoneInfo']['toPhoneNumber'] == settings.me_tests_transfer_to_phone
 
 @then('User`s balance is changed')
 def balance_change_after_transfer(get_balance, send_transfer):
 
-    new_balances = Wallet(1).balances(get_balance[0])
+    new_balances = Wallet().balances(get_balance[0])
     assert type(new_balances) == list
     assert len(new_balances) > 0
     new_balances = list(
@@ -80,11 +82,11 @@ def balance_change_after_transfer(get_balance, send_transfer):
 
 @then('Receive user has new record in operation history', target_fixture="receive_operation_history")
 def receive_operation_history(auth, send_transfer):
-    token = auth(settings.receive_email, settings.password)
+    token = auth(settings.me_tests_receive_email, settings.me_tests_password)
     counter = 0 
     while True:
         counter += 1
-        op_history = WalletHistory(1).operations_history(token)
+        op_history = WalletHistory().operations_history(token)
         received_transfer = list(
             filter(
                 lambda x: send_transfer[0]['requestId'] == x['operationId'].split('|')[0],
@@ -101,14 +103,14 @@ def receive_operation_history(auth, send_transfer):
     assert received_transfer[0]['operationType'] == 7
     assert received_transfer[0]['assetId'] == send_transfer[1]
     assert received_transfer[0]['balanceChange'] == settings.balance_asssets[send_transfer[1]] / 2 == received_transfer[0]['receiveByPhoneInfo']['depositAmount']
-    assert received_transfer[0]['receiveByPhoneInfo']['fromPhoneNumber'] == settings.from_ph_number, f'Ar:\nEr: {received_transfer}'
+    assert received_transfer[0]['receiveByPhoneInfo']['fromPhoneNumber'] == settings.me_tests_from_phone_number, f'Ar:\nEr: {received_transfer}'
     assert received_transfer[0]['newBalance'] > received_transfer[0]['newBalance'] - received_transfer[0]['balanceChange']
    
     return [received_transfer[0]['newBalance'], token, send_transfer[1]]
 
 @then('Balance of receive user are correct')
 def check_balance_after_receive(receive_operation_history):
-    balances = Wallet(1).balances(receive_operation_history[1])
+    balances = Wallet().balances(receive_operation_history[1])
     receive_balance = list(
         filter(
             lambda x: x['assetId'] == receive_operation_history[2],
@@ -127,7 +129,7 @@ def test_transfer_by_address():
 
 @when(parsers.parse('User send {asset} to {address}'), target_fixture="create_withdrawal")
 def create_withdrawal(get_balance, asset, address):
-    transferData = Blockchain(1).withdrawal(
+    transferData = Blockchain().withdrawal(
         get_balance[0],
         asset,
         settings.balance_asssets[asset] / 2,
@@ -143,7 +145,7 @@ def operation_history_withdrawal(create_withdrawal, get_balance):
     while True:
         sleep(12)
         counter += 1
-        op_history = WalletHistory(1).operations_history(get_balance[0])
+        op_history = WalletHistory().operations_history(get_balance[0])
         assert type(op_history) == list
         sended_transfer = list(
             filter(
@@ -168,7 +170,7 @@ def operation_history_withdrawal(create_withdrawal, get_balance):
 @then('User`s balance is changed after withdrawal')
 def change_balance_after_withdrawal(get_balance, create_withdrawal):
 
-    new_balances = Wallet(1).balances(get_balance[0])
+    new_balances = Wallet().balances(get_balance[0])
     assert type(new_balances) == list
     assert len(new_balances) > 0
     new_balances = list(
@@ -188,11 +190,11 @@ def change_balance_after_withdrawal(get_balance, create_withdrawal):
 
 @then('Receive user has new record(deposit) in operation history', target_fixture="deposit_operation_history")
 def deposit_operation_history(auth, create_withdrawal):
-    token = auth(settings.receive_email, settings.password)
+    token = auth(settings.me_tests_receive_email, settings.me_tests_password)
     counter = 0 
     while True:
         counter += 1
-        op_history = WalletHistory(1).operations_history(token)
+        op_history = WalletHistory().operations_history(token)
         received_deposit = list(
             filter(
                 lambda x: str(create_withdrawal[0]['requestId']) == x['operationId'].split('|')[0],
@@ -216,7 +218,7 @@ def deposit_operation_history(auth, create_withdrawal):
 
 @then('Balance of deposited user are correct')
 def chek_balance_after_deposit(deposit_operation_history):
-    balances = Wallet(1).balances(deposit_operation_history[1])
+    balances = Wallet().balances(deposit_operation_history[1])
     receive_balance = list(
         filter(
             lambda x: x['assetId'] == deposit_operation_history[2],

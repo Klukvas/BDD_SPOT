@@ -2,11 +2,11 @@ from API import WalletHistory, Wallet, Swap
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
-import os
+
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
-    token = auth(settings.email, settings.password)
-    balances = Wallet(1).balances(token)
+    token = auth(settings.me_tests_email, settings.me_tests_password)
+    balances = Wallet().balances(token)
     assert type(balances) == list
     assert len(balances) > 0
     return [token, balances]
@@ -17,13 +17,14 @@ def test_one_step_swap_fixed_true():
 
 @when(parsers.parse('User gets swap quote with fixed True from {fromAsset} to {toAsset}'), target_fixture="get_quote")
 def get_quote(get_balance, fromAsset, toAsset):
-    swapApi = Swap(1)
+    swapApi = Swap()
     quote = swapApi.get_quote(
         get_balance[0],
         fromAsset,
         toAsset,
         settings.balance_asssets[fromAsset]/2
     )
+    print(f'quote: {quote}')
     assert type(quote) == dict, f'Expected that quote will be dict, but returned:\n{quote}.\nFrom asset: {fromAsset}; Toasset: {toAsset}'
     assert quote['fromAsset'] == fromAsset
     assert quote['toAsset'] == toAsset
@@ -33,6 +34,7 @@ def get_quote(get_balance, fromAsset, toAsset):
 
 @when('User execute quote (fixed True)', target_fixture="exec")
 def exec(get_balance, get_quote):
+    print(f'get_quote: {get_quote[0]}')
     response = get_quote[1].execute_quote(get_balance[0], get_quote[0])
     assert type(response) == dict, f'Expected: type dict\nReturned: {type(response)}\nResponse: {response}'
     assert response['isExecuted'] == True
@@ -49,7 +51,7 @@ def hist(get_balance, exec):
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory(1).operations_history(get_balance[0])
+        op_history = WalletHistory().operations_history(get_balance[0])
         assert type(op_history) == list
         executed_swap = list(
             filter(
@@ -93,7 +95,7 @@ def hist2(get_balance, exec):
             exec[1]['fromAsset'], 
             exec[1]['toAsset']
         ]
-    new_balances = Wallet(1).balances(get_balance[0])
+    new_balances = Wallet().balances(get_balance[0])
     assert type(new_balances) == list
     assert len(new_balances) > 0
     new_balances = list(
@@ -127,7 +129,7 @@ def test_one_step_swap_fixed_false():
 
 @when(parsers.parse('User gets swap quote from {fromAsset} to {toAsset}'), target_fixture="get_quote")
 def get_quote(get_balance, fromAsset, toAsset):
-    swapApi = Swap(1)
+    swapApi = Swap()
     quote = swapApi.get_quote(
         get_balance[0],
         fromAsset,
@@ -160,7 +162,7 @@ def hist(get_balance, exec):
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory(1).operations_history(get_balance[0])
+        op_history = WalletHistory().operations_history(get_balance[0])
         assert type(op_history) == list
         executed_swap = list(
             filter(
@@ -204,7 +206,7 @@ def hist2(get_balance, exec):
             exec[1]['fromAsset'], 
             exec[1]['toAsset']
         ]
-    new_balances = Wallet(1).balances(get_balance[0])
+    new_balances = Wallet().balances(get_balance[0])
     assert type(new_balances) == list
     assert len(new_balances) > 0
     new_balances = list(

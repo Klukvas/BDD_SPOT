@@ -206,3 +206,52 @@ def approve_withdrawal(check_withdrawal_email, make_withdrawal):
         if counter > 6:
             raise AttributeError(f'Can not find record operation history with status 1 and operationId like {make_withdrawal["withdrawalData"]["requestId"]}')
         sleep(5)
+
+
+
+@scenario(f'../features/receive_email.feature', 'Password Recovery')
+def test_password_recovery():
+    pass
+
+@given('User passed registration', target_fixture="register")
+def register():
+    email = 'emailtest' + str(uuid.uuid4()) + '@mailforspam.com'
+    event_date = datetime.strptime(
+        datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
+        '%d-%m-%Y %H:%M:%S'
+    )
+    token = Auth(email, 'testpassword1').register()
+    assert type(token) == list, f'Expected response type: list\nReturned: {token}'
+    assert len(token) == 2
+    return {"token": token, "email": email, "event_date": event_date}
+
+@when('User send request to forgot password endpoint')
+def change_password(register):
+    change_res = Auth(register['email'], 'testpassword1').forgot_password(register['email'])
+    assert change_res[0] == 'OK'
+
+@then('User get new email with token', target_fixture='parse_token')
+def parse_token(register):
+    recovery_data = MailParser(4, register['email'], register['event_date']).parse_mail()
+    assert type(recovery_data) == dict
+    with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Password recoverу.txt') as f:
+        template = f.read().replace('{{token}}', recovery_data['token'])
+    assert template == recovery_data['message_body']
+    return {'token': recovery_data['token']}
+
+@then('User change password using token from email')
+def change_password_with_token(parse_token, register):
+    recovery_resp = Auth(register['email'], 'testpassword1').\
+        password_recovery('testpassword2', parse_token['token'])
+    assert recovery_resp[0] == 'OK'
+
+
+@then('User can not auth with old password')
+def log_in_with_new_password(register, auth):
+    token = auth(register['email'], 'testpassword1', False)
+    assert token == 401
+
+@then('User can auth with new password')
+def log_in_with_new_password(register, auth):
+    token = auth(register['email'], 'testpassword2')
+    assert type(token) == str

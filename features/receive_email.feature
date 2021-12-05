@@ -28,8 +28,10 @@ Feature: Emails receive
         | LTC   |  QVTCAaqX8UUk8kf3VY6FRdicFkBuoDQ78P  |
 
 
-  Scenario: PasswordRecovery
+  Scenario: Password Recovery
     Given User passed registration
-    When User change password
-    Then User can auth with new password
+    When User send request to forgot password endpoint
+    Then User get new email with token
+    And User change password using token from email
     And User can not auth with old password
+    And User can auth with new password

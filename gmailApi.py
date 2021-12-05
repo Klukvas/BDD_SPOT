@@ -88,6 +88,11 @@ class MailParser:
                 ip = re.search(r'IP address: ([0-9]|\.)*',  message_body.text.strip()).group(0)
                 time = re.search(r'Time: ([0-9]|\-)*\s([0-9]|:)*\sUTC',  message_body.text.strip()).group(0)
                 return {'ip': ip, 'time': time, 'message_body': message_body.text.strip()}
+            elif self.current_reason == 4:
+                token = re.search('jw_token.+', message_body.text.strip()).group(0).\
+                    split('%3d')[1].\
+                        split('%26')[0]
+                return {'token': token, 'message_body': message_body.text.strip()}
             elif self.current_reason in [2,3]:
                 ip = re.search(r'Your IP: ([0-9]|\.)*',  message_body.text.strip()).group(0)
                 confirm_link = re.search(f'https:\/\/val([A-Z]|[a-z]|\-|[0-9]|\=|\.|\/|\?|&)*', message_body.text.strip()).group(0)

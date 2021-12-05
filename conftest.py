@@ -6,10 +6,13 @@ from time import sleep
 
 @pytest.fixture
 def auth():
-    def get_tokens(email, password):
+    def get_tokens(email, password, *args):
         token = Auth(email, password).authenticate()
-        assert type(token) == list
-        return token[0]
+        if args:
+            return token
+        else:
+            assert type(token) == list
+            return token[0]
     return get_tokens
 
 
@@ -21,11 +24,11 @@ def pytest_bdd_before_scenario(request, feature, scenario):
         print('call upd balance')
         assets_for_update = []
         if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal']:
-            token = Auth(settings.template_email, settings.password).authenticate()
-            client_Id = settings.template_clientId
+            token = Auth(settings.template_tests_email, settings.template_tests_password).authenticate()
+            client_Id = settings.template_tests_client_id
         else:
-            token = Auth(settings.email, settings.password).authenticate()                    
-            client_Id = settings.client_Id
+            token = Auth(settings.me_tests_email, settings.me_tests_password).authenticate()                    
+            client_Id = settings.me_tests_client_id
 
         balances = Wallet().balances(token[0])
         assets_not_in_balance = [
