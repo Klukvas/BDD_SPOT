@@ -1,3 +1,4 @@
+from sys import path
 from time import sleep
 from API import Auth, Blockchain, Verify, Transfer, WalletHistory
 from pytest_bdd import scenario, given, then, when, parsers
@@ -6,7 +7,7 @@ from gmailApi import MailParser
 from datetime import datetime
 import settings
 import requests
-
+import os
 @scenario(f'../features/receive_email.feature', 'Email confirmation')
 def test_email_confirmation():
     pass
@@ -29,7 +30,12 @@ def get_email_data(register):
     assert mail_parser
     assert type(mail_parser) == dict
     assert len(mail_parser.keys()) == 3
-    with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Email_confirmation_request_mock.txt') as f:
+    path = os.path.join(
+        os.getcwd(),
+        'email_templates',
+        'Email_confirmation_request_mock.txt'
+    )
+    with open(path) as f:
         template = f.read().\
             replace('{{come_code_here}}', mail_parser['code']).\
                 replace('{{link}}', mail_parser['app_link'])
@@ -66,7 +72,12 @@ def log_in(auth):
     assert mail_parser
     assert type(mail_parser) == dict
     assert len(mail_parser.keys()) == 3
-    with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Success_Login.txt') as f:
+    path = os.path.join(
+        os.getcwd(),
+        'email_templates',
+        'Success_Login.txt'
+    )
+    with open(path) as f:
         template = f.read().\
             replace('{{email}}', settings.template_tests_email).\
                 replace('{{time}}', mail_parser['time']).\
@@ -104,7 +115,12 @@ def make_transfer(asset, phone, auth):
 def check_transfer_email(make_transfer):
     mail_parser = MailParser(2, settings.template_tests_email, make_transfer['event_date'], make_transfer['transferData']['transferId']).parse_mail()
     assert mail_parser
-    with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Verify transfer.txt') as f:
+    path = os.path.join(
+        os.getcwd(),
+        'email_templates',
+        'Verify transfer.txt'
+    )
+    with open(path) as f:
         template = f.read().\
             replace('{{amount}}', str(make_transfer['amount'])).\
                 replace('{{asset}}', make_transfer['asset']).\
@@ -168,7 +184,12 @@ def make_withdrawal(auth, asset, address):
 def check_withdrawal_email(make_withdrawal):
     mail_parser = MailParser(3, settings.template_tests_email, make_withdrawal['event_date'], make_withdrawal['withdrawalData']['operationId']).parse_mail()
     assert mail_parser != None, f'Expected that email ll be finded'
-    with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Verify withdrawal.txt') as f:
+    path = os.path.join(
+        os.getcwd(),
+        'email_templates',
+        'Verify withdrawal.txt'
+    )
+    with open(path) as f:
         template = f.read().\
             replace('{{amount}}', str(make_withdrawal['amount'])).\
                 replace('{{asset}}', make_withdrawal['asset']).\
@@ -234,7 +255,12 @@ def change_password(register):
 def parse_token(register):
     recovery_data = MailParser(4, register['email'], register['event_date']).parse_mail()
     assert type(recovery_data) == dict
-    with open('/Users/andrey.p/Desktop/BDD_SPOT/email_templates/Password recoverу.txt') as f:
+    path = os.path.join(
+        os.getcwd(),
+        'email_templates',
+        'Password recoverу.txt'
+    )
+    with open(path) as f:
         template = f.read().replace('{{token}}', recovery_data['token'])
     assert template == recovery_data['message_body']
     return {'token': recovery_data['token']}
@@ -255,3 +281,25 @@ def log_in_with_new_password(register, auth):
 def log_in_with_new_password(register, auth):
     token = auth(register['email'], 'testpassword2')
     assert type(token) == str
+
+@scenario(f'../features/receive_email.feature', 'ReRegistration')
+def test_re_registration():
+    pass
+@given('ReRegistration mail on inbox after existing user pass registration')
+def register_n_check_email():
+    event_date = datetime.strptime(
+        datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
+        '%d-%m-%Y %H:%M:%S'
+    )
+    token = Auth(settings.template_tests_email, 'testpassword1').register()
+    assert type(token) == list, f'Expected response type: list\nReturned: {token}'
+    assert len(token) == 2
+    mail_parser = MailParser(5, settings.template_tests_email, event_date).parse_mail()
+    path = os.path.join(
+        os.getcwd(),
+        'email_templates',
+        'reRegister.txt'
+    )
+    with open(path, encoding='utf-8') as f:
+        template = f.read()
+    assert template == mail_parser['message_body'], f"Expected:\n{template}\n\nReturned: {mail_parser['message_body']}"

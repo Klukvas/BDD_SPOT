@@ -17,7 +17,8 @@ class MailParser:
             1: '[Monfex] Success Login from',
             2: 'Verify transfer',
             3: 'Verify withdrawal',
-            4: 'Password recoverу'
+            4: 'Password recoverу',
+            5: 'Your account already exist'
         }
         self.email = email
         self.main_domain = 'https://www.mailforspam.com'
@@ -93,6 +94,8 @@ class MailParser:
                     split('%3d')[1].\
                         split('%26')[0]
                 return {'token': token, 'message_body': message_body.text.strip()}
+            elif self.current_reason == 5:
+                return {'message_body': message_body.text.strip()}
             elif self.current_reason in [2,3]:
                 ip = re.search(r'Your IP: ([0-9]|\.)*',  message_body.text.strip()).group(0)
                 confirm_link = re.search(f'https:\/\/val([A-Z]|[a-z]|\-|[0-9]|\=|\.|\/|\?|&)*', message_body.text.strip()).group(0)

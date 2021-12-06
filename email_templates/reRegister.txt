@@ -1,0 +1,16 @@
+*Hello *
+
+You tried to register in the application, but an account with your email already exists.
+Please login to the app or use forgot password to restore your account.
+
+Login to the app ( https://jetwallet.page.link/?link=https%3a%2f%2fgoogle.com%3fcode%3d777%26jw_command%3dLogin%26&apn=com.example.flutter_jetwallet&ibi=newapp.trading )
+
+If you did not try to register, then ignore this message
+
+If you have any questions our support team will be glad to help you. Just send your message to support@monfex.com ( support@monfex.com )
+
+( https://www.facebook.com/monfexofficial/ ) ( https://twitter.com/MonfexOfficial ) ( https://t.me/monfexofficial )
+
+Use of the service and website is subject to our Terms of Service ( https://www.monfex.com/terms-of-service ) and Privacy Policy ( https://www.monfex.com/privacy-policy )
+
+© 2020 Monfex. All rights reserved.
