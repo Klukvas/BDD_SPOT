@@ -35,3 +35,6 @@ Feature: Emails receive
     And User change password using token from email
     And User can not auth with old password
     And User can auth with new password
+  
+  Scenario: ReRegistration
+    Given  ReRegistration mail on inbox after existing user pass registration
