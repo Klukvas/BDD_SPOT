@@ -15,7 +15,7 @@ class MailParser:
         self.mail_types = {
             0: 'Email confirmation request',
             1: '[Monfex] Success Login from',
-            2: 'Verify transfer',
+            2: 'Verify withdrawal',
             3: 'Verify withdrawal',
             4: 'Password recoverу',
             5: 'Your account already exist'
@@ -82,25 +82,25 @@ class MailParser:
             soup = BeautifulSoup(response.text, 'html.parser')
             message_body = soup.find('p', id="messagebody")
             if self.current_reason == 0:
-                code = re.search('\d+', message_body.text.strip()).group(0)
-                app_link = re.search('Open in Application \(.+\)',message_body.text.strip()).group(0)
+                code = re.search('\d{6}', message_body.text.strip()).group(0)
+                app_link = re.search('Confirm email \(.*',message_body.text.strip()).group(0)
                 return {'message_body': message_body.text.strip(), 'code': code, 'app_link': app_link}
             elif self.current_reason == 1:
-                ip = re.search(r'IP address: ([0-9]|\.)*',  message_body.text.strip()).group(0)
-                time = re.search(r'Time: ([0-9]|\-)*\s([0-9]|:)*\sUTC',  message_body.text.strip()).group(0)
+                ip = re.search(r'IP address\n.+',  message_body.text.strip()).group(0)
+                time = re.search(r'Time\n([0-9]|\-)*\s([0-9]|:)*\s',  message_body.text.strip()).group(0)
                 return {'ip': ip, 'time': time, 'message_body': message_body.text.strip()}
             elif self.current_reason == 4:
                 token = re.search('jw_token.+', message_body.text.strip()).group(0).\
                     split('%3d')[1].\
-                        split('%26')[0]
-                return {'token': token, 'message_body': message_body.text.strip()}
+                        split('&')[0]
+                return {'token': token.strip(), 'message_body': message_body.text.strip()}
             elif self.current_reason == 5:
                 return {'message_body': message_body.text.strip()}
             elif self.current_reason in [2,3]:
-                ip = re.search(r'Your IP: ([0-9]|\.)*',  message_body.text.strip()).group(0)
+                ip = re.search(r'Your IP\n.+',  message_body.text.strip()).group(0)
                 confirm_link = re.search(f'https:\/\/val([A-Z]|[a-z]|\-|[0-9]|\=|\.|\/|\?|&)*', message_body.text.strip()).group(0)
                 if self.args[0] in confirm_link:
-                    return {'ip': ip, 'message_body': message_body.text.strip(), 'confirm_link': confirm_link}
+                    return {'ip': ip.strip(), 'message_body': message_body.text.strip(), 'confirm_link': confirm_link}
                 else:
                     self.counter += 1
                     sleep(8)

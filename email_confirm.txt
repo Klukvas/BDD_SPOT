@@ -1,14 +1,16 @@
-*****************
+
+                *****************
 Verify withdrawal
 *****************
 
 Withdraw to
 {{amount}} {{asset}}
 Amount to receive
-{{receiveAmount}} {{asset}}
+{{amount}} {{asset}}
 Fee
 {{feeAmount}} {{feeAsset}}
 
+Your IP
 {{ip}}
 Approve withdrawal ( {{link}} )
 

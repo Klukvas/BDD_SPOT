@@ -1,4 +1,3 @@
-from sys import path
 from time import sleep
 from API import Auth, Blockchain, Verify, Transfer, WalletHistory
 from pytest_bdd import scenario, given, then, when, parsers
@@ -39,7 +38,7 @@ def get_email_data(register):
         template = f.read().\
             replace('{{come_code_here}}', mail_parser['code']).\
                 replace('{{link}}', mail_parser['app_link'])
-    assert template == mail_parser['message_body'], \
+    assert template.strip() == mail_parser['message_body'], \
         f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
     return {'code': mail_parser['code']}
 
@@ -77,10 +76,11 @@ def log_in(auth):
         'email_templates',
         'Success_Login.txt'
     )
+    print(f"!{mail_parser['time'].strip()}!")
     with open(path) as f:
         template = f.read().\
             replace('{{email}}', settings.template_tests_email).\
-                replace('{{time}}', mail_parser['time']).\
+                replace('{{time}}', mail_parser['time'].strip()).\
                     replace('{{ip}}', mail_parser['ip'])
     assert template == mail_parser['message_body'],\
         f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
@@ -118,7 +118,7 @@ def check_transfer_email(make_transfer):
     path = os.path.join(
         os.getcwd(),
         'email_templates',
-        'Verify transfer.txt'
+        'Verify withdrawal.txt'
     )
     with open(path) as f:
         template = f.read().\
@@ -126,7 +126,11 @@ def check_transfer_email(make_transfer):
                 replace('{{asset}}', make_transfer['asset']).\
                     replace('{{ip}}', mail_parser['ip']).\
                         replace('{{phone_to}}', make_transfer['phone']).\
-                            replace('{{link}}', mail_parser['confirm_link'])
+                            replace('{{link}}', mail_parser['confirm_link']).\
+                                replace('{{receiveAmount}}', str(make_transfer['amount'])).\
+                                    replace('{{feeAmount}}', '0').\
+                                        replace('{{feeAsset}}', make_transfer['asset'])
+
     assert template == mail_parser['message_body'], \
                f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
     return {"confirm_link": mail_parser['confirm_link']}
@@ -180,8 +184,8 @@ def make_withdrawal(auth, asset, address):
                 "token": token, "asset": asset, "amount": amount, "address": address
             }
 
-@when('User has new email with appove withdwal link', target_fixture='check_withdrawal_email')
-def check_withdrawal_email(make_withdrawal):
+@when(parsers.parse('User has new email with appove withdwal link with {feeAmount} and {feeAsset}'), target_fixture='check_withdrawal_email')
+def check_withdrawal_email(feeAmount, feeAsset, make_withdrawal):
     mail_parser = MailParser(3, settings.template_tests_email, make_withdrawal['event_date'], make_withdrawal['withdrawalData']['operationId']).parse_mail()
     assert mail_parser != None, f'Expected that email ll be finded'
     path = os.path.join(
@@ -189,15 +193,21 @@ def check_withdrawal_email(make_withdrawal):
         'email_templates',
         'Verify withdrawal.txt'
     )
+    if feeAmount != 0:
+        receiveAmount = make_withdrawal['amount'] - float(feeAmount)
+    else:
+        receiveAmount = 0
     with open(path) as f:
         template = f.read().\
             replace('{{amount}}', str(make_withdrawal['amount'])).\
                 replace('{{asset}}', make_withdrawal['asset']).\
-                    replace('{{feeAmount}}', "0").\
-                        replace('{{feeAsset}}', make_withdrawal['asset']).\
+                    replace('{{feeAmount}}', f"{feeAmount}").\
+                        replace('{{feeAsset}}', f"{feeAsset}").\
                             replace('{{ip}}', mail_parser['ip']).\
                                 replace('{{link}}', mail_parser['confirm_link']).\
-                                    replace('{{address}}', make_withdrawal['address'])
+                                    replace('{{address}}', make_withdrawal['address']).\
+                                        replace('{{receiveAmount}}', f"{receiveAmount}")
+
     assert template == mail_parser['message_body'], \
                f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
     return {"link": mail_parser['confirm_link']}
@@ -262,7 +272,7 @@ def parse_token(register):
     )
     with open(path) as f:
         template = f.read().replace('{{token}}', recovery_data['token'])
-    assert template == recovery_data['message_body']
+    assert template == recovery_data['message_body'], f"Expected:!\n{template}\n!\nGets:!\n{recovery_data['message_body']}\n!"
     return {'token': recovery_data['token']}
 
 @then('User change password using token from email')

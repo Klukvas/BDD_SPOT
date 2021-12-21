@@ -19,15 +19,17 @@ Feature: Emails receive
       | asset | phone         |
       | LTC   | +111111123123 |
 
+  
   Scenario Outline: Internal withdrawal
     Given User send withdrawal request wiht asset: <asset>, to address: <address>
-    When User has new email with appove withdwal link
+    When User has new email with appove withdwal link with <feeAmount> and <feeAsset>
     Then User approve withdrawal by link
     Examples:
-        | asset |  address                             |
-        | LTC   |  QVTCAaqX8UUk8kf3VY6FRdicFkBuoDQ78P  |
+        | asset |  address                             | feeAsset | feeAmount |
+        | LTC   |  QVTCAaqX8UUk8kf3VY6FRdicFkBuoDQ78P  | LTC      | 0         |
 
 
+  
   Scenario: Password Recovery
     Given User passed registration
     When User send request to forgot password endpoint
