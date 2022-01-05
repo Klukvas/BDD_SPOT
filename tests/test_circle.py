@@ -2,7 +2,7 @@ from API import WalletHistory, Circle, Wallet
 from pytest_bdd import scenario, given, when, then
 from time import sleep
 import settings
-
+import pytest
 
 @scenario(f'../features/circle.feature', 'Make a deposit by card')
 def test_circle_deposit():
@@ -75,7 +75,7 @@ def check_op(get_enc_key, create_deposit):
                 deposit[0]['balanceChange'] != 0:
                 break
         elif counter > 5:
-            raise ValueError('Can not find operations with status 0 for 15 seconds') 
+            raise ValueError(f'Can not find operations({create_deposit["depositId"]}) with status 0 for 15 seconds') 
     assert len(deposit) == 1, f'Expected that operationId of transfer will be unique but gets:\nrequestId: {create_deposit["data"]["depositId"]}\n{deposit}\n'
     assert deposit[0]['operationType'] == 0
     assert deposit[0]['assetId'] == 'USD'

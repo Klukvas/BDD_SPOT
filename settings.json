@@ -1,68 +1,44 @@
 {
     "env":{
-        "TEST": {
-            "is_actual": false,
-            "template_tests":{
-                "email": "baseuser@mailforspam.com",
-                "client_id": "1f6829dc37aa4fd9a28799b6d36bc11b",
-                "password": "testpassword1",
-                "to_phone_transfer": "+111111010101",
-                "fee_amount": 0
-            },
-            "me_tests": {
-                "email": "baseuser1@mailinator.com",
-                "password": "testpassword1",
-                "client_id": "d5caeca8b1a944189dccb899ec1f8fc2",
-                "from_phone_number": "+380933342340",
-                "transfer_to_phone": "+380933333333",
-                "receive_email": "andrey.p@smplt.net"
-            },
-            "urls": {
-                "verify": "https://validation-api-uat.simple-spot.biz/api/v1/",
-                "auth": "https://wallet-api-uat.simple-spot.biz/auth/v1/Trader/",
-                "wallet_history": "https://wallet-api-uat.simple-spot.biz/api/v1/history/wallet-history/",
-                "wallet": "https://wallet-api-uat.mnftx.biz/api/v1/wallet/",
-                "signalR": "https://wallet-api-uat.simple-spot.biz/api/v1/signalr/",
-                "swap": "https://wallet-api-uat.simple-spot.biz/api/v1/trading/swap/",
-                "trading": "https://wallet-api-uat.mnftx.biz/api/v1/trading/",
-                "transfer": "https://wallet-api-uat.simple-spot.biz/api/v1/transfer/",
-                "blockchain": "https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/",
-                "circle": "https://wallet-api-uat.simple-spot.biz/api/circle/",
-                "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/"
-            }
-        },
         "UAT": {
             "is_actual": true,
-            "template_tests":{
-                "email": "baseuser@mailforspam.com",
-                "client_id": "1f6829dc37aa4fd9a28799b6d36bc11b",
-                "password": "testpassword1",
-                "to_phone_transfer": "+111111010101",
-                "fee_amount": "0"
+            "start_settings": {
+                "regression": true,
+                "smoke": false,
+                "prod": false
+            },
+            "test_data": {
+                "template_tests":{
+                    "email": "baseuser@mailforspam.com",
+                    "client_id": "1f6829dc37aa4fd9a28799b6d36bc11b",
+                    "password": "testpassword1",
+                    "to_phone_transfer": "+111111010101",
+                    "fee_amount": "0"
 
-            },
-            "me_tests": {
-                "email": "baseuser1@mailinator.com",
-                "password": "testpassword1",
-                "client_id": "d5caeca8b1a944189dccb899ec1f8fc2",
-                "from_phone_number": "+380933342340",
-                "transfer_to_phone": "+380933333333",
-                "receive_email": "andrey.p@smplt.net"
-            },
-            "urls": {
-                "verify": "https://validation-api-uat.simple-spot.biz/api/v1/",
-                "auth": "https://wallet-api-uat.simple-spot.biz/auth/v1/Trader/",
-                "wallet_history": "https://wallet-api-uat.simple-spot.biz/api/v1/history/wallet-history/",
-                "wallet": "https://wallet-api-uat.mnftx.biz/api/v1/wallet/",
-                "signalR": "https://wallet-api-uat.simple-spot.biz/api/v1/signalr/",
-                "swap": "https://wallet-api-uat.simple-spot.biz/api/v1/trading/swap/",
-                "trading": "https://wallet-api-uat.mnftx.biz/api/v1/trading/",
-                "transfer": "https://wallet-api-uat.simple-spot.biz/api/v1/transfer/",
-                "blockchain": "https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/",
-                "circle": "https://wallet-api-uat.simple-spot.biz/api/circle/",
-                "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/"
+                },
+                "me_tests": {
+                    "email": "baseuser1@mailinator.com",
+                    "password": "testpassword1",
+                    "client_id": "d5caeca8b1a944189dccb899ec1f8fc2",
+                    "from_phone_number": "+380933342340",
+                    "transfer_to_phone": "+380933333333",
+                    "receive_email": "andrey.p@smplt.net"
+                },
+                "urls": {
+                    "verify": "https://validation-api-uat.simple-spot.biz/api/v1/",
+                    "auth": "https://wallet-api-uat.simple-spot.biz/auth/v1/Trader/",
+                    "wallet_history": "https://wallet-api-uat.simple-spot.biz/api/v1/history/wallet-history/",
+                    "wallet": "https://wallet-api-uat.mnftx.biz/api/v1/wallet/",
+                    "signalR": "https://wallet-api-uat.simple-spot.biz/api/v1/signalr/",
+                    "swap": "https://wallet-api-uat.simple-spot.biz/api/v1/trading/swap/",
+                    "trading": "https://wallet-api-uat.mnftx.biz/api/v1/trading/",
+                    "transfer": "https://wallet-api-uat.simple-spot.biz/api/v1/transfer/",
+                    "blockchain": "https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/",
+                    "circle": "https://wallet-api-uat.simple-spot.biz/api/circle/",
+                    "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/"
+                }
             }
+
         }
-    
     }
 }

@@ -11,6 +11,7 @@ requests = "*"
 grpcio = "*"
 protobuf = "*"
 beautifulsoup4 = "*"
+allure-pytest = "*"
 
 [dev-packages]
 

@@ -15,7 +15,10 @@ def auth():
             return token[0]
     return get_tokens
 
-
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "smoke: mark test to run only on named environment"
+    )
 
 def pytest_bdd_before_scenario(request, feature, scenario):
     print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')

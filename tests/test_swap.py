@@ -2,6 +2,7 @@ from API import WalletHistory, Wallet, Swap
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
+import allure
 
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
@@ -10,11 +11,13 @@ def get_balance(auth):
     assert type(balances) == list
     assert len(balances) > 0
     return [token, balances]
-
+@allure.feature('swap')
+@allure.story('fixed True')
 @scenario(f'../features/swap.feature', 'Make a swap with fixed True')
 def test_one_step_swap_fixed_true():
     pass
 
+@allure.title("This test has a custom title")
 @when(parsers.parse('User gets swap quote with fixed True from {fromAsset} to {toAsset}'), target_fixture="get_quote")
 def get_quote(get_balance, fromAsset, toAsset):
     swapApi = Swap()
@@ -32,6 +35,7 @@ def get_quote(get_balance, fromAsset, toAsset):
     assert quote['isFromFixed'] == True
     return [quote, swapApi]
 
+@allure.step('step')
 @when('User execute quote (fixed True)', target_fixture="exec")
 def exec(get_balance, get_quote):
     print(f'get_quote: {get_quote[0]}')
@@ -45,6 +49,7 @@ def exec(get_balance, get_quote):
     operationId = response['operationId']
     return [operationId, response]
 
+@allure.description('dsadassdsdsdasdasda')
 @then('User has new record in operation history (fixed True)')
 def hist(get_balance, exec):
     counter = 0
@@ -121,8 +126,8 @@ def hist2(get_balance, exec):
                 else:
                     assert old_balances[jitem]['balance'] < new_balances[item]['balance']
 
-
-
+@allure.feature('swap')
+@allure.story('fixed False')
 @scenario(f'../features/swap.feature', 'Make a swap with fixed False')
 def test_one_step_swap_fixed_false():
     pass

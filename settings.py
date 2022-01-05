@@ -6,9 +6,9 @@ with open('settings.json') as f:
     data = json.load(f)
 
 if data['env']['UAT']['is_actual']:
-    data = data['env']['UAT']
+    data = data['env']['UAT']['test_data']
 elif data['env']['TEST']['is_actual']:
-    data = data['env']['TEST']
+    data = data['env']['TEST']['test_data']
 else:
     raise 'Can not find setting to start. All "is_actual" fields are eql false'
 me_tests_email = data['me_tests']['email']

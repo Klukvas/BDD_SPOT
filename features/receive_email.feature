@@ -40,3 +40,9 @@ Feature: Emails receive
   
   Scenario: ReRegistration
     Given  ReRegistration mail on inbox after existing user pass registration
+
+  # Scenario: Success withdrawal && deposit
+  #   Given User send withdrawal with asset: <asset>, to address <address>
+  #   When User has new email with appove withdrawal link
+  #   Then User approve withdrawal by link
+  #   And Receive user has new email 
