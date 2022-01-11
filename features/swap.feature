@@ -1,42 +1,31 @@
 Feature: Swap
     Convert one crypto to another
-    Background: Check balance
+    @swap
+    Scenario Outline: Make a swap
         Given Some crypto on balance
-    Scenario Outline: Make a swap with fixed True
-        When User gets swap quote with fixed True from <fromAsset> to <toAsset>
-        And User execute quote (fixed True)
-        Then User has new record in operation history (fixed True)
-        And User`s balance is changed (fixed True)
-        Examples:
-            | fromAsset | toAsset   |
-            | LTC       | USD       |
-            | BTC       | USD       |
-            | BTC       | EUR       |
-            | ETH       | EUR       |
-            | BCH       | USD       |
-            | BTC       | ETH       |
-            | LTC       | BCH       |
-            | ETH       | LTC       |
-            | USD       | LTC       |
-            | USD       | ETH       |
-            | EUR       | BTC       |
-    
-    Scenario Outline: Make a swap with fixed False
-        When User gets swap quote from <fromAsset> to <toAsset>
+        When User gets swap quote with from fixed <isFromFixed> from asset <fromAsset> to  asset <toAsset>
         And User execute quote
         Then User has new record in operation history
         And User`s balance is changed
         Examples:
-            | fromAsset | toAsset   |
-            | LTC       | USD       |
-            | BTC       | USD       |
-            | BTC       | EUR       |
-            | ETH       | EUR       |
-            | BCH       | USD       |
-            | BTC       | ETH       |
-            | LTC       | BCH       |
-            | ETH       | LTC       |
-            | BCH       | BTC       |
-
-
-            
+            | fromAsset | toAsset   | isFromFixed |
+            | LTC       | USD       | True        |
+            | BTC       | USD       | True        |
+            | BTC       | EUR       | True        |
+            | ETH       | EUR       | True        |
+            | BCH       | USD       | True        |
+            | BTC       | ETH       | True        |
+            | LTC       | BCH       | True        |
+            | ETH       | LTC       | True        |
+            | USD       | LTC       | True        |
+            | USD       | ETH       | True        |
+            | EUR       | BTC       | True        |
+            | LTC       | USD       | False       |
+            | BTC       | USD       | False       |
+            | BTC       | EUR       | False       |
+            | ETH       | EUR       | False       |
+            | BCH       | USD       | False       |
+            | BTC       | ETH       | False       |
+            | LTC       | BCH       | False       |
+            | ETH       | LTC       | False       |
+            | BCH       | BTC       | False       |

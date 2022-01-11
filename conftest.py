@@ -19,14 +19,37 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "smoke: mark test to run only on named environment"
     )
+    config.addinivalue_line(
+        "markers", "new_scenario: mark1 test to run only on named environment"
+    )
+    config.addinivalue_line(
+        "markers", "emails: mark1 test to run only on named environment"
+    )
+    config.addinivalue_line(
+        "markers", "transfer: mark1 test to run only on named environment"
+    )
+    config.addinivalue_line(
+        "markers", "circle: mark1 test to run only on named environment"
+    )
+    config.addinivalue_line(
+        "markers", "swap: mark1 test to run only on named environment"
+    )
+    # config.addinivalue_line(
+    #     "markers", "new_scenario: mark1 test to run only on named environment",
+    #     "markers", "smoke: mark1 test to run only on named environment",
+    #     "markers", "swap: mark1 test to run only on named environment",
+    #     "markers", "transfer: mark1 test to run only on named environment",
+    #     "markers", "circle: mark1 test to run only on named environment",
+        
+    # )
 
 def pytest_bdd_before_scenario(request, feature, scenario):
     print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
-    if scenario.name in ['Make a swap with fixed True', 'Make a swap with fixed False', 'Make a transfer by phone', 
-        'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal']:
+    if scenario.name in ['Make a swap', 'Make a transfer by phone', 
+        'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal && deposit']:
         print('call upd balance')
         assets_for_update = []
-        if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal']:
+        if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal && deposit']:
             token = Auth(settings.template_tests_email, settings.template_tests_password).authenticate()
             client_Id = settings.template_tests_client_id
         else:

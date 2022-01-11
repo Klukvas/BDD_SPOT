@@ -1,6 +1,7 @@
 Feature: Circle
     Actions with card
     @smoke
+    @circle
     Scenario Outline: Make a deposit by card
         Given User get encryption key
         And User encrypt data of his card

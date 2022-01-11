@@ -1,4 +1,5 @@
 # Created by andrey.p at 30.11.2021
+@emails
 Feature: Emails receive
   # Enter feature description here
 
@@ -26,7 +27,7 @@ Feature: Emails receive
     Then User approve withdrawal by link
     Examples:
         | asset |  address                             | feeAsset | feeAmount |
-        | LTC   |  QVTCAaqX8UUk8kf3VY6FRdicFkBuoDQ78P  | LTC      | 0         |
+        | LTC   |  tltc1qz3qgnmt9fyd77rv4f0jh3aer0yu6mlgje7jx0a  | LTC      | 0         |
 
 
   
@@ -40,9 +41,16 @@ Feature: Emails receive
   
   Scenario: ReRegistration
     Given  ReRegistration mail on inbox after existing user pass registration
+  
+  @new_scenario
+  Scenario: Success withdrawal && deposit
+  #email must be with domen @mailforspam and existing in system
+    Given User send withdrawal with asset: <asset>, to address <address>
+    When User approve withdrawal by restApi
+    Then User has new success withdrawal email
+    And Receive user with email <email> has new success deposit email
+    Examples:
+      | asset |  address                                       | email          |
+      | BTC   |  tb1q8gw6s94t43tz2rkpy4yerekkuuw6whrt5rhjar    | basereceiver1  |
+      | ETH   |  0x316599B1fEe6b55CFd2c39FB85d3b9b4eED31567    | basereceiver1  |
 
-  # Scenario: Success withdrawal && deposit
-  #   Given User send withdrawal with asset: <asset>, to address <address>
-  #   When User has new email with appove withdrawal link
-  #   Then User approve withdrawal by link
-  #   And Receive user has new email 

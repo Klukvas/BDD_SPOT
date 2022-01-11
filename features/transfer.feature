@@ -1,3 +1,4 @@
+@transfer
 Feature: Transfer
     Send some crypto from one wallet to anouther
     
@@ -24,6 +25,6 @@ Feature: Transfer
         And Balance of deposited user are correct
         Examples:
             | assetId | address                                     |
-            | LTC   | QfLN5dHi3NLsYJrGqLJUrhkGUXnQKVju35          |
-            | BTC   | 2N15SuQSqCu2vuN8LeGQm7rsjES2QGXn24b         |
-            | ETH   | 0xbed6f295026de344c1e80b1cfdaf545d00cd6900  |
+            | LTC   | tltc1qz3qgnmt9fyd77rv4f0jh3aer0yu6mlgje7jx0a          |
+            | BTC   | tb1qkttnq44z65020l0vwxq98cnjcu38sv7cmsvs2k         |
+            | ETH   | 0x3472b8126294D67b1586519425Ea3b98f32ABD05  |

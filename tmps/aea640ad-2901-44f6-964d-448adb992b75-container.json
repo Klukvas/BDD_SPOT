@@ -1,1 +1,0 @@
-{"uuid": "b8abca05-451a-419c-a098-41879f47913b", "befores": [{"name": "pytestbdd_when_User gets swap quote with fixed True from {fromAsset} to {toAsset}", "status": "passed", "start": 1641413524487, "stop": 1641413524488}], "start": 1641413524487, "stop": 1641413540843}

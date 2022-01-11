@@ -18,7 +18,9 @@ class MailParser:
             2: 'Verify withdrawal',
             3: 'Verify withdrawal',
             4: 'Password recoverу',
-            5: 'Your account already exist'
+            5: 'Your account already exist',
+            6: 'Withdrawal successful',
+            7: 'Deposit successful'
         }
         self.email = email
         self.main_domain = 'https://www.mailforspam.com'
@@ -111,9 +113,11 @@ class MailParser:
             
 
 if __name__ == '__main__':
-    datetime_today = dateTime.strptime(
-        dateTime.today().strftime('%d-%m-%Y %H:%M:%S'),
-        '%d-%m-%Y %H:%M:%S'
-    )
-    tes = MailParser(4, 'asd2323', datetime_today).parse_mail()
+    # datetime_today = dateTime.strptime(
+    #     dateTime.today().strftime('%d-%m-%Y %H:%M:%S'),
+    #     '%d-%m-%Y %H:%M:%S'
+    # )
+    data = '11-01-2022 22:39:15'
+    date_time_obj = dateTime.strptime(data, '%d-%m-%Y %H:%M:%S')
+    tes = MailParser(6, 'asd2323', date_time_obj).parse_mail()
     print(tes)

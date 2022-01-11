@@ -7,6 +7,8 @@ from datetime import datetime
 import settings
 import requests
 import os
+
+
 @scenario(f'../features/receive_email.feature', 'Email confirmation')
 def test_email_confirmation():
     pass
@@ -54,8 +56,6 @@ def check_email_verified(register):
     assert auth_data['data']['emailVerified'] == True
 
 
-
-
 @scenario(f'../features/receive_email.feature', 'Success login')
 def test_success_login():
     pass
@@ -84,8 +84,6 @@ def log_in(auth):
                     replace('{{ip}}', mail_parser['ip'])
     assert template == mail_parser['message_body'],\
         f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
-
-
 
 
 @scenario(f'../features/receive_email.feature', 'Transfer(waiting for user)')
@@ -157,8 +155,6 @@ def approve_transfer(check_transfer_email, make_transfer):
         if counter > 6:
             raise AttributeError(f'Can not find record operation history with status 1 and operationId like {make_transfer["transferData"]["requestId"]}')
         sleep(5)
-
-
 
 
 @scenario(f'../features/receive_email.feature', 'Internal withdrawal')
@@ -281,7 +277,6 @@ def change_password_with_token(parse_token, register):
         password_recovery('testpassword2', parse_token['token'])
     assert recovery_resp[0] == 'OK'
 
-
 @then('User can not auth with old password')
 def log_in_with_new_password(register, auth):
     token = auth(register['email'], 'testpassword1', False)
@@ -291,6 +286,7 @@ def log_in_with_new_password(register, auth):
 def log_in_with_new_password(register, auth):
     token = auth(register['email'], 'testpassword2')
     assert type(token) == str
+
 
 @scenario(f'../features/receive_email.feature', 'ReRegistration')
 def test_re_registration():
@@ -313,3 +309,103 @@ def register_n_check_email():
     with open(path, encoding='utf-8') as f:
         template = f.read()
     assert template == mail_parser['message_body'], f"Expected:\n{template}\n\nReturned: {mail_parser['message_body']}"
+
+
+@scenario(f'../features/receive_email.feature', 'Success withdrawal && deposit')
+def test_success_deposit_withdrawal():
+    pass
+
+@given(parsers.parse("User send withdrawal with asset: {asset}, to address {address}"), target_fixture="create_withdrawal")
+def create_withdrawal(auth, asset, address):
+    token = auth(settings.template_tests_email, settings.template_tests_password )
+    amount = settings.balance_asssets[asset] / 2
+    event_date = datetime.strptime(
+        datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
+        '%d-%m-%Y %H:%M:%S'
+    )
+    withdrawal = Blockchain().withdrawal(token, asset, amount, address)
+                # return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId) }
+    assert type(withdrawal) == dict
+    return {
+            "withdrawalId": withdrawal['operationId'], "token": token, 
+            "requestId": withdrawal['requestId'], "event_date": event_date,
+            "asset": asset, "amount": amount
+            }
+
+@when("User approve withdrawal by restApi")
+def approve_withdrawal(create_withdrawal):
+    #Ожидание когда вывод станет в статус ApprovalPending
+    counter = 0
+    while True:
+        sleep(5)
+        counter += 1
+        op_history = WalletHistory().operations_history(create_withdrawal['token'])
+        assert type(op_history) == list
+        pending_withdrawal = list(
+            filter(
+                lambda x: create_withdrawal["requestId"] in x['operationId'],
+                op_history
+            )
+        )
+        if  len(pending_withdrawal) == 1 and \
+            pending_withdrawal[0]['status'] == 1:
+            break
+        elif counter > 5:
+            raise ValueError('Can not find operations with status 0 for 15 seconds') 
+            
+    approve_resp = Verify().verify_withdrawal(create_withdrawal['token'], create_withdrawal['withdrawalId'])
+    assert approve_resp == 'Simple | Buy, sell and manage cryptocurrency portfolios'
+
+@then("User has new success withdrawal email")
+def check_success_withdrawal_email(create_withdrawal):
+    counter = 0
+    while True:
+        sleep(5)
+        counter += 1
+        op_history = WalletHistory().operations_history(create_withdrawal['token'])
+        assert type(op_history) == list
+        approved_withdrawal = list(
+            filter(
+                lambda x: create_withdrawal["requestId"] in x['operationId'],
+                op_history
+            )
+        )
+        if  len(approved_withdrawal) == 1 and \
+            approved_withdrawal[0]['status'] == 0:
+            break
+        elif counter > 5:
+            raise ValueError('Can not find operations with status 0 for 15 seconds') 
+    success_withdrawal = MailParser(6, settings.template_tests_email, create_withdrawal['event_date']).parse_mail()
+    assert type(success_withdrawal) == dict
+    path = os.path.join(
+        os.getcwd(),
+        'email_templates',
+        'Withdrawal_successful.txt'
+    )
+    with open(path) as f:
+        template = f.read().\
+             replace('{{amount}}', str(create_withdrawal['amount'])).\
+                replace('{{asset}}', str(create_withdrawal['asset']))
+    assert template == success_withdrawal['message_body'], f"Expected:!\n{template}\n!\nGets:!\n{success_withdrawal['message_body']}\n!"
+
+@then(parsers.parse("Receive user with email {email} has new success deposit email"))
+def check_success_deposit_email(email, create_withdrawal):
+    success_withdrawal = MailParser(7, email, create_withdrawal['event_date']).parse_mail()
+    assert type(success_withdrawal) == dict
+    path = os.path.join(
+        os.getcwd(),
+        'email_templates',
+        'Deposit_successful.txt'
+    )
+    with open(path) as f:
+        template = f.read().\
+            replace('{{amount}}', str(create_withdrawal['amount'])).\
+                replace('{{asset}}', str(create_withdrawal['asset']))
+    assert template == success_withdrawal['message_body'], f"Expected:!\n{template}\n!\nGets:!\n{success_withdrawal['message_body']}\n!"
+
+
+
+
+
+
+

@@ -3,6 +3,7 @@ from requests_pkcs12 import get, post
 from datetime import datetime
 import settings
 from uuid import uuid4
+from bs4 import BeautifulSoup
 
 cert_name = settings.cert_name
 cert_pass = settings.cert_pass
@@ -262,7 +263,7 @@ class Swap:
     def __init__(self) -> None:
         self.main_url = settings.url_swap
 
-    def get_quote(self, token, _from='EUR', to='BTC', fromToVol=300, fix=True) -> dict or int:
+    def get_quote(self, token, _from, to, fromToVol, fix) -> dict or int:
         url = f"{self.main_url}get-quote"
         if fix:
             payload = json.dumps({
@@ -273,11 +274,12 @@ class Swap:
             })
         else:
             payload = json.dumps({
-            "fromAsset": f"{_from}",
-            "toAsset": f"{to}",
-            "toAssetVolume": fromToVol,
-            "isFromFixed": fix
-        })
+                "fromAsset": f"{_from}",
+                "toAsset": f"{to}",
+                "toAssetVolume": fromToVol,
+                "isFromFixed": fix
+            })
+        print(f"payload: \n{payload}")
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -521,6 +523,39 @@ class Blockchain:
         self.main_url = settings.url_blockchain
     
     def withdrawal(self, token, asset, amount, address):
+        url = f"{self.main_url}withdrawal"
+
+        uniqId = uuid4()
+
+        payload = json.dumps({
+                "requestId": f"{uniqId}",
+                "assetSymbol": f"{asset}",
+                "amount": amount,
+                "toAddress": f"{address}",
+                "lang": "En"
+            })
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers, data=payload)
+
+        try:
+            parse_resp =  json.loads(r.text)
+            try:
+                return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId) }
+            except:
+                return [parse_resp, r.status_code]
+        except:
+            return r.status_code
+
+    
         url = f"{self.main_url}withdrawal"
 
         uniqId = uuid4()
@@ -806,6 +841,24 @@ class Verify:
         except:
             return r.status_code   
 
+    def verify_withdrawal(self,token, code):
+        url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={code}&code=000000"
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = get(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers)
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+        title = soup.find('title').text
+        return title
+    
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1').authenticate()
     s = Auth('basetestsusder@mailinator.com', 'testpassword1').change_password(tokens[0], 'testpassword1','testpassword1')
