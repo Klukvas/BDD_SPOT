@@ -311,62 +311,75 @@ def register_n_check_email():
     assert template == mail_parser['message_body'], f"Expected:\n{template}\n\nReturned: {mail_parser['message_body']}"
 
 
-@scenario(f'../features/receive_email.feature', 'Success withdrawal && deposit')
+@scenario(f'../features/receive_email.feature', 'Success withdrawal or transfer && deposit')
 def test_success_deposit_withdrawal():
     pass
 
-@given(parsers.parse("User send withdrawal with asset: {asset}, to address {address}"), target_fixture="create_withdrawal")
-def create_withdrawal(auth, asset, address):
+@given(parsers.parse("User send withdrawal/transfer with asset: {asset}, to address/phone {address_phone}"), target_fixture="create_operation")
+def create_operation(auth, asset, address_phone):
     token = auth(settings.template_tests_email, settings.template_tests_password )
     amount = settings.balance_asssets[asset] / 2
-    event_date = datetime.strptime(
-        datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
-        '%d-%m-%Y %H:%M:%S'
-    )
-    withdrawal = Blockchain().withdrawal(token, asset, amount, address)
-                # return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId) }
-    assert type(withdrawal) == dict
+    if address_phone.startswith('+'):
+        operation = Transfer().create_transfer(token, address_phone, asset, amount)
+        operation_type = 'transfer'
+    else:
+        operation = Blockchain().withdrawal(token, asset, amount, address_phone)
+        operation_type = 'withdrawal'
+
+    assert type(operation) == dict
+
     return {
-            "withdrawalId": withdrawal['operationId'], "token": token, 
-            "requestId": withdrawal['requestId'], "event_date": event_date,
-            "asset": asset, "amount": amount
+                "type": operation_type,
+                "operationId": operation['operationId'], 
+                "token": token, 
+                "requestId": operation['requestId'], 
+                "asset": asset, 
+                "amount": amount
             }
 
-@when("User approve withdrawal by restApi")
-def approve_withdrawal(create_withdrawal):
+@when("User approve withdrawal/transfer by restApi", target_fixture="approve_opetarion")
+def approve_opetarion(create_operation):
     #Ожидание когда вывод станет в статус ApprovalPending
     counter = 0
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory().operations_history(create_withdrawal['token'])
+        op_history = WalletHistory().operations_history(create_operation['token'], create_operation['asset'])
         assert type(op_history) == list
-        pending_withdrawal = list(
+        pending_operation = list(
             filter(
-                lambda x: create_withdrawal["requestId"] in x['operationId'],
+                lambda x: create_operation["requestId"] in x['operationId'],
                 op_history
             )
         )
-        if  len(pending_withdrawal) == 1 and \
-            pending_withdrawal[0]['status'] == 1:
+        if  len(pending_operation) == 1 and \
+            pending_operation[0]['status'] == 1:
             break
         elif counter > 5:
-            raise ValueError('Can not find operations with status 0 for 15 seconds') 
-            
-    approve_resp = Verify().verify_withdrawal(create_withdrawal['token'], create_withdrawal['withdrawalId'])
-    assert approve_resp == 'Simple | Buy, sell and manage cryptocurrency portfolios'
+            raise ValueError('Can not find operations with status 0 for 15 seconds')
+    event_date = datetime.strptime(
+        datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
+        '%d-%m-%Y %H:%M:%S'
+    )
+    if create_operation['type'] == 'withdrawal':
+        approve_resp = Verify().verify_withdrawal(create_operation['token'], create_operation['operationId'])
+        assert approve_resp == 'Simple | Buy, sell and manage cryptocurrency portfolios'
+    else:
+        approve_resp = Verify().verify_transfer(create_operation['token'], create_operation['operationId'])
+        assert approve_resp == None
+    return {"event_date": event_date}
 
 @then("User has new success withdrawal email")
-def check_success_withdrawal_email(create_withdrawal):
+def check_success_withdrawal_email(create_operation, approve_opetarion):
     counter = 0
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory().operations_history(create_withdrawal['token'])
+        op_history = WalletHistory().operations_history(create_operation['token'], create_operation['asset'])
         assert type(op_history) == list
         approved_withdrawal = list(
             filter(
-                lambda x: create_withdrawal["requestId"] in x['operationId'],
+                lambda x: create_operation["requestId"] in x['operationId'],
                 op_history
             )
         )
@@ -375,7 +388,7 @@ def check_success_withdrawal_email(create_withdrawal):
             break
         elif counter > 5:
             raise ValueError('Can not find operations with status 0 for 15 seconds') 
-    success_withdrawal = MailParser(6, settings.template_tests_email, create_withdrawal['event_date']).parse_mail()
+    success_withdrawal = MailParser(6, settings.template_tests_email, approve_opetarion['event_date'], withdrawal_asset = create_operation['asset'] ).parse_mail()
     assert type(success_withdrawal) == dict
     path = os.path.join(
         os.getcwd(),
@@ -384,13 +397,13 @@ def check_success_withdrawal_email(create_withdrawal):
     )
     with open(path) as f:
         template = f.read().\
-             replace('{{amount}}', str(create_withdrawal['amount'])).\
-                replace('{{asset}}', str(create_withdrawal['asset']))
-    assert template == success_withdrawal['message_body'], f"Expected:!\n{template}\n!\nGets:!\n{success_withdrawal['message_body']}\n!"
+             replace('{{amount}}', str(create_operation['amount'])).\
+                replace('{{asset}}', str(create_operation['asset']))
+    assert template == success_withdrawal['message_body'], f"Exception with Withdrawal_successful template\nExpected:!\n{template}\n!\nGets:!\n{success_withdrawal['message_body']}\n!"
 
 @then(parsers.parse("Receive user with email {email} has new success deposit email"))
-def check_success_deposit_email(email, create_withdrawal):
-    success_withdrawal = MailParser(7, email, create_withdrawal['event_date']).parse_mail()
+def check_success_deposit_email(email, create_operation, approve_opetarion):
+    success_withdrawal = MailParser(7, email, approve_opetarion['event_date']).parse_mail()
     assert type(success_withdrawal) == dict
     path = os.path.join(
         os.getcwd(),
@@ -399,9 +412,9 @@ def check_success_deposit_email(email, create_withdrawal):
     )
     with open(path) as f:
         template = f.read().\
-            replace('{{amount}}', str(create_withdrawal['amount'])).\
-                replace('{{asset}}', str(create_withdrawal['asset']))
-    assert template == success_withdrawal['message_body'], f"Expected:!\n{template}\n!\nGets:!\n{success_withdrawal['message_body']}\n!"
+            replace('{{amount}}', str(create_operation['amount'])).\
+                replace('{{asset}}', str(create_operation['asset']))
+    assert template == success_withdrawal['message_body'], f"Exception with Deposit_successful template\nExpected:!\n{template}\n!\nGets:!\n{success_withdrawal['message_body']}\n!"
 
 
 

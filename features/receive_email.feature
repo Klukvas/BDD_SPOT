@@ -43,14 +43,19 @@ Feature: Emails receive
     Given  ReRegistration mail on inbox after existing user pass registration
   
   @new_scenario
-  Scenario: Success withdrawal && deposit
-  #email must be with domen @mailforspam and existing in system
-    Given User send withdrawal with asset: <asset>, to address <address>
-    When User approve withdrawal by restApi
+  Scenario: Success withdrawal or transfer && deposit
+  #email must be with domen @mailforspam and existing in the system
+  #address_phone field: if you fill the field with the phone number(+380, +4521 ...)
+  #the scenario will make a transfer by phone, or if you fill  with  asset address 
+  #scenario will make a withdrawal
+    Given User send withdrawal/transfer with asset: <asset>, to address/phone <address_phone>
+    When User approve withdrawal/transfer by restApi
     Then User has new success withdrawal email
     And Receive user with email <email> has new success deposit email
     Examples:
-      | asset |  address                                       | email          |
+      | asset |  address_phone                                 | email          |
       | BTC   |  tb1q8gw6s94t43tz2rkpy4yerekkuuw6whrt5rhjar    | basereceiver1  |
       | ETH   |  0x316599B1fEe6b55CFd2c39FB85d3b9b4eED31567    | basereceiver1  |
-
+      | LTC   |  +3803803803803801                             | basereceiver1  |
+      | BCH   |  +3803803803803801                             | basereceiver1  |
+      

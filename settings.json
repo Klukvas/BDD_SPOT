@@ -3,8 +3,10 @@
         "UAT": {
             "is_actual": true,
             "start_settings": {
-                "regression": true,
-                "smoke": false
+                "regression": false,
+                "smoke": false,
+                "swap": false,
+                "circle": true
             },
             "test_data": {
                 "template_tests":{
@@ -12,12 +14,8 @@
                     "client_id": "1f6829dc37aa4fd9a28799b6d36bc11b",
                     "password": "testpassword1",
                     "to_phone_transfer": "+111111010101",
-                    "fee_amount": "0",
-                    "success_withdrawal_deposit": {
-                        "from_email": "",
-                        "from_client_id": "",
-                        "to_email": ""
-                    }
+                    "fee_amount": "0"
+                    
 
                 },
                 "me_tests": {

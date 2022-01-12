@@ -7,9 +7,10 @@ import re
 
 class MailParser:
 
-    def __init__(self, email_type, email, date_time_action, *args):
+    def __init__(self, email_type, email, date_time_action, *args, **kwargs):
         self.counter = 0
         self.args = args
+        self.kwargs = kwargs
         self.date_time_action = date_time_action
         self.current_reason = email_type
         self.mail_types = {
@@ -54,16 +55,19 @@ class MailParser:
                     if _from == 'Simple <noreply@simple-spot.biz>':
                         data = email.findAll('td')
                         reason = data[1].text.strip()
-                        url_to_mail = data[1].find('a')['href']
-                        send_date = data[2].text.strip()
-                        send_date = dateTime.strptime(
-                            send_date,
-                            '%d-%m-%Y %H:%M:%S'
-                        )
-                        if send_date >= self.date_time_action and \
-                                reason == self.mail_types[self.current_reason] or \
-                                self.mail_types[self.current_reason] in reason:
-                            return {'from': _from, 'reason': reason, 'url': url_to_mail}
+                        if reason == self.mail_types[self.current_reason] or self.mail_types[self.current_reason] in reason:
+                            if "withdrawal_asset" in self.kwargs.keys():
+                                prev_data = emails[num+1].findAll('td')
+                                reason = prev_data[1].text.strip()
+                                if not self.kwargs['withdrawal_asset'] in reason:
+                                    continue
+                            url_to_mail = data[1].find('a')['href']
+                            send_date = data[2].text.strip()
+                            send_date = dateTime.strptime( send_date, '%d-%m-%Y %H:%M:%S' 
+                            )
+                            if send_date >= self.date_time_action:
+                                return {'from': _from, 'reason': reason, 'url': url_to_mail}
+                        
             if counter == 6:
                 print('Can not find needed email for 60s')
                 return None
@@ -113,11 +117,23 @@ class MailParser:
             
 
 if __name__ == '__main__':
-    # datetime_today = dateTime.strptime(
-    #     dateTime.today().strftime('%d-%m-%Y %H:%M:%S'),
-    #     '%d-%m-%Y %H:%M:%S'
-    # )
-    data = '11-01-2022 22:39:15'
-    date_time_obj = dateTime.strptime(data, '%d-%m-%Y %H:%M:%S')
-    tes = MailParser(6, 'asd2323', date_time_obj).parse_mail()
+    past_date = dateTime.strptime(
+                            '13-01-2022 01:05:50',
+                            '%d-%m-%Y %H:%M:%S'
+                        )
+    tes = MailParser(6, 'baseuser', past_date, withdrawal_asset = 'BCH' ).parse_mail()
     print(tes)
+    # past_date = dateTime.strptime(
+    #                         '13-01-2022 00:14:05',
+    #                         '%d-%m-%Y %H:%M:%S'
+    #                     )
+    # send_date = dateTime.strptime(
+    #                         '13-01-2022 00:14:05',
+    #                         '%d-%m-%Y %H:%M:%S'
+    #                     )
+    # action_date = dateTime.strptime(
+        
+    #                         '13-01-2022 00:14:20',
+    #                         '%d-%m-%Y %H:%M:%S'
+    #                     )
+    # print(action_date > send_date)

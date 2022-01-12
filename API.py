@@ -464,7 +464,7 @@ class Transfer:
         try:
             parse_resp =  json.loads(r.text)
             try:
-                return {"transferId": parse_resp['data']['operationId'], "requestId": uniqId }
+                return {"operationId": parse_resp['data']['operationId'], "requestId": uniqId }
             except:
                 return [parse_resp, r.status_code]
         except:
@@ -556,37 +556,6 @@ class Blockchain:
             return r.status_code
 
     
-        url = f"{self.main_url}withdrawal"
-
-        uniqId = uuid4()
-
-        payload = json.dumps({
-                "requestId": f"{uniqId}",
-                "assetSymbol": f"{asset}",
-                "amount": amount,
-                "toAddress": f"{address}",
-                "lang": "En"
-            })
-
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
-        }
-
-        r = post(url, 
-                pkcs12_filename=cert_name, 
-                pkcs12_password=cert_pass,
-                verify = False,
-                headers=headers, data=payload)
-
-        try:
-            parse_resp =  json.loads(r.text)
-            try:
-                return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId) }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
 
 class Circle:
 
@@ -848,6 +817,24 @@ class Verify:
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
+        try:
+            r = get(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers)
+            soup = BeautifulSoup(r.text, 'html.parser')
+            title = soup.find('title').text
+            return title
+        except Exception as err:
+            return err,
+    
+    def verify_transfer(self, token, code):
+        url = f"{self.main_url}transfer-verification/verify?transferProcessId={code}&code=000000&brand=simple"
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
 
         r = get(url, 
                 pkcs12_filename=cert_name, 
@@ -855,10 +842,15 @@ class Verify:
                 verify = False,
                 headers=headers)
 
-        soup = BeautifulSoup(r.text, 'html.parser')
-        title = soup.find('title').text
-        return title
-    
+        try:
+            r = get(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers)
+            return None
+        except Exception as err:
+            return err,
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1').authenticate()
     s = Auth('basetestsusder@mailinator.com', 'testpassword1').change_password(tokens[0], 'testpassword1','testpassword1')

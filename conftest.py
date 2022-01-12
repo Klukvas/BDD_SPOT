@@ -7,6 +7,7 @@ from time import sleep
 @pytest.fixture
 def auth():
     def get_tokens(email, password, *args):
+        print(f"Log in by: {email}")
         token = Auth(email, password).authenticate()
         if args:
             return token
@@ -46,10 +47,10 @@ def pytest_configure(config):
 def pytest_bdd_before_scenario(request, feature, scenario):
     print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
     if scenario.name in ['Make a swap', 'Make a transfer by phone', 
-        'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal && deposit']:
+        'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
         print('call upd balance')
         assets_for_update = []
-        if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal && deposit']:
+        if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
             token = Auth(settings.template_tests_email, settings.template_tests_password).authenticate()
             client_Id = settings.template_tests_client_id
         else:
