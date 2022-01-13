@@ -326,7 +326,7 @@ def create_operation(auth, asset, address_phone):
         operation = Blockchain().withdrawal(token, asset, amount, address_phone)
         operation_type = 'withdrawal'
 
-    assert type(operation) == dict
+    assert type(operation) == dict, f"Expected that operation will be dict, but returned: {operation}"
 
     return {
                 "type": operation_type,

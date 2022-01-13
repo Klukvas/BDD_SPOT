@@ -4,6 +4,8 @@
             "is_actual": true,
             "start_settings": {
                 "regression": false,
+                "new_scenario": true,
+                "emails": true,
                 "smoke": false,
                 "swap": false,
                 "circle": true

@@ -2,16 +2,15 @@
 # Change allure_reports_dir
 
 import json
-from os import listdir
-from os.path import isfile, join
-from pathlib import Path
-allure_reports_dir = 'allureReport'
-mypath = str(Path(__file__).parent.resolve()) + fr'\{allure_reports_dir}'
+import os
 
-files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and '.json' in f]
+
+allure_reports_dir = 'allureReport'
+mypath = os.path.join(os.getcwd(), allure_reports_dir)
+files = [f for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f)) and '.json' in f]
 
 for file in files:
-    file_path = mypath + rf'\{file}'
+    file_path = os.path.join(mypath, file)
     with open(file_path, 'r') as f:
         try:
             response = json.load(f)

@@ -66,6 +66,7 @@ class MailParser:
                             send_date = dateTime.strptime( send_date, '%d-%m-%Y %H:%M:%S' 
                             )
                             if send_date >= self.date_time_action:
+                                
                                 return {'from': _from, 'reason': reason, 'url': url_to_mail}
                         
             if counter == 6:
@@ -118,10 +119,10 @@ class MailParser:
 
 if __name__ == '__main__':
     past_date = dateTime.strptime(
-                            '13-01-2022 01:05:50',
+                            '13-01-2022 07:07:55',
                             '%d-%m-%Y %H:%M:%S'
                         )
-    tes = MailParser(6, 'baseuser', past_date, withdrawal_asset = 'BCH' ).parse_mail()
+    tes = MailParser(6, 'baseuser', past_date, withdrawal_asset = 'LTC' ).parse_mail()
     print(tes)
     # past_date = dateTime.strptime(
     #                         '13-01-2022 00:14:05',
