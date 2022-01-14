@@ -1,22 +1,22 @@
-*Verify withdrawal*
+*****************
+Verify withdrawal
+*****************
 
-You tried to withdrawal {{amount}} {{asset}}
-Withdrawal Fee: {{feeAmount}} {{feeAsset}}
-To address: {{address}}
+Withdraw to
+{{amount}} {{asset}}
+Amount to receive
+{{receiveAmount}} {{asset}}
+Fee
+{{feeAmount}} {{feeAsset}}
 
 {{ip}}
-
-Your transfer will be *processed off-chain* as internal to another client
-
 Approve withdrawal ( {{link}} )
 
-If you did not try to withdrawal, then do not approve transaction
-and please change your password.
+If you did not try to transfer, then do not approve transaction and please change your password.
 
-If you have any questions our support team will be glad to help you. Just send your message to support@monfex.com ( support@monfex.com )
+If you have any questions our support team waill be glad to help you. Just send your message to support@simple.com ( # )
 
-( https://www.facebook.com/monfexofficial/ ) ( https://twitter.com/MonfexOfficial ) ( https://t.me/monfexofficial )
+( # ) ( # ) ( # )
 
-Use of the service and website is subject to our Terms of Service ( https://www.monfex.com/terms-of-service ) and Privacy Policy ( https://www.monfex.com/privacy-policy )
-
-© 2020 Monfex. All rights reserved.
+Use of the service and website is subject to our Terms of Service ( # ) and Privacy Policy ( # ).
+2021 Simple. All rights reserved.

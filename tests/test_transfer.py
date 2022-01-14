@@ -28,7 +28,7 @@ def send_transfer(get_balance, asset):
         settings.balance_asssets[asset] / 2
     )
     assert type(transferData) == dict, f'Expected that response will be dict, but gets: {type(transferData)}\nTransferData: {transferData}.Asset:{asset}\tAmount: {settings.balance_asssets[asset] / 2}'
-    assert type(transferData['transferId']) == str
+    assert type(transferData['operationId']) == str
     return [transferData, asset]
 
 @then('User has new record in operation history')

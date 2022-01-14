@@ -1,15 +1,18 @@
-*Success login*
+*************
+Success login
+*************
 
-We are detect new login to your account {{email}}
+We are detected new login to your account:
+{{email}}
+
 {{time}}
 {{ip}}
 
 If you did not try to login, then please change your password and notify customer support.
 
-If you have any questions our support team will be glad to help you. Just send your message to support@monfex.com ( support@monfex.com )
+If you have any questions our support team waill be glad to help you. Just send your message to support@simple.com ( # )
 
-( https://www.facebook.com/monfexofficial/ ) ( https://twitter.com/MonfexOfficial ) ( https://t.me/monfexofficial )
+( # ) ( # ) ( # )
 
-Use of the service and website is subject to our Terms of Service ( https://www.monfex.com/terms-of-service ) and Privacy Policy ( https://www.monfex.com/privacy-policy )
-
-© 2020 Monfex. All rights reserved.
+Use of the service and website is subject to our Terms of Service ( # ) and Privacy Policy ( # ).
+2021 Simple. All rights reserved.

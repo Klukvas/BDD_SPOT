@@ -1,16 +1,17 @@
-*Hello *
+****************************
+Account Registration Attempt
+****************************
 
-You tried to register in the application, but an account with your email already exists.
-Please login to the app or use forgot password to restore your account.
+Hi , Someone just tried to create a new Simple account using your email address.
 
-Login to the app ( https://jetwallet.page.link/?link=https%3a%2f%2fgoogle.com%3fcode%3d777%26jw_command%3dLogin%26&apn=com.example.flutter_jetwallet&ibi=newapp.trading )
+You can login to your account. In case you forgot your password, you can reset it ( # ).
+Login to the app ( https://jetwallet.page.link/?link=http%3a%2f%2fsimple.app%3fcode%3d777%26jw_command%3dLogin%26&apn=com.example.flutter_jetwallet&ibi=newapp.trading )
 
-If you did not try to register, then ignore this message
+If it wasn’t you, please notify customer support.
 
-If you have any questions our support team will be glad to help you. Just send your message to support@monfex.com ( support@monfex.com )
+If you have any questions our support team waill be glad to help you. Just send your message to support@simple.com ( # )
 
-( https://www.facebook.com/monfexofficial/ ) ( https://twitter.com/MonfexOfficial ) ( https://t.me/monfexofficial )
+( # ) ( # ) ( # )
 
-Use of the service and website is subject to our Terms of Service ( https://www.monfex.com/terms-of-service ) and Privacy Policy ( https://www.monfex.com/privacy-policy )
-
-© 2020 Monfex. All rights reserved.
+Use of the service and website is subject to our Terms of Service ( # ) and Privacy Policy ( # ).
+2021 Simple. All rights reserved.
