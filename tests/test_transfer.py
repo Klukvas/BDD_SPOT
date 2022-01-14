@@ -10,8 +10,8 @@ def get_balance(auth):
     print(f'call get_balance ')
     token = auth(settings.me_tests_email, settings.me_tests_password)
     balances = Wallet().balances(token)
-    assert type(balances) == list
-    assert len(balances) > 0
+    assert type(balances) == list, f"Expected that type will be list, but returned: {balances}"
+    assert len(balances) > 0, f"Expected that user has a balance"
     return [token, balances]
 
 @scenario(f'../features/transfer.feature', 'Make a transfer by phone')
@@ -28,7 +28,7 @@ def send_transfer(get_balance, asset):
         settings.balance_asssets[asset] / 2
     )
     assert type(transferData) == dict, f'Expected that response will be dict, but gets: {type(transferData)}\nTransferData: {transferData}.Asset:{asset}\tAmount: {settings.balance_asssets[asset] / 2}'
-    assert type(transferData['operationId']) == str
+    assert type(transferData['operationId']) == str, f"Exdected that type ofoperationId is string, butreturned: {transferData['operationId']}"
     return [transferData, asset]
 
 @then('User has new record in operation history')
@@ -93,15 +93,15 @@ def receive_operation_history(auth, send_transfer):
                 op_history
             )
         )
-        assert len(received_transfer) == 1
-        if received_transfer[0]['status'] == 0 and \
+        if len(received_transfer) == 1 and \
+            received_transfer[0]['status'] == 0 and \
             received_transfer[0]['balanceChange']:
             break
         elif counter > 6:
             raise ValueError('Can not find operations with status 0 for 15 seconds') 
         sleep(5)
-    assert received_transfer[0]['operationType'] == 7
-    assert received_transfer[0]['assetId'] == send_transfer[1]
+    assert received_transfer[0]['operationType'] == 7, f"Expected that operation type is 7, but returned: {received_transfer[0]['operationType']}"
+    assert received_transfer[0]['assetId'] == send_transfer[1], f"Expected that asset in operation history({received_transfer[0]['assetId']}) will be eql to"
     assert received_transfer[0]['balanceChange'] == settings.balance_asssets[send_transfer[1]] / 2 == received_transfer[0]['receiveByPhoneInfo']['depositAmount']
     assert received_transfer[0]['receiveByPhoneInfo']['fromPhoneNumber'] == settings.me_tests_from_phone_number, f'Ar:\nEr: {received_transfer}'
     assert received_transfer[0]['newBalance'] > received_transfer[0]['newBalance'] - received_transfer[0]['balanceChange']
@@ -117,8 +117,8 @@ def check_balance_after_receive(receive_operation_history):
             balances
         )
     )
-    assert len(receive_balance) == 1
-    assert receive_balance[0]['balance'] == receive_operation_history[0]
+    assert len(receive_balance) == 1, f"Can not find asset of transfer operation in balances of user"
+    assert receive_balance[0]['balance'] == receive_operation_history[0], f"Expected that new balance of user will be eql to new balance in operation history"
 
 ######################################################################################################
 
