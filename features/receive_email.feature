@@ -44,10 +44,10 @@ Feature: Emails receive
   
   @new_scenario
   Scenario: Success withdrawal or transfer && deposit
-  #email must be with domen @mailforspam and existing in the system
-  #address_phone field: if you fill the field with the phone number(+380, +4521 ...)
-  #the scenario will make a transfer by phone, or if you fill  with  asset address 
-  #scenario will make a withdrawal
+    #email must be with domen @mailforspam and existing in the system
+    #address_phone field: if you fill the field with the phone number(+380, +4521 ...)
+    #the scenario will make a transfer by phone, or if you fill  with  asset address 
+    #scenario will make a withdrawal
     Given User send withdrawal/transfer with asset: <asset>, to address/phone <address_phone>
     When User approve withdrawal/transfer by restApi
     Then User has new success withdrawal email

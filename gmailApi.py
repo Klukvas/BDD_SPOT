@@ -66,7 +66,6 @@ class MailParser:
                             send_date = dateTime.strptime( send_date, '%d-%m-%Y %H:%M:%S' 
                             )
                             if send_date >= self.date_time_action:
-                                
                                 return {'from': _from, 'reason': reason, 'url': url_to_mail}
                         
             if counter == 6:

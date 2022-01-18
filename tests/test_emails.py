@@ -363,10 +363,9 @@ def approve_opetarion(create_operation):
     )
     if create_operation['type'] == 'withdrawal':
         approve_resp = Verify().verify_withdrawal(create_operation['token'], create_operation['operationId'])
-        assert approve_resp == 'Simple | Buy, sell and manage cryptocurrency portfolios'
     else:
         approve_resp = Verify().verify_transfer(create_operation['token'], create_operation['operationId'])
-        assert approve_resp == None
+    assert approve_resp == 'Simple | Buy, sell and manage cryptocurrency portfolios'
     return {"event_date": event_date}
 
 @then("User has new success withdrawal email")

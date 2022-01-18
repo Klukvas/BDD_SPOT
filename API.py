@@ -16,7 +16,7 @@ class Auth:
         self.email = email
         self.password = password
 
-    def register(self) -> list[str] or int:
+    def register(self) -> list[str] or int or dict:
         url = f"{self.main_url}Register"
 
         payload = json.dumps({
@@ -31,8 +31,14 @@ class Auth:
                 headers=self.headers, data=payload)
 
         if r.status_code == 200:
-            parse_resp = json.loads(r.text)['data']
-            return [parse_resp['token'], parse_resp['refreshToken']] 
+            try:
+                parse_resp = json.loads(r.text)['data']
+                return {
+                        "token": parse_resp['token'], 
+                        "refreshToken": parse_resp['refreshToken']
+                    }
+            except:
+                return r.text,
         else:
             return r.status_code
     
@@ -54,9 +60,9 @@ class Auth:
             parse_resp = json.loads(r.text)['data']
             return [parse_resp['token'], parse_resp['refreshToken']] 
         else:
-            return r.status_code
+            return (r.status_code, r.text)
     
-    def change_password(self, token, oldPassword, newPassword) -> list[str] or int:
+    def change_password(self, token, oldPassword, newPassword) -> list[str] or int or dict:
         url = f"{self.main_url}ChangePassword"
 
         payload = json.dumps({
@@ -76,8 +82,11 @@ class Auth:
                 headers=headers, data=payload)
 
         if r.status_code == 200:
-            parse_resp = json.loads(r.text)
-            return [parse_resp['result']]
+            try:
+                parse_resp = json.loads(r.text)['result']
+                return {'result': parse_resp}
+            except:
+                return r.text,
         else:
             return r.status_code
     
@@ -848,7 +857,9 @@ class Verify:
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=headers)
-            return None
+            soup = BeautifulSoup(r.text, 'html.parser')
+            title = soup.find('title').text
+            return title
         except Exception as err:
             return err,
 if __name__ == '__main__':
