@@ -75,25 +75,57 @@ class Auth:
             else:
                 return r.status_code
     
-    def authenticate(self) -> list[str] or int:
+    def authenticate(self, *args) -> list[str] or int:
         url = f"{self.main_url}Authenticate"
 
-        payload = json.dumps({
-            "email": f"{self.email}",
-            "password": f"{self.password}",
-        })
+        if self.email == "empty" and self.password == "empty":
+            payload = json.dumps({
+                "email": f"",
+                "password": f""
+            })
+        
+        elif self.email == "null" and self.password == "null":
+            payload = json.dumps({})
+        
+        elif self.password == "empty" and self.email != "empty":
+            payload = json.dumps({
+                "email": f"{self.email}",
+                "password": f""
+            })
+        elif self.password != "empty" and self.email == "empty":
+            payload = json.dumps({
+                "email": f"",
+                "password": f"{self.password}"
+            })
+        
+        elif self.password == "null" and self.email != "null":
+            payload = json.dumps({
+                "email": f"{self.email}"
+            })
+        elif self.password != "null" and self.email == "null":
+            payload = json.dumps({
+                "password": f"{self.password}"
+            })
+        
+        else:
+            payload = json.dumps({
+                "email": f"{self.email}",
+                "password": f"{self.password}"
+            })
 
         r = post(url, 
                 pkcs12_filename=cert_name, 
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=self.headers, data=payload)
-
-        if r.status_code == 200:
-            parse_resp = json.loads(r.text)['data']
-            return [parse_resp['token'], parse_resp['refreshToken']] 
+        if args:
+            return {"response": r.text, "status": r.status_code}
         else:
-            return (r.status_code, r.text)
+            if r.status_code == 200:
+                parse_resp = json.loads(r.text)['data']
+                return [parse_resp['token'], parse_resp['refreshToken']] 
+            else:
+                return (r.status_code, r.text)
     
     def change_password(self, token, oldPassword, newPassword) -> list[str] or int or dict:
         url = f"{self.main_url}ChangePassword"

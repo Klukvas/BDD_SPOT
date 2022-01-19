@@ -111,3 +111,14 @@ def test_registration(email, password, response, status_code):
     assert type(negative_response) == dict, f"Expected: type == str\nReturned: {type(negative_response)}\t tokens: {negative_response}"
     assert negative_response['response'] == response, f"Expected: {response}\nReturned: {negative_response['response']}"
     assert negative_response['status'] == int(status_code),f"Expected: {status_code}\nReturned: {negative_response['status']}"
+
+@scenario(f'../features/auth.feature', 'Negative authentification')
+def test_negative_authentification():
+    pass
+
+@given(parsers.parse("User try to authentification with {email} and {password}. User get {response} with {status_code}"))
+def test_authentification(email, password, response, status_code):
+    negative_response = Auth(email, password).authenticate('negative cases')
+    assert type(negative_response) == dict, f"Expected: type == str\nReturned: {type(negative_response)}\t tokens: {negative_response}"
+    assert negative_response['response'] == response, f"Expected: {response}\nReturned: {negative_response['response']}"
+    assert negative_response['status'] == int(status_code),f"Expected: {status_code}\nReturned: {negative_response['status']}"
