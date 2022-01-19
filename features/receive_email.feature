@@ -42,7 +42,6 @@ Feature: Emails receive
   Scenario: ReRegistration
     Given  ReRegistration mail on inbox after existing user pass registration
   
-  @new_scenario
   Scenario: Success withdrawal or transfer && deposit
     #email must be with domen @mailforspam and existing in the system
     #address_phone field: if you fill the field with the phone number(+380, +4521 ...)
