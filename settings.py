@@ -26,6 +26,9 @@ template_tests_fee_amoutn = data['template_tests']['fee_amount']
 
 template_tests_to_phone_transfer = data['template_tests']['to_phone_transfer']
 
+auth_tests_email_for_change_password = data['auth_tests']['email_for_change_password']
+auth_tests_password_for_change_password = data['auth_tests']['password_for_change_password']
+
 url_verify =  data['urls']['verify']
 url_auth = data['urls']['auth']
 url_wallet_history = data['urls']['wallet_history']

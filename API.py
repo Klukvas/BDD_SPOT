@@ -127,7 +127,7 @@ class Auth:
             else:
                 return (r.status_code, r.text)
     
-    def change_password(self, token, oldPassword, newPassword) -> list[str] or int or dict:
+    def change_password(self, token, oldPassword, newPassword, *args) -> list[str] or int or dict:
         url = f"{self.main_url}ChangePassword"
 
         payload = json.dumps({
@@ -145,15 +145,17 @@ class Auth:
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=headers, data=payload)
-
-        if r.status_code == 200:
-            try:
-                parse_resp = json.loads(r.text)['result']
-                return {'result': parse_resp}
-            except:
-                return r.text,
+        if args:
+            return {'resp':r.text, 'code': r.status_code }
         else:
-            return r.status_code
+            if r.status_code == 200:
+                try:
+                    parse_resp = json.loads(r.text)['result']
+                    return {'result': parse_resp}
+                except:
+                    return r.text,
+            else:
+                return r.status_code
     
     def forgot_password(self, email) -> list[str] or int:
         url = f"{self.main_url}ForgotPassword"

@@ -122,3 +122,19 @@ def test_authentification(email, password, response, status_code):
     assert type(negative_response) == dict, f"Expected: type == str\nReturned: {type(negative_response)}\t tokens: {negative_response}"
     assert negative_response['response'] == response, f"Expected: {response}\nReturned: {negative_response['response']}"
     assert negative_response['status'] == int(status_code),f"Expected: {status_code}\nReturned: {negative_response['status']}"
+
+@scenario(f'../features/auth.feature', 'Negative change password')
+def test_negative_change_password():
+    pass
+
+@given(parsers.parse("User try to change password from {password_old} to {password_new}. User get {response} with {status_code}"))
+def test_change_password_negative(auth, password_old, password_new, response, status_code):
+    token = auth(settings.auth_tests_email_for_change_password, settings.auth_tests_password_for_change_password)
+    if password_old == 'default':
+        password_old = settings.auth_tests_password_for_change_password
+    change_password_resp = Auth(
+        settings.auth_tests_email_for_change_password, 
+        settings.auth_tests_password_for_change_password
+    ).change_password(token, password_old, password_new, "negative cases")
+    assert str(change_password_resp['code']) == status_code, f"Expected status code eql to {status_code} but returned: {change_password_resp}"
+    assert change_password_resp['resp'] == response, f"Expected status code eql to {status_code} but returned: {change_password_resp}"

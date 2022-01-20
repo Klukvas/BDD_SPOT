@@ -18,7 +18,6 @@ Feature: Authentification
         And User can interact with endpoints
         When User make LogOut
         Then User can not interact with endpoint with old token
-    @new_scenario
     Scenario Outline: Negative registration
         Given User try to registration with <email> and <password>. User get <response> with <status_code>
         Examples:
@@ -52,3 +51,14 @@ Feature: Authentification
             | email@email.email | $%^&*&^%   | 401         | {"message":"InvalidUserNameOrPassword"}     |
             | empty             | empty      | 400         | {"message":"'Email' must not be empty. 'Email' is not a valid email address. 'Password' must not be empty."} |
             | null              | null       | 400         | {"message":"'Email' must not be empty. 'Password' must not be empty."} |
+    @new_scenario
+    Scenario Outline: Negative change password
+        Given User try to change password from <password_old> to <password_new>. User get <response> with <status_code>
+        Examples:
+            | password_old | password_new | status_code | response   |
+            | default      | password     | 400         | {"message":"'New Password' is not in the correct format."}   | #non existing user
+            | default      | 23456789     | 400         | {"message":"'New Password' is not in the correct format."}   | #non existing user
+            | default      | #$%^&^%$     | 400         | {"message":"'New Password' is not in the correct format."}   | #non existing user
+            | default      | jk           | 400         | {"message":"'New Password' is not in the correct format. 'New Password' must be between 8 and 31 characters. You entered 2 characters."}   | #non existing user
+            | default      | 1232         | 400         | {"message":"'New Password' is not in the correct format. 'New Password' must be between 8 and 31 characters. You entered 4 characters."}   | #non existing user
+            | testpa1      | password1    | 400         | {"message":"OldPasswordDoesntMatch"}   | #non existing user
