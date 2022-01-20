@@ -399,7 +399,6 @@ class Swap:
                 "toAssetVolume": fromToVol,
                 "isFromFixed": fix
             })
-        print(f"payload: \n{payload}")
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -416,9 +415,13 @@ class Swap:
             try:
                 return parse_resp['data']
             except:
-                return [parse_resp,]
+                return [parse_resp]
         else:
-            return r.status_code
+            try:
+                parse_resp =  json.loads(r.text)
+                return (r.status_code, parse_resp)
+            except:
+                return (r.status_code, r.text)
 
     def execute_quote(self, token, body) -> dict or int or list:
         url = f"{self.main_url}execute-quote"

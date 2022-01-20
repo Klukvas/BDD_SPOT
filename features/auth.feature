@@ -51,7 +51,6 @@ Feature: Authentification
             | email@email.email | $%^&*&^%   | 401         | {"message":"InvalidUserNameOrPassword"}     |
             | empty             | empty      | 400         | {"message":"'Email' must not be empty. 'Email' is not a valid email address. 'Password' must not be empty."} |
             | null              | null       | 400         | {"message":"'Email' must not be empty. 'Password' must not be empty."} |
-    @new_scenario
     Scenario Outline: Negative change password
         Given User try to change password from <password_old> to <password_new>. User get <response> with <status_code>
         Examples:

@@ -1,8 +1,8 @@
-from API import WalletHistory, Wallet, Swap
+from API import Trading, WalletHistory, Wallet, Swap
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
-
+from random import choice
 
 @scenario(f'../features/swap.feature', 'Make a swap')
 def test_make_swap():
@@ -133,3 +133,59 @@ def hist2(get_balance, exec):
                     assert old_balances[jitem]['balance'] > new_balances[item]['balance']
                 else:
                     assert old_balances[jitem]['balance'] < new_balances[item]['balance']
+
+
+
+@scenario(f'../features/swap.feature', 'Swap with amount more than balance')
+def test_make_swap_more_than_balance():
+    pass
+
+@given('User try to get quote with amount more than has on balance. User get an lowBalance error')
+def quote_more_than_balance(auth):
+    token = auth(settings.me_tests_email, settings.me_tests_password)
+    from_asset = choice(list(settings.balance_asssets.keys()))
+    quote = Swap().get_quote(
+            token, 
+            from_asset,
+            'USD',
+            settings.balance_asssets[from_asset] * 2,
+            True
+        )
+    assert quote[0] == {"result": "LowBalance"}, f"Expected that response from get quote is: 'result': 'LowBalance' but returned: {quote}"
+
+
+
+
+@scenario(f'../features/swap.feature', 'Swap with nonexisting asset from')
+def test_make_swap_nonexisting_asset_from():
+    pass
+
+@given('User try to get quote with nonexisting asset from. User get an Asset do not found error')
+def quote_nonexisting_asset_from(auth):
+    token = auth(settings.me_tests_email, settings.me_tests_password)
+    quote = Swap().get_quote(
+            token, 
+            'asd',
+            'USD',
+            2,
+            True
+        )
+    assert quote[1] == {"message": "FromAsset or ToAsset do not found"}, f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
+    assert quote[0] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
+
+@scenario(f'../features/swap.feature', 'Swap with nonexisting asset to')
+def test_make_swap_nonexisting_asset_to():
+    pass
+
+@given('User try to get quote with nonexisting asset to. User get an Asset do not found error')
+def quote_nonexisting_asset_from(auth):
+    token = auth(settings.me_tests_email, settings.me_tests_password)
+    quote = Swap().get_quote(
+            token, 
+            'LTC',
+            'asdasd',
+            0.00002,
+            True
+        )
+    assert quote[1] == {"message": "FromAsset or ToAsset do not found"}, f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
+    assert quote[0] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
