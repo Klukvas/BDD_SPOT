@@ -1,5 +1,6 @@
 import email
 import json
+from sqlite3 import Timestamp
 from requests_pkcs12 import get, post
 from datetime import datetime
 import settings
@@ -975,8 +976,36 @@ class Verify:
         except Exception as err:
             return err,
 
+class Candle:
 
+    def __init__(self):
+        self.main_url = settings.url_candles
+
+    def get_candels(self,token, type, instrument, fromDate, toDate, mergeCount):
+        url = f"{self.main_url}/{type}?Instruction={instrument}&BidOrAsk=0&FromDate={fromDate}&ToDate={toDate}&MergeCandlesCount={mergeCount}"
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = get(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers)
+
+        try:
+            parse_resp =  json.loads(r.text)
+            return {"data": parse_resp, "url": url}
+        except:
+            return r.status_code   
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1').authenticate()
-    s = Auth('basetestsusder@mailinator.com', 'testpassword1').change_password(tokens[0], 'testpassword1','testpassword1')
-    print(s)
+    import datetime
+        
+    fromDate = int( (datetime.datetime.today() - datetime.timedelta(days = 2)).timestamp() * 1000)
+    toDate = int((datetime.datetime.today() - datetime.timedelta(days = 1)).timestamp() *1000)
+    print(f"From: {fromDate}\tTo: {toDate}")
+    can = Candle().get_candels(tokens[0], 0, 'BTCUSD',fromDate, toDate, 15 )
+
+    print(f"Candels length: {len(can['data'])}")

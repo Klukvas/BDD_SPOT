@@ -43,7 +43,8 @@
                     "transfer": "https://wallet-api-uat.simple-spot.biz/api/v1/transfer/",
                     "blockchain": "https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/",
                     "circle": "https://wallet-api-uat.simple-spot.biz/api/circle/",
-                    "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/"
+                    "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/",
+                    "candles": "https://candles-api-test.simple-spot.biz/api/v3/Candles/Candles"
                 }
             }
 

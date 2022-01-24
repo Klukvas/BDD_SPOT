@@ -38,7 +38,10 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "auth: mark1 test to run only on named environment"
     )
-    auth
+    config.addinivalue_line(
+        "markers", "candels: mark1 test to run only on named environment"
+    )
+    
     # config.addinivalue_line(
     #     "markers", "new_scenario: mark1 test to run only on named environment",
     #     "markers", "smoke: mark1 test to run only on named environment",
