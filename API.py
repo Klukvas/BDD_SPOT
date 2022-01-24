@@ -1,4 +1,6 @@
+import email
 import json
+from sqlite3 import Timestamp
 from requests_pkcs12 import get, post
 from datetime import datetime
 import settings
@@ -16,47 +18,117 @@ class Auth:
         self.email = email
         self.password = password
 
-    def register(self) -> list[str] or int:
+    def register(self, *args) -> list[str] or int or dict:
         url = f"{self.main_url}Register"
-
-        payload = json.dumps({
-            "email": f"{self.email}",
-            "password": f"{self.password}",
-        })
+        
+        if self.email == "empty" and self.password == "empty":
+            payload = json.dumps({
+                "email": f"",
+                "password": f""
+            })
+        
+        elif self.email == "null" and self.password == "null":
+            payload = json.dumps({})
+        
+        elif self.password == "empty" and self.email != "empty":
+            payload = json.dumps({
+                "email": f"{self.email}",
+                "password": f""
+            })
+        elif self.password != "empty" and self.email == "empty":
+            payload = json.dumps({
+                "email": f"",
+                "password": f"{self.password}"
+            })
+        
+        elif self.password == "null" and self.email != "null":
+            payload = json.dumps({
+                "email": f"{self.email}"
+            })
+        elif self.password != "null" and self.email == "null":
+            payload = json.dumps({
+                "password": f"{self.password}"
+            })
+        
+        else:
+            payload = json.dumps({
+                "email": f"{self.email}",
+                "password": f"{self.password}"
+            })
         
         r = post(url, 
                 pkcs12_filename=cert_name, 
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=self.headers, data=payload)
-
-        if r.status_code == 200:
-            parse_resp = json.loads(r.text)['data']
-            return [parse_resp['token'], parse_resp['refreshToken']] 
+        if args:
+            return {"response": r.text, "status": r.status_code}
         else:
-            return r.status_code
+            if r.status_code == 200:
+                try:
+                    parse_resp = json.loads(r.text)['data']
+                    return {
+                            "token": parse_resp['token'], 
+                            "refreshToken": parse_resp['refreshToken']
+                        }
+                except:
+                    return r.text,
+            else:
+                return r.status_code
     
-    def authenticate(self) -> list[str] or int:
+    def authenticate(self, *args) -> list[str] or int:
         url = f"{self.main_url}Authenticate"
 
-        payload = json.dumps({
-            "email": f"{self.email}",
-            "password": f"{self.password}",
-        })
+        if self.email == "empty" and self.password == "empty":
+            payload = json.dumps({
+                "email": f"",
+                "password": f""
+            })
+        
+        elif self.email == "null" and self.password == "null":
+            payload = json.dumps({})
+        
+        elif self.password == "empty" and self.email != "empty":
+            payload = json.dumps({
+                "email": f"{self.email}",
+                "password": f""
+            })
+        elif self.password != "empty" and self.email == "empty":
+            payload = json.dumps({
+                "email": f"",
+                "password": f"{self.password}"
+            })
+        
+        elif self.password == "null" and self.email != "null":
+            payload = json.dumps({
+                "email": f"{self.email}"
+            })
+        elif self.password != "null" and self.email == "null":
+            payload = json.dumps({
+                "password": f"{self.password}"
+            })
+        
+        else:
+            payload = json.dumps({
+                "email": f"{self.email}",
+                "password": f"{self.password}"
+            })
 
         r = post(url, 
                 pkcs12_filename=cert_name, 
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=self.headers, data=payload)
-
-        if r.status_code == 200:
-            parse_resp = json.loads(r.text)['data']
-            return [parse_resp['token'], parse_resp['refreshToken']] 
+        if args:
+            return {"response": r.text, "status": r.status_code}
         else:
-            return r.status_code
+            if r.status_code == 200:
+                parse_resp = json.loads(r.text)['data']
+                return [parse_resp['token'], parse_resp['refreshToken']] 
+            else:
+                return (r.status_code, r.text)
     
-    def change_password(self, token, oldPassword, newPassword) -> list[str] or int:
+    def change_password(self, token, oldPassword, newPassword, *args) -> list[str] or int or dict:
         url = f"{self.main_url}ChangePassword"
 
         payload = json.dumps({
@@ -74,12 +146,17 @@ class Auth:
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=headers, data=payload)
-
-        if r.status_code == 200:
-            parse_resp = json.loads(r.text)
-            return [parse_resp['result']]
+        if args:
+            return {'resp':r.text, 'code': r.status_code }
         else:
-            return r.status_code
+            if r.status_code == 200:
+                try:
+                    parse_resp = json.loads(r.text)['result']
+                    return {'result': parse_resp}
+                except:
+                    return r.text,
+            else:
+                return r.status_code
     
     def forgot_password(self, email) -> list[str] or int:
         url = f"{self.main_url}ForgotPassword"
@@ -121,6 +198,50 @@ class Auth:
         else:
             return r.status_code
     
+    def logout(self, token) -> list[str] or int or dict:
+        url = f"{self.main_url}Logout"
+
+        payload = json.dumps({
+            "token": token
+        })
+        
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=self.headers, data=payload)
+
+        if r.status_code == 200:
+            try:
+                parse_resp = json.loads(r.text)
+                return { "response": parse_resp }
+            except:
+                return r.text,
+        else:
+            return r.status_code
+    
+    def refresh(self, refreshToken) -> list[str] or int or dict:
+        url = f"{self.main_url}RefreshToken"
+
+        payload = json.dumps({
+            "refreshToken": refreshToken
+        })
+        
+        r = post(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=self.headers, data=payload)
+
+        if r.status_code == 200:
+            try:
+                parse_resp = json.loads(r.text)
+                return { "response": parse_resp }
+            except:
+                return r.text,
+        else:
+            return r.status_code
+   
 class WalletHistory:
 
     def __init__(self) -> None:
@@ -279,7 +400,6 @@ class Swap:
                 "toAssetVolume": fromToVol,
                 "isFromFixed": fix
             })
-        print(f"payload: \n{payload}")
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -296,9 +416,13 @@ class Swap:
             try:
                 return parse_resp['data']
             except:
-                return [parse_resp,]
+                return [parse_resp]
         else:
-            return r.status_code
+            try:
+                parse_resp =  json.loads(r.text)
+                return (r.status_code, parse_resp)
+            except:
+                return (r.status_code, r.text)
 
     def execute_quote(self, token, body) -> dict or int or list:
         url = f"{self.main_url}execute-quote"
@@ -554,8 +678,6 @@ class Blockchain:
                 return [parse_resp, r.status_code]
         except:
             return r.status_code
-
-    
 
 class Circle:
 
@@ -848,10 +970,42 @@ class Verify:
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=headers)
-            return None
+            soup = BeautifulSoup(r.text, 'html.parser')
+            title = soup.find('title').text
+            return title
         except Exception as err:
             return err,
+
+class Candle:
+
+    def __init__(self):
+        self.main_url = settings.url_candles
+
+    def get_candels(self,token, type, instrument, fromDate, toDate, mergeCount):
+        url = f"{self.main_url}/{type}?Instruction={instrument}&BidOrAsk=0&FromDate={fromDate}&ToDate={toDate}&MergeCandlesCount={mergeCount}"
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = get(url, 
+                pkcs12_filename=cert_name, 
+                pkcs12_password=cert_pass,
+                verify = False,
+                headers=headers)
+
+        try:
+            parse_resp =  json.loads(r.text)
+            return {"data": parse_resp, "url": url}
+        except:
+            return r.status_code   
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1').authenticate()
-    s = Auth('basetestsusder@mailinator.com', 'testpassword1').change_password(tokens[0], 'testpassword1','testpassword1')
-    print(s)
+    import datetime
+        
+    fromDate = int( (datetime.datetime.today() - datetime.timedelta(days = 2)).timestamp() * 1000)
+    toDate = int((datetime.datetime.today() - datetime.timedelta(days = 1)).timestamp() *1000)
+    print(f"From: {fromDate}\tTo: {toDate}")
+    can = Candle().get_candels(tokens[0], 0, 'BTCUSD',fromDate, toDate, 15 )
+
+    print(f"Candels length: {len(can['data'])}")

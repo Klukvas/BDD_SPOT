@@ -4,3 +4,9 @@ coverage
 test_z.py
 features/tz.feature
 qwe.py
+.vscode
+TODO
+run
+allureReport
+allureReport/*
+__pycache__

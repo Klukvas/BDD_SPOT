@@ -28,6 +28,10 @@
                     "transfer_to_phone": "+380933333333",
                     "receive_email": "andrey.p@smplt.net"
                 },
+                "auth_tests": {
+                    "email_for_change_password": "email_change_password@mailinator.com",
+                    "password_for_change_password": "testpassword1"
+                },
                 "urls": {
                     "verify": "https://validation-api-uat.simple-spot.biz/api/v1/",
                     "auth": "https://wallet-api-uat.simple-spot.biz/auth/v1/Trader/",
@@ -39,7 +43,8 @@
                     "transfer": "https://wallet-api-uat.simple-spot.biz/api/v1/transfer/",
                     "blockchain": "https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/",
                     "circle": "https://wallet-api-uat.simple-spot.biz/api/circle/",
-                    "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/"
+                    "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/",
+                    "candles": "https://candles-api-test.simple-spot.biz/api/v3/Candles/Candles"
                 }
             }
 
