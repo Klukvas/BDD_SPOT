@@ -9,10 +9,11 @@ pytest = "*"
 requests-pkcs12 = "*"
 requests = "*"
 grpcio = "*"
-protobuf = "*"
 beautifulsoup4 = "*"
 allure-pytest-bdd = "*"
 allure-python-commons = "*"
+grpcio-tools = "*"
+protobuf = "*"
 
 [dev-packages]
 

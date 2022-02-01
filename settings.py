@@ -50,7 +50,8 @@ balance_asssets = {
     'ETH': 0.07,
     'USD': 300,
     'EUR': 265,
-    'BCH': 0.5
+    'BCH': 0.5,
+    'XLM': 1500
 }
 # используються для создания квоты свопа с fixed True
 to_balance = {

@@ -1,5 +1,3 @@
-import email
-import turtle
 from API import WalletHistory, Auth
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep

@@ -24,4 +24,8 @@ def start_tests():
 
 
 if __name__ == "__main__":
-    start_tests()
+    # start_tests()
+    from GRPC.AssetsInfo import assetsInfo
+    a = assetsInfo.get_asset_by_id('BTC')
+    a.Value.asdasd = 'asdasd'
+    print(a)

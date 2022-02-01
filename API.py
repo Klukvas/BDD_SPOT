@@ -384,7 +384,7 @@ class Swap:
     def __init__(self) -> None:
         self.main_url = settings.url_swap
 
-    def get_quote(self, token, _from, to, fromToVol, fix) -> dict or int:
+    def get_quote(self, token, _from, to, fromToVol, fix, *args) -> dict or int:
         url = f"{self.main_url}get-quote"
         if fix:
             payload = json.dumps({
@@ -410,19 +410,26 @@ class Swap:
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=headers, data=payload)
-
-        if r.status_code == 200:
-            parse_resp =  json.loads(r.text)
-            try:
-                return parse_resp['data']
-            except:
-                return [parse_resp]
-        else:
-            try:
+        if args:
+            if args[0] == 'MIN_MAX_TESTS':
                 parse_resp =  json.loads(r.text)
-                return (r.status_code, parse_resp)
-            except:
-                return (r.status_code, r.text)
+                try:
+                    return parse_resp['result']
+                except:
+                    return [parse_resp]
+        else:
+            if r.status_code == 200:
+                parse_resp =  json.loads(r.text)
+                try:
+                    return parse_resp['data']
+                except:
+                    return [parse_resp]
+            else:
+                try:
+                    parse_resp =  json.loads(r.text)
+                    return (r.status_code, parse_resp)
+                except:
+                    return (r.status_code, r.text)
 
     def execute_quote(self, token, body) -> dict or int or list:
         url = f"{self.main_url}execute-quote"

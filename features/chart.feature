@@ -20,3 +20,11 @@ Feature: Charts
             | BTCUSD     | WEEK     |
             | BTCUSD     | MOUNTH   |
             | BTCUSD     | YEAR     |
+            | SOLUSD     | DAY      |
+            | SOLUSD     | WEEK     |
+            | SOLUSD     | MOUNTH   |
+            | SOLUSD     | YEAR     |
+            | BCHUSD     | DAY      |
+            | BCHUSD     | WEEK     |
+            | BCHUSD     | MOUNTH   |
+            | BCHUSD     | YEAR     |

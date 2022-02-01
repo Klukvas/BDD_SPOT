@@ -202,7 +202,7 @@ def check_withdrawal_email(feeAmount, feeAsset, make_withdrawal):
                             replace('{{ip}}', mail_parser['ip']).\
                                 replace('{{link}}', mail_parser['confirm_link']).\
                                     replace('{{address}}', make_withdrawal['address']).\
-                                        replace('{{receiveAmount}}', f"{receiveAmount}")
+                                        replace('{{receiveAmount}}', str(make_withdrawal['amount']))
 
     assert template == mail_parser['message_body'], \
                f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
