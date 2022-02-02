@@ -242,30 +242,43 @@ def get_assets_with_min_max_volume(asset):
 
 @given(parsers.parse("User try to get quote with {min_max} amout and fixed {fixed}"))
 def get_quote_with_min_max_volume(min_max, fixed, auth, get_assets_with_min_max_volume):
-    token = auth(settings.me_tests_email, settings.me_tests_password)
-    swapApi = Swap()
-    if min_max == 'min':
-        volume = get_assets_with_min_max_volume['min_float'] - ( get_assets_with_min_max_volume['min_float'] * 0.1 )
-    else:
-        volume = get_assets_with_min_max_volume['max_float'] + ( get_assets_with_min_max_volume['max_float'] * 0.1 )
-    if fixed == True:
-        quote = swapApi.get_quote(
-            token,
-            get_assets_with_min_max_volume['asset'],
-            choice(list(settings.balance_asssets.keys())),
-            volume,
-            True,
-            'MIN_MAX_TESTS'
-        )
-    else:
-        quote = swapApi.get_quote(
-            token, 
-            choice(list(settings.balance_asssets.keys())),
-            get_assets_with_min_max_volume['asset'],
-            volume,
-            False,
-            'MIN_MAX_TESTS'
-        )
-    expected_response = 'AmountIsSmall' if min_max == 'min' else 'AmountToLarge'
-    print(f"quote: {quote}")
-    assert quote == expected_response, f"Exp: {expected_response}  Returned: {quote}"
+    try:
+        token = auth(settings.me_tests_email, settings.me_tests_password)
+        swapApi = Swap()
+        if min_max == 'min':
+            volume = get_assets_with_min_max_volume['min_float'] - ( get_assets_with_min_max_volume['min_float'] * 0.1 )
+        else:
+            volume = get_assets_with_min_max_volume['max_float'] + ( get_assets_with_min_max_volume['max_float'] * 0.1 )
+        if fixed == True:
+            quote = swapApi.get_quote(
+                token,
+                get_assets_with_min_max_volume['asset'],
+                choice(list(settings.balance_asssets.keys())),
+                volume,
+                True,
+                'MIN_MAX_TESTS'
+            )
+        else:
+            quote = swapApi.get_quote(
+                token, 
+                choice(list(settings.balance_asssets.keys())),
+                get_assets_with_min_max_volume['asset'],
+                volume,
+                False,
+                'MIN_MAX_TESTS'
+            )
+        expected_response = 'AmountIsSmall' if min_max == 'min' else 'AmountToLarge'
+        print(f"quote: {quote}")
+        assert quote == expected_response, f"Exp: {expected_response}  Returned: {quote}"
+    except Exception as err:
+        raise Exception(err)
+    finally:
+        min_vol = get_assets_with_min_max_volume["response"].Value.MinTradeValue if get_assets_with_min_max_volume["response"].Value.MinTradeValue else None
+        max_vol = get_assets_with_min_max_volume["response"].Value.MaxTradeValue if get_assets_with_min_max_volume["response"].Value.MaxTradeValue else None
+        min_max_object = {
+            "MinTradeValue": min_vol,
+            "MaxTradeValue": max_vol
+        }
+        min_max_object['MinTradeValue']
+        min_max_object['MaxTradeValue']
+        assetsInfo.update_asset(get_assets_with_min_max_volume["response"].Value, min_max_object)
