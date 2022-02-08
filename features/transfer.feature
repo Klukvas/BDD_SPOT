@@ -16,7 +16,6 @@ Feature: Transfer
             | LTC   |
             | BTC   |
             | ETH   |
-    
     Scenario Outline: Make a internalWithdrawal
         When User send <assetId> to <address>
         Then User has new record(withdrawal) in operation history

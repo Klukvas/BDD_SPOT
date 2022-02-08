@@ -35,7 +35,6 @@ Feature: Swap
         Given User try to get quote with nonexisting asset from. User get an Asset do not found error
     Scenario: Swap with nonexisting asset to
         Given User try to get quote with nonexisting asset to. User get an Asset do not found error
-    @new_scenario
     Scenario Outline: Swap with min && max amount
         Given User set to <asset> min and max amount
         Given User try to get quote with <min_max> amout and fixed <fixed>

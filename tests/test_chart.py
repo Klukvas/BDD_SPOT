@@ -5,7 +5,7 @@ import datetime
 
 
 @scenario(f'../features/chart.feature', 'Receive chart data')
-def test_circle_deposit():
+def test_chart_data():
     pass
 
 @given(parsers.parse('User send request for chart with next data: {instrument}, {period}'))

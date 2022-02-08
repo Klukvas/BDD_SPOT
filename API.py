@@ -572,14 +572,17 @@ class Transfer:
         url = f"{self.main_url}by-phone"
 
         uniqId = str(datetime.strftime(datetime.today(), '%m%d%H%s%f'))
-
+        phone_code = phone[:3]
+        phone_body = phone[3:]
         payload = json.dumps({
-            "requestId": uniqId,
-            "assetSymbol": asset,
-            "amount": amount,
-            "toPhoneNumber": phone,
-            "lang": "En"
-        })
+                "requestId": uniqId,
+                "assetSymbol": asset,
+                "amount": amount,
+                "lang": "Ru",
+                "toPhoneCode": phone_code,
+                "toPhoneBody": phone_body,
+                "toPhoneIso": "UKR"
+            })
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -939,8 +942,8 @@ class Verify:
         except:
             return r.status_code   
 
-    def verify_withdrawal(self,token, code):
-        url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={code}&code=000000"
+    def verify_withdrawal(self,token, withdrawalProcessId):
+        url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={withdrawalProcessId}&code=000000"
 
         headers = {
             'Authorization': f'Bearer {token}',

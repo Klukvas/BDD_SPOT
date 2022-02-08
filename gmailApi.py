@@ -15,7 +15,7 @@ class MailParser:
         self.current_reason = email_type
         self.mail_types = {
             0: 'Email confirmation request',
-            1: '[Monfex] Success Login from',
+            1: 'Success Login from',
             2: 'Verify withdrawal',
             3: 'Verify withdrawal',
             4: 'Password recoverу',
