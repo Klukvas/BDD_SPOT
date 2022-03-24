@@ -1,4 +1,3 @@
-from tkinter.messagebox import NO
 from API import WalletHistory, Wallet, Swap
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
@@ -18,7 +17,7 @@ def get_balance(auth):
     balances = Wallet().balances(token)
     assert type(balances) == list
     assert len(balances) > 0
-    return [token, balances] #{"token": token}
+    return [token, balances] #{"token": token }
 
 @when(parsers.parse('User gets swap quote with from fixed {isFromFixed} from asset {fromAsset} to  asset {toAsset}'), target_fixture="get_quote")
 def get_quote(get_balance,isFromFixed, fromAsset, toAsset):
