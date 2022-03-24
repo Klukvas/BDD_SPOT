@@ -1,0 +1,144 @@
+syntax = "proto3";
+package Service.ChangeBalanceGateway.Grpc;
+import "bcl.proto";
+
+message AgentInfo {
+   string ApplicationName = 1;
+   string ApplicationEnvInfo = 2;
+}
+message BlockchainDepositGrpcRequest {
+   string TransactionId = 1;
+   string ClientId = 2;
+   string WalletId = 3;
+   .bcl.Decimal Amount = 4;
+   string AssetSymbol = 5;
+   string Comment = 6;
+   string BrokerId = 8;
+   string Integration = 9;
+   string Txid = 10;
+   AgentInfo Agent = 11;
+}
+message BlockchainFeeApplyGrpcRequest {
+   string TransactionId = 1;
+   string WalletId = 2;
+   string BrokerId = 3;
+   string AssetSymbol = 4;
+   .bcl.Decimal FeeAmount = 5;
+}
+message BlockchainWithdrawalGrpcRequest {
+   string TransactionId = 1;
+   string ClientId = 2;
+   string WalletId = 3;
+   .bcl.Decimal Amount = 4;
+   string AssetSymbol = 5;
+   string Comment = 6;
+   string BrokerId = 8;
+   string Integration = 9;
+   string Txid = 10;
+   TransactionStatus Status = 11;
+   string WithdrawalAddress = 12;
+   AgentInfo Agent = 13;
+   .bcl.Decimal FeeAmount = 14;
+   string FeeAssetSymbol = 15;
+}
+message ChangeBalanceGrpcResponse {
+   bool Result = 1;
+   string ErrorMessage = 2;
+   string TransactionId = 3;
+   ErrorCodeEnum ErrorCode = 4;
+}
+enum ErrorCodeEnum {
+   Ok = 0;
+   Error = 1;
+   LowBalance = 2;
+   Duplicate = 3;
+   AssetDoNotFound = 4;
+   AssetIsDisabled = 5;
+   WalletDoNotFound = 6;
+   BadRequest = 7;
+}
+message FeeTransferRequest {
+   string TransactionId = 1;
+   string ClientId = 2;
+   string FromWalletId = 3;
+   string ToWalletId = 4;
+   .bcl.Decimal Amount = 5;
+   string AssetSymbol = 6;
+   string Comment = 7;
+   string BrokerId = 8;
+   string RequestSource = 9;
+}
+message InternalTransferGrpcRequest {
+   string TransactionId = 1;
+   string ClientId = 2;
+   string FromWalletId = 3;
+   string ToWalletId = 4;
+   .bcl.Decimal Amount = 5;
+   string AssetSymbol = 6;
+   string Comment = 7;
+   string BrokerId = 8;
+   string Integration = 9;
+   string Txid = 10;
+   TransactionStatus Status = 11;
+   AgentInfo Agent = 12;
+}
+message ManualChangeBalanceGrpcRequest {
+   string TransactionId = 1;
+   string ClientId = 2;
+   string WalletId = 3;
+   .bcl.Decimal Amount = 4;
+   string AssetSymbol = 5;
+   string Comment = 6;
+   string BrokerId = 8;
+   string Officer = 9;
+   AgentInfo Agent = 10;
+}
+message PayInterestRateRequest {
+   string TransactionId = 1;
+   string ClientId = 2;
+   string FromWalletId = 3;
+   string ToWalletId = 4;
+   .bcl.Decimal Amount = 5;
+   string AssetSymbol = 6;
+   string Comment = 7;
+   string BrokerId = 8;
+   string RequestSource = 9;
+}
+message PciDssDepositGrpcRequest {
+   string TransactionId = 1;
+   string ClientId = 2;
+   string WalletId = 3;
+   .bcl.Decimal Amount = 4;
+   string AssetSymbol = 5;
+   string Comment = 6;
+   string BrokerId = 8;
+   AgentInfo Agent = 9;
+}
+message SwapGrpcRequest {
+   string TransactionId = 1;
+   string WalletId1 = 2;
+   string AssetSymbol1 = 3;
+   .bcl.Decimal Amount1 = 4;
+   string WalletId2 = 5;
+   string AssetSymbol2 = 6;
+   .bcl.Decimal Amount2 = 7;
+   string BrokerId = 8;
+}
+enum TransactionStatus {
+   New = 0;
+   Pending = 1;
+   Confirmed = 2;
+}
+service SpotChangeBalanceService {
+   rpc BlockchainDeposit (BlockchainDepositGrpcRequest) returns (ChangeBalanceGrpcResponse);
+   rpc BlockchainFeeApply (BlockchainFeeApplyGrpcRequest) returns (ChangeBalanceGrpcResponse);
+   rpc BlockchainWithdrawal (BlockchainWithdrawalGrpcRequest) returns (ChangeBalanceGrpcResponse);
+   rpc InternalTransfer (InternalTransferGrpcRequest) returns (ChangeBalanceGrpcResponse);
+   rpc ManualChangeBalance (ManualChangeBalanceGrpcRequest) returns (ChangeBalanceGrpcResponse);
+   rpc PayBonusReward (FeeTransferRequest) returns (ChangeBalanceGrpcResponse);
+   rpc PayFeeSharesToReferrer (FeeTransferRequest) returns (ChangeBalanceGrpcResponse);
+   rpc PayInterestRate (PayInterestRateRequest) returns (ChangeBalanceGrpcResponse);
+   rpc PciDssDeposit (PciDssDepositGrpcRequest) returns (ChangeBalanceGrpcResponse);
+   rpc Swap (SwapGrpcRequest) returns (ChangeBalanceGrpcResponse);
+   rpc TransferFeeShareToServiceWallet (FeeTransferRequest) returns (ChangeBalanceGrpcResponse);
+}

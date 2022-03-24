@@ -384,7 +384,7 @@ class Swap:
     def __init__(self) -> None:
         self.main_url = settings.url_swap
 
-    def get_quote(self, token, _from, to, fromToVol, fix) -> dict or int:
+    def get_quote(self, token, _from, to, fromToVol, fix, *args) -> dict or int:
         url = f"{self.main_url}get-quote"
         if fix:
             payload = json.dumps({
@@ -410,19 +410,26 @@ class Swap:
                 pkcs12_password=cert_pass,
                 verify = False,
                 headers=headers, data=payload)
-
-        if r.status_code == 200:
-            parse_resp =  json.loads(r.text)
-            try:
-                return parse_resp['data']
-            except:
-                return [parse_resp]
-        else:
-            try:
+        if args:
+            if args[0] == 'MIN_MAX_TESTS':
                 parse_resp =  json.loads(r.text)
-                return (r.status_code, parse_resp)
-            except:
-                return (r.status_code, r.text)
+                try:
+                    return parse_resp['result']
+                except:
+                    return [parse_resp]
+        else:
+            if r.status_code == 200:
+                parse_resp =  json.loads(r.text)
+                try:
+                    return parse_resp['data']
+                except:
+                    return [parse_resp]
+            else:
+                try:
+                    parse_resp =  json.loads(r.text)
+                    return (r.status_code, parse_resp)
+                except:
+                    return (r.status_code, r.text)
 
     def execute_quote(self, token, body) -> dict or int or list:
         url = f"{self.main_url}execute-quote"
@@ -565,14 +572,17 @@ class Transfer:
         url = f"{self.main_url}by-phone"
 
         uniqId = str(datetime.strftime(datetime.today(), '%m%d%H%s%f'))
-
+        phone_code = phone[:3]
+        phone_body = phone[3:]
         payload = json.dumps({
-            "requestId": uniqId,
-            "assetSymbol": asset,
-            "amount": amount,
-            "toPhoneNumber": phone,
-            "lang": "En"
-        })
+                "requestId": uniqId,
+                "assetSymbol": asset,
+                "amount": amount,
+                "lang": "Ru",
+                "toPhoneCode": phone_code,
+                "toPhoneBody": phone_body,
+                "toPhoneIso": "UKR"
+            })
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -772,7 +782,7 @@ class Circle:
         except:
             return r.status_code
 
-    def create_payment(self, token, encryption_data, keyId, cardId, amount=10):
+    def create_payment(self, token, encryption_data, keyId, cardId, currency='USD', amount=10):
         url = f"{self.main_url}create-payment"
         requestGuid = uuid4()
         payload = json.dumps({
@@ -932,8 +942,8 @@ class Verify:
         except:
             return r.status_code   
 
-    def verify_withdrawal(self,token, code):
-        url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={code}&code=000000"
+    def verify_withdrawal(self,token, withdrawalProcessId):
+        url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={withdrawalProcessId}&code=000000"
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -999,6 +1009,7 @@ class Candle:
             return {"data": parse_resp, "url": url}
         except:
             return r.status_code   
+
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1').authenticate()
     import datetime

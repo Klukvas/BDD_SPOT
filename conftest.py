@@ -1,7 +1,7 @@
 from API import Auth, Wallet
 import pytest
 import settings
-from ChangeBalance.change_balance import changeBalance
+from GRPC.ChangeBalance.change_balance import changeBalance
 from time import sleep
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def pytest_configure(config):
         "markers", "smoke: mark test to run only on named environment"
     )
     config.addinivalue_line(
-        "markers", "new_scenario: mark1 test to run only on named environment"
+        "markers", "test: mark1 test to run only on named environment"
     )
     config.addinivalue_line(
         "markers", "emails: mark1 test to run only on named environment"
@@ -41,21 +41,11 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "candels: mark1 test to run only on named environment"
     )
-    
-    # config.addinivalue_line(
-    #     "markers", "new_scenario: mark1 test to run only on named environment",
-    #     "markers", "smoke: mark1 test to run only on named environment",
-    #     "markers", "swap: mark1 test to run only on named environment",
-    #     "markers", "transfer: mark1 test to run only on named environment",
-    #     "markers", "circle: mark1 test to run only on named environment",
-        
-    # )
 
 def pytest_bdd_before_scenario(request, feature, scenario):
     print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
-    if scenario.name in ['Make a swap', 'Make a transfer by phone', 
+    if scenario.name in ['Make a swap', 'Make a transfer by phone', 'Make a internalWithdrawal',
         'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
-        print('call upd balance')
         assets_for_update = []
         if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
             token = Auth(settings.template_tests_email, settings.template_tests_password).authenticate()
@@ -87,20 +77,23 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                 if item['assetId'] in settings.balance_asssets.keys():
                     if item['balance'] < settings.balance_asssets[item['assetId']]:
                         correct_amount = settings.balance_asssets[item['assetId']] - item['balance'] 
-                        assets_for_update.append(
-                            [
-                                item['assetId'],
-                                correct_amount
-                            ]
-                        )
+                        if correct_amount > 0.0001:
+                            assets_for_update.append(
+                                [
+                                    item['assetId'],
+                                    correct_amount
+                                ]
+                            )
+                        print(f"assets_for_update: {assets_for_update}")
                     elif item['balance'] > settings.balance_asssets[item['assetId']]:
                         correct_amount = (item['balance'] - settings.balance_asssets[item['assetId']] ) * -1
-                        assets_for_update.append(
-                            [
-                                item['assetId'],
-                                correct_amount
-                            ]
-                        )
+                        if correct_amount * -1 > 0.0001:
+                            assets_for_update.append(
+                                [
+                                    item['assetId'],
+                                    correct_amount
+                                ]
+                            )
         else:
             for item in settings.balance_asssets.items():
                 assets_for_update.append(
@@ -108,6 +101,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                     item[1]
                 ) 
         for item in assets_for_update:
+            print(f"item[1]: {item[1]}\titem[0]: {item[0]}")
             bl_change_result = changeBalance(
                 client_Id,
                 item[1],

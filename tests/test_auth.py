@@ -1,5 +1,3 @@
-import email
-import turtle
 from API import WalletHistory, Auth
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
@@ -95,9 +93,6 @@ def refresh(get_token):
 
 @then('User can interact with endpoint with new token')
 def check_logouted_token(refresh):
-    # op_history = WalletHistory().operations_history(get_token['tokens'][0])
-    # assert type(op_history) == int, f"Expected that resp type will be int but returned: {op_history}"
-    # assert op_history == 401, f"Expected that resp will be eql to 401 but returned: {op_history}"
     op_history = WalletHistory().operations_history(refresh['new_tokens']['response']['data']['token'])
     assert type(op_history) == list, f"Expected that resp type will be int but returned: {op_history}"
 
@@ -105,8 +100,8 @@ def check_logouted_token(refresh):
 def test_negative_registration():
     pass
 
-@given(parsers.parse("User try to registration with {email} and {password}. User get {response} with {status_code}"))
-def test_registration(email, password, response, status_code):
+@given(parsers.parse('User try to registration with {email} and {password}. User get {response} with {status_code}'))
+def registration_with_broke_data(email, password, response, status_code):
     negative_response = Auth(email, password).register('negative cases')
     assert type(negative_response) == dict, f"Expected: type == str\nReturned: {type(negative_response)}\t tokens: {negative_response}"
     assert negative_response['response'] == response, f"Expected: {response}\nReturned: {negative_response['response']}"
@@ -117,7 +112,7 @@ def test_negative_authentification():
     pass
 
 @given(parsers.parse("User try to authentification with {email} and {password}. User get {response} with {status_code}"))
-def test_authentification(email, password, response, status_code):
+def authentification_negative(email, password, response, status_code):
     negative_response = Auth(email, password).authenticate('negative cases')
     assert type(negative_response) == dict, f"Expected: type == str\nReturned: {type(negative_response)}\t tokens: {negative_response}"
     assert negative_response['response'] == response, f"Expected: {response}\nReturned: {negative_response['response']}"
@@ -128,7 +123,7 @@ def test_negative_change_password():
     pass
 
 @given(parsers.parse("User try to change password from {password_old} to {password_new}. User get {response} with {status_code}"))
-def test_change_password_negative(auth, password_old, password_new, response, status_code):
+def hange_password_negative(auth, password_old, password_new, response, status_code):
     token = auth(settings.auth_tests_email_for_change_password, settings.auth_tests_password_for_change_password)
     if password_old == 'default':
         password_old = settings.auth_tests_password_for_change_password

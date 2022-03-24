@@ -11,13 +11,14 @@ elif data['env']['TEST']['is_actual']:
     data = data['env']['TEST']['test_data']
 else:
     raise 'Can not find setting to start. All "is_actual" fields are eql false'
+    
 me_tests_email = data['me_tests']['email']
 me_tests_password = data['me_tests']['password']
 me_tests_client_id = data['me_tests']['client_id']
 me_tests_from_phone_number = data['me_tests']['from_phone_number']
 me_tests_transfer_to_phone = data['me_tests']['transfer_to_phone']
 me_tests_receive_email = data['me_tests']['receive_email']
-
+me_tests_circle_test_currency = data['me_tests']['circle_test_currency']
 #Имейл на который прихоят письма
 template_tests_email = data['template_tests']['email']
 template_tests_client_id = data['template_tests']['client_id']
@@ -50,7 +51,8 @@ balance_asssets = {
     'ETH': 0.07,
     'USD': 300,
     'EUR': 265,
-    'BCH': 0.5
+    'BCH': 0.5,
+    'XLM': 1500
 }
 # используються для создания квоты свопа с fixed True
 to_balance = {

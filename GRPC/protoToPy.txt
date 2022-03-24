@@ -1,0 +1,13 @@
+pipenv run python3 -m grpc_tools.protoc --python_out=.  --grpc_python_out=. -Iprotofiles  ChangeBalance/new/Change_Balance_.proto
+pipenv run python3 -m grpc_tools.protoc -IChangeBalance/new --python_out=. --grpc_python_out=. ChangeBalance/new/bcl.proto
+pipenv run python3 -m grpc_tools.protoc -IChangeBalance/new --python_out=. --grpc_python_out=. bcl.proto
+python -m grpc_tools.protoc -I ../protobufs --python_out=. --grpc_python_out=. ../protobufs/recommendations.proto
+
+
++++
+pipenv run python3 -m grpc_tools.protoc -IGRPC/UsefulImport --python_out=. --grpc_python_out=. protoFiles/empty.proto
+
+
++++
+cd /Users/andrey.p/Desktop/BDD_SPOT/GRPC/MinMaxVolume
+pipenv run python3 -m grpc_tools.protoc --python_out=.  --grpc_python_out=. -IprotoFiles  protoFiles/IAssetsDictionaryService.proto

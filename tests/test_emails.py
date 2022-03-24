@@ -21,9 +21,9 @@ def register():
         '%d-%m-%Y %H:%M:%S'
     )
     token = Auth(email, 'testpassword1').register()
-    assert type(token) == list, f'Expected response type: list\nReturned: {token}'
+    assert type(token) == dict, f'Expected response type: dict\nReturned: {token}'
     assert len(token) == 2
-    return {"token": token, "email": email, "event_date": event_date}
+    return {"token": token["token"], "email": email, "event_date": event_date}
 
 @given('User has new email with code', target_fixture="get_email_data")
 def get_email_data(register):
@@ -46,12 +46,12 @@ def get_email_data(register):
 
 @when('User can verify email by code from mail', target_fixture="check_op")
 def verify_email(register, get_email_data):
-    verify = Verify().verify_email(register['token'][0], get_email_data['code'])
+    verify = Verify().verify_email(register['token'], get_email_data['code'])
     assert verify['data'] == 'OK'
 
 @then('User`s email is veryfied', target_fixture="check_op")
 def check_email_verified(register):
-    auth_data = Verify().client_data(register['token'][0])
+    auth_data = Verify().client_data(register['token'])
     assert type(auth_data) == dict, f'Expected that email ll be verifyed but:{auth_data}'
     assert auth_data['data']['emailVerified'] == True
 
@@ -103,7 +103,7 @@ def make_transfer(asset, phone, auth):
             token, phone, asset, amount
         )
     assert type(transferData) == dict, f'Expected that response will be dict, but gets: {type(transferData)}\nTransferData: {transferData}.Asset:{asset}\tAmount: {amount}\t {type(amount)}'
-    assert type(transferData['transferId']) == str
+    assert type(transferData['operationId']) == str
     return {
             "transferData": transferData, "asset": asset, "amount": amount, 
             "phone": phone, "event_date": event_date, "token": token
@@ -111,7 +111,7 @@ def make_transfer(asset, phone, auth):
 
 @when('User has new email with appove link', target_fixture='check_transfer_email')
 def check_transfer_email(make_transfer):
-    mail_parser = MailParser(2, settings.template_tests_email, make_transfer['event_date'], make_transfer['transferData']['transferId']).parse_mail()
+    mail_parser = MailParser(2, settings.template_tests_email, make_transfer['event_date'], make_transfer['transferData']['operationId']).parse_mail()
     assert mail_parser
     path = os.path.join(
         os.getcwd(),
@@ -202,7 +202,7 @@ def check_withdrawal_email(feeAmount, feeAsset, make_withdrawal):
                             replace('{{ip}}', mail_parser['ip']).\
                                 replace('{{link}}', mail_parser['confirm_link']).\
                                     replace('{{address}}', make_withdrawal['address']).\
-                                        replace('{{receiveAmount}}', f"{receiveAmount}")
+                                        replace('{{receiveAmount}}', str(make_withdrawal['amount']))
 
     assert template == mail_parser['message_body'], \
                f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
@@ -248,7 +248,7 @@ def register():
         '%d-%m-%Y %H:%M:%S'
     )
     token = Auth(email, 'testpassword1').register()
-    assert type(token) == list, f'Expected response type: list\nReturned: {token}'
+    assert type(token) == dict, f'Expected response type: dict\nReturned: {token}'
     assert len(token) == 2
     return {"token": token, "email": email, "event_date": event_date}
 
@@ -278,9 +278,10 @@ def change_password_with_token(parse_token, register):
     assert recovery_resp[0] == 'OK'
 
 @then('User can not auth with old password')
-def log_in_with_new_password(register, auth):
+def log_in_with_new_password(auth, register):
     token = auth(register['email'], 'testpassword1', False)
-    assert token == 401
+    assert token[0] == 401
+    assert token[1] == '{"message":"InvalidUserNameOrPassword"}'
 
 @then('User can auth with new password')
 def log_in_with_new_password(register, auth):
@@ -298,7 +299,7 @@ def register_n_check_email():
         '%d-%m-%Y %H:%M:%S'
     )
     token = Auth(settings.template_tests_email, 'testpassword1').register()
-    assert type(token) == list, f'Expected response type: list\nReturned: {token}'
+    assert type(token) == dict, f'Expected response type: dict\nReturned: {token}'
     assert len(token) == 2
     mail_parser = MailParser(5, settings.template_tests_email, event_date).parse_mail()
     path = os.path.join(

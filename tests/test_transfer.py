@@ -1,7 +1,8 @@
-from API import WalletHistory, Wallet, Blockchain, Transfer
+from API import Verify, WalletHistory, Wallet, Blockchain, Transfer
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
+from tests.test_emails import approve_opetarion
 
 
 
@@ -141,15 +142,16 @@ def create_withdrawal(get_balance, asset, address):
 
 @then('User has new record(withdrawal) in operation history')
 def operation_history_withdrawal(create_withdrawal, get_balance):
+    appoved = False
     counter = 0
     while True:
-        sleep(12)
+        sleep(20)
         counter += 1
         op_history = WalletHistory().operations_history(get_balance[0])
         assert type(op_history) == list
         sended_transfer = list(
             filter(
-                lambda x: str(create_withdrawal[0]['requestId']) == x['operationId'].split('|')[0],
+                lambda x: str(create_withdrawal[0]['requestId']) in x['operationId'].split('|')[0],
                 op_history
             )
         )
@@ -157,6 +159,12 @@ def operation_history_withdrawal(create_withdrawal, get_balance):
             if sended_transfer[0]['status'] == 0 and \
                 sended_transfer[0]['balanceChange'] != 0:
                 break
+            elif sended_transfer[0]['status'] == 1 and \
+                not appoved:
+                appoved = True
+                counter -= 1
+                approve_opetarion = Verify().verify_withdrawal(get_balance[0], create_withdrawal[0]['operationId'])
+                assert type(approve_opetarion) == str, f"Expected that response ll be string, but returned: {approve_opetarion}" 
         if counter > 7:
             raise ValueError(f'Can not find operations with status 0 for 15 seconds\nSearched operationId: {create_withdrawal[0]["requestId"]}\nsended_transfer in op hi: {sended_transfer}') 
     assert len(sended_transfer) == 1, f'Expected that operationId of transfer will be unique but gets:\nrequestId: {create_withdrawal[0]["requestId"]}\n{sended_transfer}\n'

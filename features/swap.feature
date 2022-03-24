@@ -33,6 +33,23 @@ Feature: Swap
         Given User try to get quote with amount more than has on balance. User get an lowBalance error
     Scenario: Swap with nonexisting asset from
         Given User try to get quote with nonexisting asset from. User get an Asset do not found error
-    @new_scenario
     Scenario: Swap with nonexisting asset to
         Given User try to get quote with nonexisting asset to. User get an Asset do not found error
+    Scenario Outline: Swap with min && max amount
+        Given User set to <asset> min and max amount
+        Given User try to get quote with <min_max> amout and fixed <fixed>
+        Examples:
+        #ASSET MUST BE IN BALANCE_ASSETS OBJECT
+            | asset | min_max | fixed | 
+            | BTC   | min     | True  |
+            | XLM   | min     | True  |
+            | LTC   | min     | True  |
+            | BTC   | min     | False |
+            | XLM   | min     | False |
+            | LTC   | min     | False |
+            | BTC   | max     | True  |
+            | XLM   | max     | True  |
+            | LTC   | max     | True  |
+            | BTC   | max     | False |
+            | XLM   | max     | False |
+            | LTC   | max     | False |

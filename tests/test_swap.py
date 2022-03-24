@@ -1,8 +1,12 @@
-from API import Trading, WalletHistory, Wallet, Swap
+from tkinter.messagebox import NO
+from API import WalletHistory, Wallet, Swap
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
 from random import choice
+from GRPC.AssetsInfo import assetsInfo
+from GRPC.Helper import helper
+
 
 @scenario(f'../features/swap.feature', 'Make a swap')
 def test_make_swap():
@@ -14,7 +18,7 @@ def get_balance(auth):
     balances = Wallet().balances(token)
     assert type(balances) == list
     assert len(balances) > 0
-    return [token, balances]
+    return [token, balances] #{"token": token}
 
 @when(parsers.parse('User gets swap quote with from fixed {isFromFixed} from asset {fromAsset} to  asset {toAsset}'), target_fixture="get_quote")
 def get_quote(get_balance,isFromFixed, fromAsset, toAsset):
@@ -189,3 +193,90 @@ def quote_nonexisting_asset_from(auth):
         )
     assert quote[1] == {"message": "FromAsset or ToAsset do not found"}, f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
     assert quote[0] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
+
+
+
+
+# Scenario: Swap with min && max amount
+#         Given User try to get assets with setted min and max amount
+#         Given User try to get quote with min and max amout
+
+@scenario(f'../features/swap.feature', 'Swap with min && max amount')
+def test_swap_min_max_amount():
+    pass
+
+@given(parsers.parse("User set to {asset} min and max amount"), target_fixture="get_assets_with_min_max_volume")
+def get_assets_with_min_max_volume(asset):
+
+    response = assetsInfo.get_asset_by_id(asset)
+    assert response != None, f"Error of getting asset"
+    
+    min_vol = helper.string_to_decimal(
+        str(settings.balance_asssets[asset]* 0.2) #20%
+    )
+    assert min_vol != None, f"Error of getting min volume as dict"
+    
+    max_vol = helper.string_to_decimal(
+        str(settings.balance_asssets[asset]*0.5) #50%
+    )
+    assert max_vol != None, f"Error of getting max volume as dict"
+
+    min_max = {
+        "MaxTradeValue": max_vol,
+        "MinTradeValue": min_vol
+    }
+
+    update_response = assetsInfo.update_asset(response.Value, min_max)
+    assert update_response != None, f"Error with updating asset"
+
+    return { 
+            "response": response, 
+            "min_dict": min_vol, 
+            "max_dict": max_vol,
+            "min_float": settings.balance_asssets[asset]* 0.2,
+            "max_float": settings.balance_asssets[asset]* 0.5,
+            "asset": asset
+        }
+
+@given(parsers.parse("User try to get quote with {min_max} amout and fixed {fixed}"))
+def get_quote_with_min_max_volume(min_max, fixed, auth, get_assets_with_min_max_volume):
+    try:
+        token = auth(settings.me_tests_email, settings.me_tests_password)
+        swapApi = Swap()
+        if min_max == 'min':
+            volume = get_assets_with_min_max_volume['min_float'] - ( get_assets_with_min_max_volume['min_float'] * 0.1 )
+        else:
+            volume = get_assets_with_min_max_volume['max_float'] + ( get_assets_with_min_max_volume['max_float'] * 0.1 )
+        if fixed == True:
+            quote = swapApi.get_quote(
+                token,
+                get_assets_with_min_max_volume['asset'],
+                choice(list(settings.balance_asssets.keys())),
+                volume,
+                True,
+                'MIN_MAX_TESTS'
+            )
+        else:
+            quote = swapApi.get_quote(
+                token, 
+                choice(list(settings.balance_asssets.keys())),
+                get_assets_with_min_max_volume['asset'],
+                volume,
+                False,
+                'MIN_MAX_TESTS'
+            )
+        expected_response = 'AmountIsSmall' if min_max == 'min' else 'AmountToLarge'
+        print(f"quote: {quote}")
+        assert quote == expected_response, f"Exp: {expected_response}  Returned: {quote}"
+    except Exception as err:
+        raise Exception(err)
+    finally:
+        min_vol = get_assets_with_min_max_volume["response"].Value.MinTradeValue if get_assets_with_min_max_volume["response"].Value.MinTradeValue else None
+        max_vol = get_assets_with_min_max_volume["response"].Value.MaxTradeValue if get_assets_with_min_max_volume["response"].Value.MaxTradeValue else None
+        min_max_object = {
+            "MinTradeValue": min_vol,
+            "MaxTradeValue": max_vol
+        }
+        min_max_object['MinTradeValue']
+        min_max_object['MaxTradeValue']
+        assetsInfo.update_asset(get_assets_with_min_max_volume["response"].Value, min_max_object)

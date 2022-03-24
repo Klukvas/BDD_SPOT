@@ -1,0 +1,56 @@
+syntax = "proto3";
+package Service.AssetsDictionary.Grpc;
+import "bcl.proto";
+
+message Asset {
+   string BrokerId = 1;
+   string Symbol = 2;
+   string Description = 3;
+   int32 Accuracy = 4;
+   bool IsEnabled = 5;
+   string MatchingEngineId = 6;
+   bool KycRequiredForDeposit = 7;
+   bool KycRequiredForWithdrawal = 8;
+   string IconUrl = 9;
+   string PrefixSymbol = 10;
+   bool IsMainNet = 11;
+   bool CanBeBaseAsset = 12;
+   repeated string DepositBlockchains = 13;
+   repeated string WithdrawalBlockchains = 14;
+   string ShortDescription = 15;
+   AssetType Type = 16;
+   bool KycRequiredForTrade = 17;
+   bool HideInTerminal = 18;
+   .bcl.Decimal MinTradeValue = 19;
+   .bcl.Decimal MaxTradeValue = 20;
+}
+message AssetDictionaryResponse_Asset {
+   Asset Data = 1;
+   string ErrorMessage = 2;
+   bool IsSuccess = 3;
+}
+message AssetIdentity {
+   string BrokerId = 1;
+   string Symbol = 2;
+}
+enum AssetType {
+   Crypto = 0;
+   Index = 1;
+   Fiat = 2;
+}
+message AssetsListResponse {
+   repeated Asset Assets = 1;
+}
+message JetBrokerIdentity {
+   string BrokerId = 1;
+}
+message NullableValue_Asset {
+   Asset Value = 1;
+}
+service AssetsDictionaryService {
+   rpc CreateAsset (Asset) returns (AssetDictionaryResponse_Asset);
+   rpc DeleteAsset (Asset) returns (AssetDictionaryResponse_Asset);
+   rpc GetAssetById (AssetIdentity) returns (NullableValue_Asset);
+   rpc GetAssetsByBroker (JetBrokerIdentity) returns (AssetsListResponse);
+   rpc UpdateAsset (Asset) returns (AssetDictionaryResponse_Asset);
+}

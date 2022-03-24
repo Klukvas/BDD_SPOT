@@ -50,7 +50,8 @@ def create_deposit(add_card, get_enc_key, enc_data):
         get_enc_key[0],
         enc_data['data'],
         get_enc_key[1]['keyId'],
-        add_card['id']
+        add_card['id'],
+        settings.me_tests_circle_test_currency
     )
     assert type(deposit) == dict, f'Expected type dict. Retrurned: {deposit}'
     assert deposit['data']['status'] == 0, f"Expected deposit['data']['status'] == {0} but returned: {deposit['data']['status']}"
@@ -66,7 +67,7 @@ def check_op(get_enc_key, create_deposit):
         assert type(op_history) == list
         deposit = list(
             filter(
-                lambda x: create_deposit['depositId'] == x['operationId'],
+                lambda x: create_deposit['depositId'] in x['operationId'],
                 op_history
             )
         )
@@ -75,14 +76,13 @@ def check_op(get_enc_key, create_deposit):
                 deposit[0]['balanceChange'] != 0:
                 break
         elif counter > 5:
-            raise ValueError(f'Can not find operations({create_deposit["depositId"]}) with status 0 for 15 seconds') 
+            raise ValueError(f'Can not find operations({create_deposit["depositId"]}) with status 0 for 15 seconds\nop_history: {deposit}') 
     assert len(deposit) == 1, f'Expected that operationId of transfer will be unique but gets:\nrequestId: {create_deposit["data"]["depositId"]}\n{deposit}\n'
     assert deposit[0]['operationType'] == 0, f"Expected deposit in operation history has operationType: 0. But returned: {deposit[0]['operationType']}"
     assert deposit[0]['assetId'] == 'USD', f"Expected deposit in operation history has assetId: USD. But returned: {deposit[0]['assetId']}"
     assert deposit[0]['balanceChange'] == deposit[0]['depositInfo']['depositAmount'], f"Expected deposit.balanceChange are eql to deposit.depositInfo.depositAmount. Bur returned:\ndeposit.balanceChange:{deposit[0]['balanceChange']} deposit.depositInfo.depositAmount: {deposit[0]['depositInfo']['depositAmount']}"
     assert deposit[0]['status'] == 0, f"Expected that status of deposit are eql to 0. But returned: {deposit[0]['status']}"
     assert type(deposit[0]['depositInfo']) == dict, f"Expected that type of deposit.depositInfo are eqk ti dict. But returned: {type(deposit[0]['depositInfo'])}"
-    assert deposit[0]['depositInfo']['txId'] == create_deposit['depositId'], f"Expected that deposit.depositInfo.txId are elq to Id from reponse of deposit creation. But returned:\ndeposit[0]['depositInfo']['txId']: {deposit[0]['depositInfo']['txId']} == create_deposit['depositId']: {create_deposit['depositId']}"
     return deposit
 
 @then('User`s balance is changed')
