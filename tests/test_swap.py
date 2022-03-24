@@ -1,4 +1,6 @@
-from API import WalletHistory, Wallet, Swap
+from API.WalletHistory import WalletHistory
+from API.Wallet import Wallet
+from API.Swap import Swap
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings

@@ -1,8 +1,10 @@
-from API import WalletHistory, Circle, Wallet
+from API.WalletHistory import WalletHistory
+from API.Circle import Circle
+from API.Wallet import Wallet
 from pytest_bdd import scenario, given, when, then
 from time import sleep
 import settings
-import pytest
+
 
 @scenario(f'../features/circle.feature', 'Make a deposit by card')
 def test_circle_deposit():

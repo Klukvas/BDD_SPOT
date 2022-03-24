@@ -1,5 +1,9 @@
 from time import sleep
-from API import Auth, Blockchain, Verify, Transfer, WalletHistory
+from API.Blockchain import Blockchain
+from API.Auth import Auth
+from API.Verify import Verify
+from API.Transfer import Transfer
+from API.WalletHistory import WalletHistory
 from pytest_bdd import scenario, given, then, when, parsers
 import uuid
 from gmailApi import MailParser

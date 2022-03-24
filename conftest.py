@@ -1,4 +1,6 @@
-from API import Auth, Wallet
+# from API import Auth, Wallet
+from API.Auth import Auth
+from API.Wallet import Wallet
 import pytest
 import settings
 from GRPC.ChangeBalance.change_balance import changeBalance
