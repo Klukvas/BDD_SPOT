@@ -1,4 +1,6 @@
-from API import Auth, Wallet
+# from API import Auth, Wallet
+from API.Auth import Auth
+from API.Wallet import Wallet
 import pytest
 import settings
 from GRPC.ChangeBalance.change_balance import changeBalance
@@ -44,7 +46,7 @@ def pytest_configure(config):
 
 def pytest_bdd_before_scenario(request, feature, scenario):
     print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
-    if scenario.name in ['Make a swap', 'Make a transfer by phone', 'Make a internalWithdrawal',
+    if scenario.name in ['Make a swap', 'Make a deposit by simplex', 'Make a transfer by phone', 'Make a internalWithdrawal',
         'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
         assets_for_update = []
         if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:

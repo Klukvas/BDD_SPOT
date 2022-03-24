@@ -1,6 +1,6 @@
-from API import WalletHistory, Auth
+from API.WalletHistory import WalletHistory
+from API.Auth import Auth 
 from pytest_bdd import scenario, given, when, then, parsers
-from time import sleep
 import settings
 from uuid import uuid4
 

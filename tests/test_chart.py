@@ -1,4 +1,4 @@
-from API import Candle
+from API.Candle import Candle
 from pytest_bdd import scenario, given, parsers
 import settings
 import datetime

@@ -1,8 +1,12 @@
-from API import Verify, WalletHistory, Wallet, Blockchain, Transfer
+from API.Verify import Verify
+from API.WalletHistory import WalletHistory
+from API.Wallet import Wallet
+from API.Blockchain import Blockchain
+from API.Transfer import Transfer
 from pytest_bdd import scenario, given, when, then, parsers
 from time import sleep
 import settings
-from tests.test_emails import approve_opetarion
+
 
 
 
