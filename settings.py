@@ -43,7 +43,7 @@ url_transfer = data['urls']['transfer']
 url_blockchain = data['urls']['blockchain']
 url_circle = data['urls']['circle']
 url_debug = data['urls']['debug']
-        
+url_simplex = data['urls']['simplex'] 
 # используються для создания квоты свопа с fixed False
 balance_asssets = {
     'LTC': 1.3,
