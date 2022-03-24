@@ -13,49 +13,55 @@ class Auth(MainObj):
         self.email = email
         self.password = password
 
-    def register(self, *args) -> list[str] or int or dict:
+    def negative_cases_handler(func):
+        def inner(self):
+            if self.email == "empty" and self.password == "empty":
+                payload = json.dumps({
+                    "email": f"",
+                    "password": f""
+                })
+            
+            elif self.email == "null" and self.password == "null":
+                payload = json.dumps({})
+            
+            elif self.password == "empty" and self.email != "empty":
+                payload = json.dumps({
+                    "email": f"{self.email}",
+                    "password": f""
+                })
+            elif self.password != "empty" and self.email == "empty":
+                payload = json.dumps({
+                    "email": f"",
+                    "password": f"{self.password}"
+                })
+            
+            elif self.password == "null" and self.email != "null":
+                payload = json.dumps({
+                    "email": f"{self.email}"
+                })
+            elif self.password != "null" and self.email == "null":
+                payload = json.dumps({
+                    "password": f"{self.password}"
+                })
+            
+            else:
+                payload = json.dumps({
+                    "email": f"{self.email}",
+                    "password": f"{self.password}"
+                })
+            return func(self, reg_data = payload)
+
+        return inner
+
+    @negative_cases_handler
+    def register(self, *args, **kwargs) -> list[str] or int or dict:
         url = f"{self.main_url}Register"
-        
-        if self.email == "empty" and self.password == "empty":
-            payload = json.dumps({
-                "email": f"",
-                "password": f""
-            })
-        
-        elif self.email == "null" and self.password == "null":
-            payload = json.dumps({})
-        
-        elif self.password == "empty" and self.email != "empty":
-            payload = json.dumps({
-                "email": f"{self.email}",
-                "password": f""
-            })
-        elif self.password != "empty" and self.email == "empty":
-            payload = json.dumps({
-                "email": f"",
-                "password": f"{self.password}"
-            })
-        
-        elif self.password == "null" and self.email != "null":
-            payload = json.dumps({
-                "email": f"{self.email}"
-            })
-        elif self.password != "null" and self.email == "null":
-            payload = json.dumps({
-                "password": f"{self.password}"
-            })
-        
-        else:
-            payload = json.dumps({
-                "email": f"{self.email}",
-                "password": f"{self.password}"
-            })
         
         r = post(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify = False,
-                headers=self.headers, data=payload)
+                headers=self.headers, data=kwargs['reg_data'])
         if args:
             return {"response": r.text, "status": r.status_code}
         else:
