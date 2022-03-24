@@ -18,7 +18,6 @@
                     "to_phone_transfer": "+111111010101",
                     "fee_amount": "0"
                     
-
                 },
                 "me_tests": {
                     "email": "baseuser1@mailinator.com",
@@ -26,7 +25,8 @@
                     "client_id": "d5caeca8b1a944189dccb899ec1f8fc2",
                     "from_phone_number": "+380933342340",
                     "transfer_to_phone": "+380933333333",
-                    "receive_email": "andrey.p@smplt.net"
+                    "receive_email": "andrey.p@smplt.net",
+                    "circle_test_currency": "USD"
                 },
                 "auth_tests": {
                     "email_for_change_password": "email_change_password@mailinator.com",
@@ -42,7 +42,7 @@
                     "trading": "https://wallet-api-uat.mnftx.biz/api/v1/trading/",
                     "transfer": "https://wallet-api-uat.simple-spot.biz/api/v1/transfer/",
                     "blockchain": "https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/",
-                    "circle": "https://wallet-api-uat.simple-spot.biz/api/circle/",
+                    "circle": "https://wallet-api-uat.simple-spot.biz/api/v1/circle/",
                     "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/",
                     "candles": "https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles"
                 }

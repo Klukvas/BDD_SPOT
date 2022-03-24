@@ -46,7 +46,6 @@ def pytest_bdd_before_scenario(request, feature, scenario):
     print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
     if scenario.name in ['Make a swap', 'Make a transfer by phone', 'Make a internalWithdrawal',
         'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
-        print('call upd balance')
         assets_for_update = []
         if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
             token = Auth(settings.template_tests_email, settings.template_tests_password).authenticate()

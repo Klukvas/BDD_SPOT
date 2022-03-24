@@ -782,7 +782,7 @@ class Circle:
         except:
             return r.status_code
 
-    def create_payment(self, token, encryption_data, keyId, cardId, amount=10):
+    def create_payment(self, token, encryption_data, keyId, cardId, currency='USD', amount=10):
         url = f"{self.main_url}create-payment"
         requestGuid = uuid4()
         payload = json.dumps({
@@ -1009,6 +1009,7 @@ class Candle:
             return {"data": parse_resp, "url": url}
         except:
             return r.status_code   
+
 if __name__ == '__main__':
     tokens = Auth('basetestsusder@mailinator.com', 'testpassword1').authenticate()
     import datetime

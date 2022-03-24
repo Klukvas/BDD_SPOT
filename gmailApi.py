@@ -4,7 +4,7 @@ from datetime import datetime as dateTime
 from time import sleep
 import re
 
-
+#mailforspam
 class MailParser:
 
     def __init__(self, email_type, email, date_time_action, *args, **kwargs):

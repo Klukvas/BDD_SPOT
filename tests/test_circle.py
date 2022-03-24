@@ -50,7 +50,8 @@ def create_deposit(add_card, get_enc_key, enc_data):
         get_enc_key[0],
         enc_data['data'],
         get_enc_key[1]['keyId'],
-        add_card['id']
+        add_card['id'],
+        settings.me_tests_circle_test_currency
     )
     assert type(deposit) == dict, f'Expected type dict. Retrurned: {deposit}'
     assert deposit['data']['status'] == 0, f"Expected deposit['data']['status'] == {0} but returned: {deposit['data']['status']}"
