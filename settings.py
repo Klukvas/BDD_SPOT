@@ -90,3 +90,6 @@ chart_data = {
         "expected_count": 92
     }
 }
+
+if __name__ == '__main__':
+    print(cert_name)

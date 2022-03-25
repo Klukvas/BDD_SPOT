@@ -12,7 +12,7 @@ class Verify(MainObj):
         super().__init__()
         self.main_url = settings.url_verify
 
-    def verify_email(self,token, code):
+    def verify_email(self, token, code):
         url = f"{self.main_url}email-verification/verify"
 
         payload = json.dumps({
@@ -26,11 +26,11 @@ class Verify(MainObj):
         r = post(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
+                verify=False,
                 headers=headers, data=payload)
 
         try:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             try:
                 return {"data": parse_resp['result'] }
             except:
@@ -38,7 +38,7 @@ class Verify(MainObj):
         except:
             return r.status_code   
     
-    def client_data(self,token):
+    def client_data(self, token):
         url = f"https://wallet-api-uat.simple-spot.biz/api/v1/info/session-info"
 
         headers = {
@@ -49,7 +49,7 @@ class Verify(MainObj):
         r = get(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
+                verify=False,
                 headers=headers)
 
         try:
@@ -72,7 +72,7 @@ class Verify(MainObj):
             r = get(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
+                verify=False,
                 headers=headers)
             soup = BeautifulSoup(r.text, 'html.parser')
             title = soup.find('title').text

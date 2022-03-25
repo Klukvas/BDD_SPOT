@@ -1,9 +1,10 @@
 import json
 from requests_pkcs12 import get, post
+from requests import Response
 import settings
 from uuid import uuid4
 from API.Main import MainObj
-
+from API.Exceptions import RequestError, SomethingWentWrong, CantParseJSON
 
 class Circle(MainObj):
 
@@ -204,3 +205,176 @@ class Circle(MainObj):
                 return [parse_resp, r.status_code]
         except:
             return r.status_code
+
+    def add_bank_account(self, token: str, bank_country: str, billing_country: str, account_number: str,
+                         iban: str, routing_number: str, guid: str) -> dict:
+        url = f"{self.main_url}add-bank-account"
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        if bank_country == "null":
+            bank_country = ''
+
+        if billing_country == "null":
+            billing_country = ''
+
+        if account_number == "null":
+            account_number = ''
+
+        if iban == "null":
+            iban = ''
+
+        if routing_number == "null":
+            routing_number = ''
+
+        if guid == "unique":
+            guid = uuid4()
+        elif guid == "null":
+            guid = ''
+
+        payload = {
+            "requestGuid": f'{guid}',
+            "accountNumber": f'{account_number}',
+            "bankAddressBankName": "test test",
+            "bankAddressCity": "Niger",
+            "bankAddressCountry": f'{bank_country}',
+            "bankAddressDistrict": "MA",
+            "bankAddressLine1": "test",
+            "bankAddressLine2": "test",
+            "billingDetailsCity": "Niger",
+            "billingDetailsCountry": f"{billing_country}",
+            "billingDetailsDistrict": "MA",
+            "billingDetailsLine1": "test",
+            "billingDetailsLine2": "test",
+            "billingDetailsName": "test",
+            "billingDetailsPostalCode": "01232",
+            "iban": f'{iban}',
+            "routingNumber": f'{routing_number}'
+        }
+
+        try:
+            r = post(url,
+                pkcs12_filename=self.cert_name,
+                pkcs12_password=self.cert_pass,
+                verify=False,
+                headers=headers, json=payload)
+        except:
+            raise RequestError
+
+        if isinstance(r, Response):
+            if r.status_code == 200:
+                try:
+                    resp = r.json()
+                except:
+                    raise CantParseJSON
+                return {'status': r.status_code, 'data': resp}
+            else:
+                return {'status': r.status_code, 'data': None}
+        else:
+            raise SomethingWentWrong
+
+    def get_bank_account_all(self, token: str) -> dict:
+        url = f"{self.main_url}get-bank-account-all"
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            r = get(url,
+                    pkcs12_filename=self.cert_name,
+                    pkcs12_password=self.cert_pass,
+                    verify=False,
+                    headers=headers)
+        except:
+            raise RequestError
+
+        if isinstance(r, Response):
+            if r.status_code == 200:
+                try:
+                    resp = r.json()
+                except:
+                    raise CantParseJSON
+                return {'status': r.status_code, 'data': resp}
+            else:
+                return {'status': r.status_code, 'data': None}
+        else:
+            raise SomethingWentWrong
+
+    def delete_bank_account(self, token: str, bank_account_id: str) -> dict:
+        url = f"{self.main_url}delete-bank-account"
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        if bank_account_id == 'null':
+            bank_account_id = ''
+
+        payload = {
+            "bankAccountId": f"{bank_account_id}"
+        }
+
+        try:
+            r = post(url,
+                     pkcs12_filename=self.cert_name,
+                     pkcs12_password=self.cert_pass,
+                     verify=False,
+                     headers=headers,
+                     json=payload)
+        except:
+            raise RequestError
+
+        if isinstance(r, Response):
+            if r.status_code == 200:
+                try:
+                    resp = r.json()
+                except:
+                    raise CantParseJSON
+                return {'status': r.status_code, 'data': resp}
+            else:
+                return {'status': r.status_code, 'data': None}
+        else:
+            raise SomethingWentWrong
+
+    def get_bank_account(self, token: str, bank_account_id: str) -> dict:
+        url = f"{self.main_url}get-bank-account"
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        if bank_account_id == 'null':
+            bank_account_id = ''
+
+        payload = {
+            "bankAccountId": f"{bank_account_id}"
+        }
+
+        try:
+            r = post(url,
+                     pkcs12_filename=self.cert_name,
+                     pkcs12_password=self.cert_pass,
+                     verify=False,
+                     headers=headers,
+                     json=payload)
+        except:
+            raise RequestError
+
+        if isinstance(r, Response):
+            if r.status_code == 200:
+                try:
+                    resp = r.json()
+                except:
+                    raise CantParseJSON
+                return {'status': r.status_code, 'data': resp}
+            else:
+                return {'status': r.status_code, 'data': None}
+        else:
+            raise SomethingWentWrong

@@ -14,7 +14,7 @@ def start_tests():
 
     for key, value in data.items():
         if value:
-            subprocess.call(f"pytest -m '{key}' --alluredir=allureReport ", shell=True)
+            subprocess.call(f"pytest -m {key} --alluredir=allureReport", shell=True)
             break
     subprocess.call(f"python allure_report_maker.py", shell=True)
     subprocess.call(f"allure serve allureReport", shell=True)
