@@ -9,7 +9,7 @@ class Auth(MainObj):
     def __init__(self, email, password) -> None:
         super().__init__()
         self.main_url = settings.url_auth
-        self.headers = { 'Content-Type': 'application/json' }
+        self.headers = {'Content-Type': 'application/json'}
         self.email = email
         self.password = password
 
@@ -242,4 +242,3 @@ class Auth(MainObj):
                 return r.text,
         else:
             return r.status_code
- 
