@@ -23,7 +23,11 @@
                 "circle_test": {
                     "email": "okn193322@mailinator.com",
                     "password": "testpassword1",
-                    "client_id": "7f44af2dbb154f03b0fc1e7b6409513a"
+                    "client_id": "7f44af2dbb154f03b0fc1e7b6409513a",
+                    "my_bank_account_id": "a7a75213-0b9f-4126-bef0-f043fe50f2bf",
+                    "empty_bank_accounts_email": "okn193323@mailinator.com",
+                    "empty_bank_accounts_password": "testpassword1",
+                    "empty_bank_accounts_client_id": "a3d31bd7f90e4e228bfb4ece3b6378ff"
                 },
                 "me_tests": {
                     "email": "baseuser1@mailinator.com",

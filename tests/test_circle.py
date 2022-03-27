@@ -5,12 +5,13 @@ from API.Exceptions import RequestError, SomethingWentWrong, CantParseJSON
 from pytest_bdd import scenarios, given, when, then, parsers
 from time import sleep
 import settings
+import inspect
 
 scenarios('../features/circle.feature')
 
 @given('User get encryption key', target_fixture="get_enc_key")
 def get_enc_key(auth):
-    token = auth(settings.me_tests_email, settings.me_tests_password )
+    token = auth(settings.me_tests_email, settings.me_tests_password)
     enc_key = Circle().get_encryption_key(token)
     assert type(enc_key) == dict, f"Expected: type == dict\nReturned: {type(enc_key)}"
     assert len(enc_key['data'].keys()) == 2, f"Expected that enc key object has 2 keys but returned: {len(enc_key['data'].keys())}"
@@ -111,12 +112,14 @@ def delete_card(get_enc_key, add_card):
         )
     ) == 0
 
+########################################################################################################################
+
 @given(parsers.parse('bank_country is {bank_country}; billing_country is {billing_country}; account_number is {account_number}; iban is {iban}; routing_number is {routing_number}; guid is {guid}'), target_fixture="variables_dict")
 def get_variables(bank_country, billing_country, account_number, iban, routing_number, guid):
     return {'bank_country': bank_country, 'billing_country': billing_country, 'account_number': account_number,
             'iban': iban, 'routing_number': routing_number, 'guid': guid}
 
-@when('user add bank account', target_fixture="add_bank_account_response")
+@when('user add bank account', target_fixture="response")
 def add_bank_account(auth, variables_dict):
     token = auth(settings.circle_email, settings.circle_password)
     try:
@@ -125,22 +128,22 @@ def add_bank_account(auth, variables_dict):
                                              variables_dict['routing_number'], variables_dict['guid'])
         return response
     except RequestError:
-        assert 1 == 0, 'Cant send add_bank_account request'
+        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
     except CantParseJSON:
-        assert 1 == 0, 'Cant parse json from add_bank_account response'
+        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
     except SomethingWentWrong:
-        assert 1 == 0, 'Something went wrong while sending add_bank_account request'
+        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
 
 @then(parsers.parse('response status code has to be equals to {status_code}'))
-def check_response_status_code(status_code, add_bank_account_response: dict):
-    response_status_code = add_bank_account_response['status']
-    assert int(status_code) == int(response_status_code), 'add_bank_accounts status code is different from expected'
+def check_response_status_code(status_code, response):
+    response_status_code = response['status']
+    assert int(status_code) == int(response_status_code), f'status code is different from expected. Expected {status_code}'
 
-@then('response must contains added bank account info')
-def check_add_bank_account_response_data(variables_dict, add_bank_account_response: dict):
-    response = add_bank_account_response['data']
-    assert response['result'] == 'OK', f'add_bank_account response is not ok. Result is {response["result"]}, expected OK'
-    response_data = response['data']
+@then('response must contains bank account info')
+def check_add_bank_account_response_data(variables_dict, response):
+    resp = response['data']
+    assert resp['result'] == 'OK', f'add_bank_account response is not ok. Result is {resp["result"]}, expected OK'
+    response_data = resp['data']
     assert isinstance(response_data['id'], str), f'add_bank_account response is not ok. Id is {response_data["id"]}, expected str'
     assert isinstance(response_data['brokerId'], str), f'add_bank_account response is not ok. BrokerId is {response_data["brokerId"]}, expected str'
     assert response_data['clientId'] == settings.circle_client_id, f'add_bank_account response is not ok. ClientId is {response_data["clientId"]}, expected {settings.circle_client_id}'
@@ -178,3 +181,66 @@ def check_add_bank_account_response_data(variables_dict, add_bank_account_respon
         assert response_data['routingNumber'] is None, f'add_bank_account response is not ok. RoutingNumber is {response_data["routingNumber"]}, expected "null"'
     else:
         assert response_data['routingNumber'] == variables_dict['routing_number'], f'add_bank_account response is not ok. RoutingNumber is {response_data["routingNumber"]}, expected {variables_dict["routing_number"]}'
+
+########################################################################################################################
+
+@when(parsers.parse("user send request to get all bank accounts ({count})"), target_fixture='response')
+def get_all_bank_accounts(auth, count):
+    if count == '>=1':
+        token = auth(settings.circle_email, settings.circle_password)
+    elif count == '0':
+        token = auth(settings.circle_empty_bank_accounts_email, settings.circle_empty_bank_accounts_password)
+    try:
+        response = Circle().get_bank_account_all(token)
+        return response
+    except RequestError:
+        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
+    except CantParseJSON:
+        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
+    except SomethingWentWrong:
+        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+
+@then('response must contains info about all bank accounts')
+def check_all_bank_accounts(response):
+    resp = response['data']
+    assert resp['result'] == 'OK', f'get-bank-account-all response is not ok. Result is {resp["result"]}, expected OK'
+    response_data = resp['data']
+    assert len(response_data) > 0, f'get-bank-account-all response is not ok. Response contains {len(response_data)} bank accounts expected >0'
+    for account in response_data:
+        assert isinstance(account['id'], str), f'get-bank-account-all response is not ok. Id is {account["id"]}, expected str'
+        assert isinstance(account['brokerId'], str), f'get-bank-account-all response is not ok. BrokerId is {account["brokerId"]}, expected str'
+        assert account['clientId'] == settings.circle_client_id, f'get-bank-account-all response is not ok. ClientId is {account["clientId"]}, expected {settings.circle_client_id}'
+        assert isinstance(account['bankAccountId'], str), f'get-bank-account-all response is not ok. BankAccountId is {account["bankAccountId"]}, expected str'
+        assert isinstance(account['bankAccountStatus'], int), f'get-bank-account-all response is not ok. BankAccountId is {account["bankAccountId"]}, expected int'
+        assert isinstance(account['description'], str), f'get-bank-account-all response is not ok. Description is {account["description"]}, expected str'
+        assert isinstance(account['trackingRef'], str), f'get-bank-account-all response is not ok. TrackingRef is {account["trackingRef"]}, expected str'
+        assert isinstance(account['fingerPrint'], str), f'get-bank-account-all response is not ok. FingerPrint is {account["fingerPrint"]}, expected str'
+        assert isinstance(account['billingDetailsName'], str), f'get-bank-account-all response is not ok. BillingDetailsName is {account["billingDetailsName"]}, expected str'
+        assert isinstance(account['billingDetailsCity'], str), f'get-bank-account-all response is not ok. BillingDetailsCity is {account["billingDetailsCity"]}, expected str'
+        assert isinstance(account['billingDetailsCountry'], str), f'get-bank-account-all response is not ok. BillingDetailsCountry is {account["billingDetailsCountry"]}, expected str'
+        assert isinstance(account['billingDetailsLine1'], (type(None), str)), f'get-bank-account-all response is not ok. BillingDetailsLine1 is {account["billingDetailsLine1"]}, expected str'
+        assert isinstance(account['billingDetailsLine2'], (type(None), str)), f'get-bank-account-all response is not ok. BillingDetailsLine2 is {account["billingDetailsLine2"]}, expected str'
+        assert isinstance(account['billingDetailsDistrict'], str), f'get-bank-account-all response is not ok. BillingDetailsDistrict is {account["billingDetailsDistrict"]}, expected str'
+        assert isinstance(account['billingDetailsPostalCode'], str), f'get-bank-account-all response is not ok. BillingDetailsPostalCode is {account["billingDetailsPostalCode"]}, expected str'
+        assert isinstance(account['bankAddressBankName'], str), f'get-bank-account-all response is not ok. BankAddressBankName is {account["bankAddressBankName"]}, expected str'
+        assert isinstance(account['bankAddressCity'], str), f'get-bank-account-all response is not ok. BankAddressCity is {account["bankAddressCity"]}, expected str'
+        assert isinstance(account['bankAddressCountry'], str), f'get-bank-account-all response is not ok. BankAddressCountry is {account["bankAddressCountry"]}, expected str'
+        assert isinstance(account['bankAddressLine1'], (type(None), str)), f'get-bank-account-all response is not ok. BankAddressLine1 is {account["bankAddressLine1"]}, expected str'
+        assert isinstance(account['bankAddressLine2'], (type(None), str)), f'get-bank-account-all response is not ok. BankAddressLine2 is {account["bankAddressLine2"]}, expected str'
+        assert isinstance(account['bankAddressDistrict'], str), f'get-bank-account-all response is not ok. BankAddressDistrict is {account["bankAddressDistrict"]}, expected str'
+        assert account['error'] is None, f'get-bank-account-all response is not ok. Error is {account["error"]}, expected "null"'
+        assert account['isActive'] is True, f'get-bank-account-all response is not ok. IsActive is {account["isActive"]}, expected "true"'
+        assert isinstance(account['createDate'], str), f'get-bank-account-all response is not ok. CreateDate is {account["createDate"]}, expected str'
+        assert isinstance(account['updateDate'], str), f'get-bank-account-all response is not ok. UpdateDate is {account["updateDate"]}, expected str'
+        assert account['iban'] is None or isinstance(account['iban'], str), f'get-bank-account-all response is not ok. Iban is {account["iban"]}, expected "null"'
+        assert account['accountNumber'] is None or isinstance(account['accountNumber'], str), f'get-bank-account-all response is not ok. AccountNumber is {account["accountNumber"]}, expected "null" or "str"'
+        assert account['routingNumber'] is None or isinstance(account['routingNumber'], str), f'add_bank_account response is not ok. RoutingNumber is {account["routingNumber"]}, expected "null" or "str"'
+
+@then('response must return empty list')
+def check_all_bank_accounts_empty(response):
+    resp = response['data']
+    assert resp['result'] == 'OK', f'get-bank-account-all response is not ok. Result is {resp["result"]}, expected OK'
+    response_data = resp['data']
+    assert len(response_data) == 0, f'get-bank-account-all response is not ok. Response contains {len(response_data)} bank accounts expected == 0'
+
+########################################################################################################################

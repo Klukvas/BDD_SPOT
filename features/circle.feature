@@ -18,9 +18,25 @@ Feature: Circle
             Given bank_country is <bank_country>; billing_country is <billing_country>; account_number is <account_number>; iban is <iban>; routing_number is <routing_number>; guid is <guid>
             When user add bank account
             Then response status code has to be equals to <status_code>
-            And response must contains added bank account info
+            And response must contains bank account info
         Examples:
         | bank_country | billing_country | account_number | iban                              | routing_number | guid   | status_code |
         | US           | US              | 123400120      | null                              | 121000248      | unique | 200         |
         | IT           | IT              | null           | IT60 X054 2811 1010 0000 0123 456 | null           | unique | 200         |
         | CL           | CL              | 98765432       | null                              | AFPPCLR2       | unique | 200         |
+
+    @smoke
+    @circle_all
+    @circle_bank_accounts
+        Scenario: Get all bank accounts if count(bank_accounts) >= 1
+            When user send request to get all bank accounts (>=1)
+            Then response status code has to be equals to 200
+            And response must contains info about all bank accounts
+
+    @smoke
+    @circle_all
+    @circle_bank_accounts
+        Scenario: Get all bank accounts if count(bank_accounts) == 0
+            When user send request to get all bank accounts (0)
+            Then response status code has to be equals to 200
+            And response must return empty list

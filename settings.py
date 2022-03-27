@@ -15,6 +15,10 @@ else:
 circle_email = data['circle_test']['email']
 circle_password = data['circle_test']['password']
 circle_client_id = data['circle_test']['client_id']
+circle_my_bank_account_ud = data['circle_test']['my_bank_account_id']
+circle_empty_bank_accounts_email = data['circle_test']['empty_bank_accounts_email']
+circle_empty_bank_accounts_password = data['circle_test']['empty_bank_accounts_password']
+circle_empty_bank_accounts_client_id = data['circle_test']['empty_bank_accounts_client_id']
 
 me_tests_email = data['me_tests']['email']
 me_tests_password = data['me_tests']['password']
