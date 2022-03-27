@@ -14,16 +14,13 @@ Feature: Circle
     @smoke
     @circle_all
     @circle_bank_accounts
-        Scenario Outline: Add bank accounts
-            Given bank_country is <bank_country>
-            And billing_country is <billing_country>
-            And account_number is <account_number>
-            And iban is <iban>
-            And routing_number is <routing_number>
-            And guid is <guid>
+        Scenario Outline: Add bank account
+            Given bank_country is <bank_country>; billing_country is <billing_country>; account_number is <account_number>; iban is <iban>; routing_number is <routing_number>; guid is <guid>
             When user add bank account
             Then response status code has to be equals to <status_code>
-            And response must contains created bank account info
+            And response must contains added bank account info
         Examples:
-        | bank_country | billing_country | account_number | iban | routing_number | guid   | status_code |
-        | US           | US              | 123400120      | null | 121000248      | unique | 200         |
+        | bank_country | billing_country | account_number | iban                              | routing_number | guid   | status_code |
+        | US           | US              | 123400120      | null                              | 121000248      | unique | 200         |
+        | IT           | IT              | null           | IT60 X054 2811 1010 0000 0123 456 | null           | unique | 200         |
+        | CL           | CL              | 98765432       | null                              | AFPPCLR2       | unique | 200         |

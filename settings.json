@@ -19,7 +19,11 @@
                     "password": "testpassword1",
                     "to_phone_transfer": "+111111010101",
                     "fee_amount": "0"
-                    
+                },
+                "circle_test": {
+                    "email": "okn193322@mailinator.com",
+                    "password": "testpassword1",
+                    "client_id": "7f44af2dbb154f03b0fc1e7b6409513a"
                 },
                 "me_tests": {
                     "email": "baseuser1@mailinator.com",

@@ -10,3 +10,5 @@ run
 allureReport
 allureReport/*
 __pycache__
+.env
+todo

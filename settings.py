@@ -11,7 +11,11 @@ elif data['env']['TEST']['is_actual']:
     data = data['env']['TEST']['test_data']
 else:
     raise 'Can not find setting to start. All "is_actual" fields are eql false'
-    
+
+circle_email = data['circle_test']['email']
+circle_password = data['circle_test']['password']
+circle_client_id = data['circle_test']['client_id']
+
 me_tests_email = data['me_tests']['email']
 me_tests_password = data['me_tests']['password']
 me_tests_client_id = data['me_tests']['client_id']
@@ -32,7 +36,7 @@ auth_tests_password_for_change_password = data['auth_tests']['password_for_chang
 
 
 url_candles = data['urls']['candles']
-url_verify =  data['urls']['verify']
+url_verify = data['urls']['verify']
 url_auth = data['urls']['auth']
 url_wallet_history = data['urls']['wallet_history']
 url_wallet = data['urls']['wallet']
@@ -92,4 +96,4 @@ chart_data = {
 }
 
 if __name__ == '__main__':
-    print(cert_name)
+    print()
