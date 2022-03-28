@@ -183,8 +183,7 @@ def check_add_bank_account_response_data(variables_dict, response):
         assert response_data['routingNumber'] == variables_dict['routing_number'], f'add_bank_account response is not ok. RoutingNumber is {response_data["routingNumber"]}, expected {variables_dict["routing_number"]}'
 
 ########################################################################################################################
-
-@when(parsers.parse("user send request to get all bank accounts ({count})"), target_fixture='response')
+@given(parsers.parse('user send request to parse existed bank_account_id ({count})'), target_fixture='resp')
 def get_all_bank_accounts(auth, count):
     if count == '>=1':
         token = auth(settings.circle_email, settings.circle_password)
@@ -192,6 +191,34 @@ def get_all_bank_accounts(auth, count):
         token = auth(settings.circle_empty_bank_accounts_email, settings.circle_empty_bank_accounts_password)
     try:
         response = Circle().get_bank_account_all(token)
+        response['token'] = token
+        response['accounts_count'] = len(response['data']['data'])
+        try:
+            response['bankaccountid_to_delete'] = response['data']['data'][-1]['bankAccountId']
+        except IndexError:
+            pass
+        return response
+    except RequestError:
+        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
+    except CantParseJSON:
+        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
+    except SomethingWentWrong:
+        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+
+@when(parsers.parse("user send request to get all bank accounts ({count})"), target_fixture='response')
+def get_all_bank_accounts_1(auth, count):
+    if count == '>=1':
+        token = auth(settings.circle_email, settings.circle_password)
+    elif count == '0':
+        token = auth(settings.circle_empty_bank_accounts_email, settings.circle_empty_bank_accounts_password)
+    try:
+        response = Circle().get_bank_account_all(token)
+        response['token'] = token
+        response['accounts_count'] = len(response['data']['data'])
+        try:
+            response['bankaccountid_to_delete'] = response['data']['data'][-1]['bankAccountId']
+        except IndexError:
+            pass
         return response
     except RequestError:
         assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
@@ -257,7 +284,7 @@ def get_bank_account(auth, state):
         elif state == 'with no auth token':
             response = Circle().get_bank_account('', settings.circle_my_bank_account_id)
         elif state == 'if bank_account_id was deleted':
-            response = Circle().get_bank_account(token, settings.circle_delete_bank_account_id)
+            response = Circle().get_bank_account(token, settings.circle_deleted_bank_account_id)
         elif state == 'if bank_account_id is invalid':
             response = Circle().get_bank_account(token, settings.circle_invalid_bank_account_id)
         return response
@@ -306,3 +333,68 @@ def check_get_bank_account(response):
 def check_get_bank_account_result(response, result):
     resp = response['data']
     assert resp['result'] == result, f'get-bank-account response is not ok. Result is {resp["result"]}, expected {result}'
+
+########################################################################################################################
+
+@given('user get deleted bank_account_id', target_fixture='resp')
+def get_resp(resp):
+    resp['bankaccountid_to_delete'] = settings.circle_deleted_bank_account_id
+    return resp
+
+@when('user send request to delete bank account', target_fixture='response')
+def delete_bank_account(resp):
+    bankaccountid_to_delete = resp['bankaccountid_to_delete']
+    try:
+        response = Circle().delete_bank_account(resp['token'], bankaccountid_to_delete)
+        response['deleted_bankaccountid'] = bankaccountid_to_delete
+        return response
+    except RequestError:
+        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
+    except CantParseJSON:
+        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
+    except SomethingWentWrong:
+        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+
+@then('response must contains deleted true')
+def check_delete_bank_account_response(response):
+    resp = response['data']
+    assert resp['result'] == 'OK', f'delete_bank_account response is not ok. Result is {resp["result"]}, expected OK'
+    response_data = resp['data']
+    assert response_data['deleted'] is True, f'delete_bank_account response is not ok. Deleted is {response_data["deleted"]} expected "true"'
+
+@then("get-bank-accounts-all haven't to return deleted bank account")
+def check_delete_bank_account(resp, response):
+    r = Circle().get_bank_account_all(resp['token'])
+    assert len(r['data']['data']) == resp['accounts_count'] - 1, f'get-bank-accounts-all response is not ok. {len(response["data"]["data"])} accounts at response, expected {resp["accounts_count"] - 1}'
+    for account in r['data']['data']:
+        assert account['bankAccountId'] != response['deleted_bankaccountid'], f'get-bank-accounts-all response is not ok. Deleted bankaccountid - {resp["deleted_bankaccountid"]} is in response'
+
+@then("count of bank accounts at get-bank-accounts-all hasn't change")
+def check_delete_deleted_bank_account(resp):
+    r = Circle().get_bank_account_all(resp['token'])
+    assert len(r['data']['data']) == resp['accounts_count'], f'get-bank-accounts-all response is not ok. {len(r["data"]["data"])} accounts at response, expected {resp["accounts_count"]}'
+
+@when('user2 send request to delete bank account', target_fixture='response')
+def delete_bank_account_2(auth, resp):
+    token = auth(settings.circle_empty_bank_accounts_email, settings.circle_empty_bank_accounts_password)
+    try:
+        response = Circle().delete_bank_account(token, resp['bankaccountid_to_delete'])
+        return response
+    except RequestError:
+        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
+    except CantParseJSON:
+        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
+    except SomethingWentWrong:
+        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+
+@when('user send request to delete bank account without token', target_fixture='response')
+def delete_bank_account_3(resp):
+    try:
+        response = Circle().delete_bank_account('', resp['bankaccountid_to_delete'])
+        return response
+    except RequestError:
+        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
+    except CantParseJSON:
+        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
+    except SomethingWentWrong:
+        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'

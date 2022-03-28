@@ -1,5 +1,4 @@
 import json
-import os
 import subprocess
 
 def start_tests():
@@ -18,9 +17,6 @@ def start_tests():
             break
     subprocess.call(f"python allure_report_maker.py", shell=True)
     subprocess.call(f"allure serve allureReport", shell=True)
-
-    
-
 
 
 if __name__ == "__main__":
