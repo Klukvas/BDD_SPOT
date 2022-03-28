@@ -1,4 +1,3 @@
-# from API import Auth, Wallet
 from API.Auth import Auth
 from API.Wallet import Wallet
 import pytest
@@ -32,7 +31,13 @@ def pytest_configure(config):
         "markers", "transfer: mark1 test to run only on named environment"
     )
     config.addinivalue_line(
-        "markers", "circle: mark1 test to run only on named environment"
+        "markers", "circle_all: mark1 test to run only on named environment"
+    )
+    config.addinivalue_line(
+        "markers", "circle_cards: mark1 test to run only on named environment"
+    )
+    config.addinivalue_line(
+        "markers", "circle_bank_accounts: mark1 test to run only on named environment"
     )
     config.addinivalue_line(
         "markers", "swap: mark1 test to run only on named environment"

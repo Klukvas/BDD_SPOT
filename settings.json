@@ -19,7 +19,18 @@
                     "password": "testpassword1",
                     "to_phone_transfer": "+111111010101",
                     "fee_amount": "0"
-                    
+                },
+                "circle_test": {
+                    "email": "okn193322@mailinator.com",
+                    "password": "testpassword1",
+                    "client_id": "7f44af2dbb154f03b0fc1e7b6409513a",
+                    "my_bank_account_id": "a7a75213-0b9f-4126-bef0-f043fe50f2bf",
+                    "not_my_bank_account_id": "8bbbc6da-e2ba-4428-9cb0-3e721e27389a",
+                    "deleted_bank_account_id": "ec77017f-a5a0-48aa-9c4e-a16a1b928292",
+                    "invalid_bank_account_id": "1234",
+                    "empty_bank_accounts_email": "okn193323@mailinator.com",
+                    "empty_bank_accounts_password": "testpassword1",
+                    "empty_bank_accounts_client_id": "a3d31bd7f90e4e228bfb4ece3b6378ff"
                 },
                 "me_tests": {
                     "email": "baseuser1@mailinator.com",
