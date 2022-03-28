@@ -1,11 +1,13 @@
 from API.WalletHistory import WalletHistory
 from API.Circle import Circle
+from API.Auth import Auth
 from API.Wallet import Wallet
 from API.Exceptions import RequestError, SomethingWentWrong, CantParseJSON
 from pytest_bdd import scenarios, given, when, then, parsers
 from time import sleep
 import settings
 import inspect
+
 
 scenarios('../features/circle.feature')
 
@@ -43,6 +45,20 @@ def add_card(enc_data, get_enc_key):
         ), f"Expected that card data has all keys of ['id','cardName','last4','network','expMonth','expYear','status','errorCode','isActive','createDate','updateDate']\nBut card data == {card_data['data']}"
     assert card_data['data']['status'] == 0, f"Expected card_data['data']['status'] == {0} but returned: {card_data['data']['status']}"
     return card_data['data']
+
+@when('user add bank account', target_fixture="add_bank_account_response")
+def add_bank_account(auth, bank_country, billing_country, account_number, routing_number, iban, guid):
+    token = auth('okn193322@mailinator.com', 'testpassword1')
+    try:
+        response = Circle().add_bank_account(token, bank_country, billing_country,
+                                             account_number, iban, routing_number, guid)
+        return response
+    except RequestError:
+        assert 1 == 0, 'Cant send add_bank_account request'
+    except CantParseJSON:
+        assert 1 == 0, 'Cant parse json from add_bank_account response'
+    except SomethingWentWrong:
+        assert 1 == 0, 'Something went wrong while sending add_bank_account request'
 
 @then('User create deposit via card', target_fixture="create_deposit")
 def create_deposit(add_card, get_enc_key, enc_data):
@@ -112,7 +128,6 @@ def delete_card(get_enc_key, add_card):
         )
     ) == 0
 
-########################################################################################################################
 
 @given(parsers.parse('bank_country is {bank_country}; billing_country is {billing_country}; account_number is {account_number}; iban is {iban}; routing_number is {routing_number}; guid is {guid}'), target_fixture="variables_dict")
 def get_variables(bank_country, billing_country, account_number, iban, routing_number, guid):
@@ -169,6 +184,7 @@ def check_add_bank_account_response_data(variables_dict, response):
     assert response_data['isActive'] is True, f'add_bank_account response is not ok. IsActive is {response_data["isActive"]}, expected "true"'
     assert isinstance(response_data['createDate'], str), f'add_bank_account response is not ok. CreateDate is {response_data["createDate"]}, expected str'
     assert isinstance(response_data['updateDate'], str), f'add_bank_account response is not ok. UpdateDate is {response_data["updateDate"]}, expected str'
+
     if variables_dict['iban'] == 'null':
         assert response_data['iban'] is None, f'add_bank_account response is not ok. Iban is {response_data["iban"]}, expected "null"'
     else:
@@ -398,3 +414,4 @@ def delete_bank_account_3(resp):
         assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
     except SomethingWentWrong:
         assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+

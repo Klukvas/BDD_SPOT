@@ -10,9 +10,6 @@ Feature: Circle
             And User has new record in operation history
             And User`s balance is changed
             And User delete his card
-
-######################################################################################################################
-
     @smoke
     @circle_all
     @circle_bank_accounts
