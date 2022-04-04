@@ -14,7 +14,6 @@ allure-pytest-bdd = "*"
 allure-python-commons = "*"
 grpcio-tools = "*"
 protobuf = "*"
-atomicwrites = "*"
 
 [dev-packages]
 
