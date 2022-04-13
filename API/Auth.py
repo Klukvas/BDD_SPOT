@@ -1,3 +1,4 @@
+from ast import arg
 import json
 from requests_pkcs12 import post
 import settings
@@ -14,41 +15,49 @@ class Auth(MainObj):
         self.password = password
 
     def negative_cases_handler(func):
-        def inner(self):
-            if self.email == "empty" and self.password == "empty":
-                payload = json.dumps({
-                    "email": f"",
-                    "password": f""
-                })
-            
-            elif self.email == "null" and self.password == "null":
-                payload = json.dumps({})
-            
-            elif self.password == "empty" and self.email != "empty":
-                payload = json.dumps({
-                    "email": f"{self.email}",
-                    "password": f""
-                })
-            elif self.password != "empty" and self.email == "empty":
-                payload = json.dumps({
-                    "email": f"",
-                    "password": f"{self.password}"
-                })
-            
-            elif self.password == "null" and self.email != "null":
-                payload = json.dumps({
-                    "email": f"{self.email}"
-                })
-            elif self.password != "null" and self.email == "null":
-                payload = json.dumps({
-                    "password": f"{self.password}"
-                })
-            
+        def inner(self, *args):
+            if args:
+                if self.email == "empty" and self.password == "empty":
+                    payload = json.dumps({
+                        "email": f"",
+                        "password": f""
+                    })
+                
+                elif self.email == "null" and self.password == "null":
+                    payload = json.dumps({})
+                
+                elif self.password == "empty" and self.email != "empty":
+                    payload = json.dumps({
+                        "email": f"{self.email}",
+                        "password": f""
+                    })
+                elif self.password != "empty" and self.email == "empty":
+                    payload = json.dumps({
+                        "email": f"",
+                        "password": f"{self.password}"
+                    })
+                
+                elif self.password == "null" and self.email != "null":
+                    payload = json.dumps({
+                        "email": f"{self.email}"
+                    })
+                elif self.password != "null" and self.email == "null":
+                    payload = json.dumps({
+                        "password": f"{self.password}"
+                    })
+                
+                else:
+                    payload = json.dumps({
+                        "email": f"{self.email}",
+                        "password": f"{self.password}"
+                    })
+                return func(self,args, reg_data = payload)
+                
             else:
                 payload = json.dumps({
-                    "email": f"{self.email}",
-                    "password": f"{self.password}"
-                })
+                        "email": f"{self.email}",
+                        "password": f"{self.password}"
+                    })
             return func(self, reg_data = payload)
 
         return inner
