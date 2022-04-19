@@ -4,13 +4,15 @@ cert_name = os.environ['cert_name']
 cert_pass = os.environ['cert_pass']
 with open('settings.json') as f:
     data = json.load(f)
-
-if data['env']['UAT']['is_actual']:
-    data = data['env']['UAT']['test_data']
-elif data['env']['TEST']['is_actual']:
-    data = data['env']['TEST']['test_data']
-else:
-    raise 'Can not find setting to start. All "is_actual" fields are eql false'
+envs = data['env'].keys()
+test_data_seted = False
+for env in envs:
+    if data['env'][env]['is_actual']:
+        data = data['env'][env]['test_data']
+        test_data_seted = True
+        break
+if not test_data_seted:
+    raise 'Can not set settings. All "is_actual" fields are eql to false'
 
 circle_email = data['circle_test']['email']
 circle_password = data['circle_test']['password']
