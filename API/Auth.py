@@ -1,3 +1,4 @@
+from ast import arg
 import json
 from requests_pkcs12 import post
 import settings
@@ -56,13 +57,13 @@ class Auth(MainObj):
     @negative_cases_handler
     def register(self, *args, **kwargs) -> list[str] or int or dict:
         url = f"{self.main_url}Register"
-
         r = post(url,
                  pkcs12_filename=self.cert_name,
                  pkcs12_password=self.cert_pass,
                  verify=False,
                  headers=self.headers, data=kwargs['reg_data'])
-        if args:
+        if len(args[0]):
+            print(f'askdaskldjaslk|||len(args): {len(args[0])}')
             return {"response": r.text, "status": r.status_code}
         else:
             if r.status_code == 200:

@@ -4,7 +4,7 @@ Feature: Authentification
     # Enter feature description here
     auth service
     Scenario: Refresh token
-        Given User logIn to account
+        Given User logIn to his account
         And User can interact with endpoints
         When User make Refresh of token
         Then User can interact with endpoint with new token
@@ -15,7 +15,7 @@ Feature: Authentification
         And User can logIn by new password
     Scenario: LogOut
         Given User logIn to account
-        And User can interact with endpoints
+        And User can interact with any endpoint
         When User make LogOut
         Then User can not interact with endpoint with old token
     Scenario Outline: Negative registration

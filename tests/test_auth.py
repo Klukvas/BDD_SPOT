@@ -15,7 +15,7 @@ def register():
     auth_object = Auth(email, password)
     reg_data = auth_object.register()
     assert type(reg_data) == dict, f"Expected: type == dict\nReturned: {type(reg_data)}\treg_data:{reg_data}"
-    assert all (k in reg_data for k in ("token","refreshToken")), f"Expected that reg_data object has 2 keys but returned: {reg_data}"
+    assert all (k in reg_data.keys() for k in ("token","refreshToken")), f"Expected that reg_data object has 2 keys but returned: {reg_data}"
     return { "token": reg_data['token'], "auth_object": auth_object, "email":  email}
 
 @when('User change his password')
@@ -50,21 +50,21 @@ def get_token(auth):
     assert type(token) == str, f"Expected: type == str\nReturned: {type(token)}\treg_data:{token}"
     return { "token": token}
 
-@given('User can interact with endpoints')
+@given('User can interact with any endpoint')
 def check_token(get_token):
-    op_history = WalletHistory().operations_history(get_token['tokens'][0])
+    op_history = WalletHistory().operations_history(get_token['token'])
     assert type(op_history) == list, f"Expected that resp type will be list but returned: {op_history}"
 
 @when('User make LogOut')
 def log_out(get_token):
     
-    logout_data = Auth(None, None).logout(get_token['tokens'][0])
+    logout_data = Auth(None, None).logout(get_token['token'])
     assert type(logout_data) == dict, f"Expected that response will be dict but returned: {logout_data}"
     assert logout_data['response']['result'] == 'OK', f"Expected that result of response will be eql to OK but returned: {logout_data}"
 
 @then('User can not interact with endpoint with old token')
 def check_logouted_token(get_token):
-    op_history = WalletHistory().operations_history(get_token['tokens'][0])
+    op_history = WalletHistory().operations_history(get_token['token'])
     assert type(op_history) == int, f"Expected that resp type will be int but returned: {op_history}"
     assert op_history == 401, f"Expected that resp will be eql to 401 but returned: {op_history}"
 
@@ -73,7 +73,7 @@ def check_logouted_token(get_token):
 def test_refreshtoken():
     pass
 
-@given('User logIn to account', target_fixture="get_token")
+@given('User logIn to his account', target_fixture="get_token")
 def get_token(auth):
     tokens = auth(settings.template_tests_email, settings.template_tests_password, 'need refresh token')
     assert type(tokens) == list, f"Expected: type == str\nReturned: {type(tokens)}\t tokens: {tokens}"

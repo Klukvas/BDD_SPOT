@@ -1,7 +1,7 @@
 {
     "env":{
         "UAT": {
-            "is_actual": true,
+            "is_actual": false,
             "start_settings": {
                 "regression": false,
                 "new_scenario": false,
@@ -59,6 +59,69 @@
                     "debug": "https://wallet-api-uat.simple-spot.biz/api/debug/",
                     "candles": "https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles",
                     "simplex": "https://wallet-api-uat.simple-spot.biz/api/v1/simplex/"
+                }
+            }
+
+        },
+        "PROD": {
+            "is_actual": true,
+            "start_settings": {
+                "regression": false,
+                "new_scenario": false,
+                "emails": false,
+                "smoke": false,
+                "swap": false,
+                "circle_all": false,
+                "circle_cards": false,
+                "circle_bank_accounts": true
+            },
+            "test_data": {
+                "template_tests":{
+                    "email": "baseuser@mailforspam.com",
+                    "client_id": "",
+                    "password": "testpassword1",
+                    "to_phone_transfer": "",
+                    "fee_amount": ""
+                },
+                "circle_test": {
+                    "email": "",
+                    "password": "",
+                    "client_id": "",
+                    "my_bank_account_id": "",
+                    "not_my_bank_account_id": "",
+                    "deleted_bank_account_id": "",
+                    "invalid_bank_account_id": "",
+                    "empty_bank_accounts_email": "",
+                    "empty_bank_accounts_password": "",
+                    "empty_bank_accounts_client_id": ""
+                },
+                "me_tests": {
+                    "email": "",
+                    "password": "",
+                    "client_id": "",
+                    "from_phone_number": "",
+                    "transfer_to_phone": "",
+                    "receive_email": "",
+                    "circle_test_currency": ""
+                },
+                "auth_tests": {
+                    "email_for_change_password": "email_change_password@mailinator.com",
+                    "password_for_change_password": "testpassword1"
+                },
+                "urls": {
+                    "verify": "https://validation-api.simple-spot.biz/api/v1/",
+                    "auth": "https://wallet-api.simple-spot.biz/auth/v1/Trader/",
+                    "wallet_history": "https://wallet-api.simple-spot.biz/api/v1/history/wallet-history/",
+                    "wallet": "https://wallet-api.mnftx.biz/api/v1/wallet/",
+                    "signalR": "https://wallet-api.simple-spot.biz/api/v1/signalr/",
+                    "swap": "https://wallet-api.simple-spot.biz/api/v1/trading/swap/",
+                    "trading": "https://wallet-api.mnftx.biz/api/v1/trading/",
+                    "transfer": "https://wallet-api.simple-spot.biz/api/v1/transfer/",
+                    "blockchain": "https://wallet-api.simple-spot.biz/api/v1/blockchain/",
+                    "circle": "https://wallet-api.simple-spot.biz/api/v1/circle/",
+                    "debug": "https://wallet-api.simple-spot.biz/api/debug/",
+                    "candles": "https://candles-api.simple-spot.biz/api/v3/Candles/Candles",
+                    "simplex": "https://wallet-api.simple-spot.biz/api/v1/simplex/"
                 }
             }
 
