@@ -4,6 +4,14 @@ import pytest
 import settings
 from GRPC.ChangeBalance.change_balance import changeBalance
 from time import sleep
+from Database.db import DatabaseClient
+
+@pytest.fixture(scope='session')
+def get_db_connection():
+    if settings.db_connection_string:
+        return DatabaseClient()
+    else:
+        assert False, 'db_connection_string is not set'
 
 @pytest.fixture
 def auth():
