@@ -4,7 +4,7 @@ import pytest
 import settings
 from GRPC.ChangeBalance.change_balance import changeBalance
 from time import sleep
-
+from API.GmailApi import GmailApi
 @pytest.fixture
 def auth():
     def get_tokens(email, password, *args):
@@ -16,8 +16,28 @@ def auth():
             assert type(token) == list
             return token[0]
     return get_tokens
+@pytest.fixture
+def create_temporary_template():
+    def inner(body, name):
+        with open(f"{name}.html", 'w+') as f:
+            f.writelines(body)
+            f.flush()
+            f.seek(0)
+            data = f.read()
+        return data
+    return inner
+@pytest.fixture(scope='session', autouse=True)
+def clear_emailbox():
+    gmail_api = GmailApi()
+    gmail_api.generateCreds()
+    gmail_api.generateService()
+    gmail_api._deleteParsedMessage()
 
 def pytest_configure(config):
+    
+    config.addinivalue_line(
+        "markers", "email_test: mark test to run only on named environment"
+    )
     config.addinivalue_line(
         "markers", "smoke: mark test to run only on named environment"
     )

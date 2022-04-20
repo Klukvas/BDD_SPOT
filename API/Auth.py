@@ -147,7 +147,7 @@ class Auth(MainObj):
                  pkcs12_password=self.cert_pass,
                  verify=False,
                  headers=headers, data=payload)
-        if args:
+        if len(args):
             return {'resp': r.text, 'code': r.status_code}
         else:
             if r.status_code == 200:
@@ -160,7 +160,7 @@ class Auth(MainObj):
                 return r.status_code
 
     def forgot_password(self, email) -> list[str] or int:
-        url = f"{self.main_url}ForgotPassword"
+        url = f"{self.main_url}ForgotPasswordCode"
 
         payload = json.dumps({
             "email": f"{email}",
@@ -179,12 +179,13 @@ class Auth(MainObj):
         else:
             return r.status_code
 
-    def password_recovery(self, password, token) -> list[str] or int:
-        url = f"{self.main_url}PasswordRecovery"
+    def password_recovery(self, password, code) -> list[str] or int:
+        url = f"{self.main_url}PasswordRecoveryCode"
 
         payload = json.dumps({
-            "password": f"{password}",
-            "token": f"{token}"
+            "email": self.email,
+            "password": password,
+            "code": code
         })
 
         r = post(url,
