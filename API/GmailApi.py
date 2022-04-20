@@ -15,9 +15,10 @@ class GmailApi:
         result = self._service.users().messages().list(
                     userId='me'
                 ).execute()
-        for item in result['messages']:
-            deleteResult = self._service.users().messages().delete(userId='me', id=item['id']).execute()
-        return deleteResult
+        if result['resultSizeEstimate'] > 0:
+            for item in result['messages']:
+                deleteResult = self._service.users().messages().delete(userId='me', id=item['id']).execute()
+            return deleteResult
     def generateCreds(self):
         path = os.path.join(
             os.getcwd(),
@@ -44,7 +45,7 @@ class GmailApi:
             elif result['resultSizeEstimate'] == 1:
                 return result['messages'][0]['id']
             counter += 1
-            sleep(12)
+            sleep(20)
             
     
     def getMessageById(self, id):
@@ -103,14 +104,15 @@ class ParseMessage:
         """
         self.mailsEnum = {
             1: 'Password recoverу',
-            3: 'Your account already exist',
             2: 'Success Login from IP',
+            3: 'Your account already exist',
             4: 'Verify transfer',
             5: 'Verify withdrawal',
             6: 'Withdrawal declined',
             7: 'Transfer declined',
             8: 'Deposit successful',
-            9: 'Withdrawal successful'
+            9: 'Withdrawal successful',
+            10: 'Email confirmation request'
         }
         self.funcsEnum = {
             1: self.passwordRecoveryParser,
@@ -119,8 +121,10 @@ class ParseMessage:
             4: self.transferParser,
             5: self.withdrawalPerser,
             6: self.wdDeclinedParser,
+
             8: self.dpSuccessfulParser,
-            9: self.wdSuccssesParser
+            9: self.wdSuccssesParser,
+            10: self.emailConfirmationParser
         }
         self.searchedType = searchedType
 
@@ -145,6 +149,19 @@ class ParseMessage:
     def createSoup(self, html:str) -> BeautifulSoup:
         soup = BeautifulSoup(html, 'html.parser')
         return soup
+
+    def emailConfirmationParser(self, soup:BeautifulSoup) -> dict:
+        confirmUrl = soup.find_all('tr')[8].find('a')['href']
+        htmlConfirUrl = confirmUrl.replace('&', '&amp;')
+        code = soup.find_all('tr')[12].\
+            find('div').\
+                findAll('div')[1].\
+                    text.strip()
+        return {
+            "confirmUrl": confirmUrl,
+            "htmlConfirUrl": htmlConfirUrl,
+            "code": code
+        }
 
     def dpSuccessfulParser(self, soup:BeautifulSoup) -> dict:
         tableParts = soup.find_all('tr')

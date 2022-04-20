@@ -20,33 +20,34 @@ def test_email_confirmation():
 
 @given('User registration', target_fixture="register")
 def register():
-    email = 'emailtest' + str(uuid.uuid4()) + '@mailforspam.com'
-    event_date = datetime.strptime(
-        datetime.today().strftime('%d-%m-%Y %H:%M:%S'),
-        '%d-%m-%Y %H:%M:%S'
-    )
+    email = settings.template_tests_email.\
+        split('@')[0]
+    email += "+" + str(uuid.uuid4().int) + "@gmail.com"
     token = Auth(email, 'testpassword1').register()
+    print(f"email: {email} registered")
     assert type(token) == dict, f'Expected response type: dict\nReturned: {token}'
     assert len(token) == 2
-    return {"token": token["token"], "email": email, "event_date": event_date}
+    return {"token": token["token"], "email": email}
 
 @given('User has new email with code', target_fixture="get_email_data")
-def get_email_data(register):
-    mail_parser = MailParser(0, register['email'],  register["event_date"]).parse_mail()
-    assert mail_parser
-    assert type(mail_parser) == dict
-    assert len(mail_parser.keys()) == 3
+def get_email_data(create_temporary_template):
+    mail_object = ParseMessage(10)
+    mail_parser = mail_object.getMessage()
+    assert type(mail_parser) == dict, f"Expect type dict; Returned: {type(mail_parser)}"
+    assert len(mail_parser.keys()) == 4
     path = os.path.join(
         os.getcwd(),
-        'email_templates',
-        'Email_confirmation_request_mock.txt'
+        'templates',
+        f'{mail_object.get_template_name()}.html'
     )
     with open(path) as f:
         template = f.read().\
-            replace('{{come_code_here}}', mail_parser['code']).\
-                replace('{{link}}', mail_parser['app_link'])
-    assert template.strip() == mail_parser['message_body'], \
-        f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
+            replace('{{code}}', mail_parser['code']).\
+                replace('{{htmlConfirUrl}}', mail_parser['htmlConfirUrl'])
+    data = create_temporary_template(mail_parser['message_body'], mail_object.get_template_name())
+    os.remove(f"{mail_object.get_template_name()}.html")
+    assert template.strip() ==data, \
+        f'Text from template: !\n{template}\n!\n\nText mess: !\n{data}\n!'
     return {'code': mail_parser['code']}
 
 @when('User can verify email by code from mail', target_fixture="check_op")

@@ -2,7 +2,7 @@
 @emails
 Feature: Emails receive
   # Enter feature description here
-
+  @email_test
   Scenario: Email confirmation
     Given User registration
     And User has new email with code
@@ -11,7 +11,6 @@ Feature: Emails receive
   Scenario: Success login
     Given  User has new Success login email after login
   
-  @email_test
   Scenario Outline: Transfer(waiting for user)
     Given User send transfer with asset: <asset>, to phone <phone>
     When User has new email with appove link
