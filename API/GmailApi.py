@@ -4,7 +4,7 @@ import base64
 from time import sleep
 import API.Exceptions as Exceptions
 from bs4 import BeautifulSoup
-
+import os
 SCOPES = ['https://mail.google.com/']
 
 class GmailApi:
@@ -19,7 +19,11 @@ class GmailApi:
             deleteResult = self._service.users().messages().delete(userId='me', id=item['id']).execute()
         return deleteResult
     def generateCreds(self):
-        self._creds = Credentials.from_authorized_user_file('/Users/andrey.p/Desktop/BDD_SPOT/API/token.json', SCOPES)
+        path = os.path.join(
+            os.getcwd(),
+            'token.json'
+        )
+        self._creds = Credentials.from_authorized_user_file(path, SCOPES)
     
     def generateService(self):
         self._service = build('gmail', 'v1', credentials=self._creds)
