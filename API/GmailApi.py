@@ -103,7 +103,7 @@ class ParseMessage:
         7-
         """
         self.mailsEnum = {
-            1: 'Password recoverу',
+            1: 'Password recovery',
             2: 'Success Login from IP',
             3: 'Your account already exist',
             4: 'Verify transfer',
