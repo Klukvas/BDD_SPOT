@@ -1,7 +1,7 @@
 {
     "env":{
         "UAT": {
-            "is_actual": false,
+            "is_actual": true,
             "start_settings": {
                 "regression": false,
                 "new_scenario": false,
@@ -32,6 +32,12 @@
                     "empty_bank_accounts_email": "okn193323@mailinator.com",
                     "empty_bank_accounts_password": "testpassword1",
                     "empty_bank_accounts_client_id": "a3d31bd7f90e4e228bfb4ece3b6378ff"
+                },
+                "autoinvest_test": {
+                    "email": "withdrawal.test@mailinator.com",
+                    "password": "testpassword1",
+                    "client_id": "9ddecae3dba14861a934551b0bfa9e33",
+                    "wallet_id": "SP-9ddecae3dba14861a934551b0bfa9e33"
                 },
                 "me_tests": {
                     "email": "baseuser1@mailinator.com",
@@ -66,7 +72,7 @@
 
         },
         "PROD": {
-            "is_actual": true,
+            "is_actual": false,
             "start_settings": {
                 "regression": false,
                 "new_scenario": false,
@@ -97,6 +103,12 @@
                     "empty_bank_accounts_email": "",
                     "empty_bank_accounts_password": "",
                     "empty_bank_accounts_client_id": ""
+                },
+                "autoinvest_test": {
+                    "email": "",
+                    "password": "",
+                    "client_id": "",
+                    "wallet_id": ""
                 },
                 "me_tests": {
                     "email": "",

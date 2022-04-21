@@ -25,6 +25,11 @@ circle_empty_bank_accounts_email = data['circle_test']['empty_bank_accounts_emai
 circle_empty_bank_accounts_password = data['circle_test']['empty_bank_accounts_password']
 circle_empty_bank_accounts_client_id = data['circle_test']['empty_bank_accounts_client_id']
 
+autoinvest_email = data['autoinvest_test']['email']
+autoinvest_password = data['autoinvest_test']['password']
+autoinvest_client_id = data['autoinvest_test']['client_id']
+autoinvest_wallet_id = data['autoinvest_test']['wallet_id']
+
 me_tests_email = data['me_tests']['email']
 me_tests_password = data['me_tests']['password']
 me_tests_client_id = data['me_tests']['client_id']

@@ -4,14 +4,23 @@ import pytest
 import settings
 from GRPC.ChangeBalance.change_balance import changeBalance
 from time import sleep
-from Database.db import DatabaseClient
+from Database.db import DatabaseClient, recurringbuy_instructions_table, recurringbuy_orders_table
 
 @pytest.fixture(scope='session')
-def get_db_connection():
+def db_connection():
     if settings.db_connection_string:
         return DatabaseClient()
     else:
         assert False, 'db_connection_string is not set'
+
+@pytest.fixture(scope='session')
+def recurringbuy_instructions(db_connection):
+    return recurringbuy_instructions_table(db_connection)
+
+@pytest.fixture(scope='session')
+def recurringbuy_orders(db_connection):
+    return recurringbuy_orders_table(db_connection)
+
 
 @pytest.fixture
 def auth():
