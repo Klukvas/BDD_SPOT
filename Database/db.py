@@ -14,23 +14,20 @@ class DatabaseClient:
 
 Base = declarative_base()
 
-def recurringbuy_instructions_table(db_connection):
-    def create_table_reflect(table_name, schema_name):
-        return Table(table_name, db_connection.metadata, autoload_with=db_connection.engine, schema=schema_name)
+def create_table_reflect(table_name, schema_name, db_connection):
+    return Table(table_name, db_connection.metadata, autoload_with=db_connection.engine, schema=schema_name)
 
+def recurringbuy_instructions_table(db_connection):
     class RecurringbuyInstructions(Base):
-        __table__ = create_table_reflect('instructions', 'recurringbuy')
+        __table__ = create_table_reflect('instructions', 'recurringbuy', db_connection)
         __mapper_args__ = {
             'primary_key': [__table__.c.Id]
         }
     return RecurringbuyInstructions
 
 def recurringbuy_orders_table(db_connection):
-    def create_table_reflect(table_name, schema_name):
-        return Table(table_name, db_connection.metadata, autoload_with=db_connection.engine, schema=schema_name)
-
     class RecurringbuyOrders(Base):
-        __table__ = create_table_reflect('orders', 'recurringbuy')
+        __table__ = create_table_reflect('orders', 'recurringbuy', db_connection)
         __mapper_args__ = {
             'primary_key': [__table__.c.Id]
         }

@@ -6,8 +6,9 @@ Feature: Autoinvest
         When user create instruction (method 1)
         And instruction appears in DB
 #        And instruction has to appear at signalR hub
-        Then change execution time at DB to - now
+        Then change execution time at DB
         And wait till instruction executes
+        And order appears in DB
         And balance has to be changed
         And new log has to be in backoffice
         And new log has to be in operation history
