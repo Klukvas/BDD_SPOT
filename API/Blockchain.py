@@ -31,10 +31,9 @@ class Blockchain(MainObj):
 
         r = post(url, 
                 pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_name,
+                pkcs12_password=self.cert_pass,
                 verify = False,
                 headers=headers, data=payload)
-
         try:
             parse_resp =  json.loads(r.text)
             try:
