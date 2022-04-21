@@ -91,7 +91,7 @@ class GmailApi:
             return
         msgData = self.getMessageById(messageId)
         parsedMessage = self.parseMessage(msgData)
-        self._deleteParsedMessage()
+        # self._deleteParsedMessage()
         return parsedMessage
 
 class ParseMessage:

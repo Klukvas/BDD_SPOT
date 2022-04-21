@@ -26,14 +26,15 @@ Feature: Emails receive
         | asset |  address                             | feeAsset | feeAmount |
         | LTC   |  tltc1qz3qgnmt9fyd77rv4f0jh3aer0yu6mlgje7jx0a  | LTC      | 0         |
 
-
   Scenario: Password Recovery
-    Given User send request to forgot password endpoint
+    Given User registration
+    When User send request to forgot password endpoint
     Then User get new email with code
     And User change password using code from email
     And User can not auth with old password
     And User can auth with new password
-    And User comeback old password
+    
+
   Scenario: ReRegistration
     Given  ReRegistration mail on inbox after existing user pass registration
   

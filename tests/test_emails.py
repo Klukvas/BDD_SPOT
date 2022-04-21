@@ -4,19 +4,16 @@ from API.Auth import Auth
 from API.Verify import Verify
 from API.Transfer import Transfer
 from API.WalletHistory import WalletHistory
-from pytest_bdd import scenario, given, then, when, parsers
+from pytest_bdd import scenarios, given, then, when, parsers
 import uuid
-from gmailApi_old import MailParser
 from API.GmailApi import ParseMessage
-from datetime import datetime
 import settings
 import requests
 import os
 
 
-@scenario(f'../features/receive_email.feature', 'Email confirmation')
-def test_email_confirmation():
-    pass
+scenarios(f'../features/receive_email.feature')
+
 
 @given('User registration', target_fixture="register")
 def register():
@@ -62,9 +59,7 @@ def check_email_verified(register):
     assert auth_data['data']['emailVerified'] == True
 
 
-@scenario(f'../features/receive_email.feature', 'Success login')
-def test_success_login():
-    pass
+###############################################################################################################################################
 
 @given('User has new Success login email after login')
 def log_in(auth, create_temporary_template):
@@ -89,9 +84,7 @@ def log_in(auth, create_temporary_template):
         f'Text from template: !\n{template}\n!\n\nText mess: !\n{data}\n!'
 
 
-@scenario(f'../features/receive_email.feature', 'Transfer(waiting for user)')
-def test_success_transfer_email():
-    pass
+###############################################################################################################################################
 
 @given(parsers.parse('User send transfer with asset: {asset}, to phone {phone}'), target_fixture='make_transfer')
 def make_transfer(asset, phone, auth):
@@ -157,9 +150,7 @@ def approve_transfer(check_transfer_email, make_transfer):
         sleep(5)
 
 
-@scenario(f'../features/receive_email.feature', 'Internal withdrawal')
-def test_success_withdrawal_email():
-    pass
+###############################################################################################################################################
 
 @given(parsers.parse('User send withdrawal request wiht asset: {asset}, to address: {address}'), target_fixture='make_withdrawal')
 def make_withdrawal(auth, asset, address):
@@ -233,14 +224,14 @@ def approve_withdrawal(check_withdrawal_email, make_withdrawal):
         sleep(5)
 
 
+###############################################################################################################################################
 
-@scenario(f'../features/receive_email.feature', 'Password Recovery')
-def test_password_recovery():
-    pass
-
-@given('User send request to forgot password endpoint')
-def change_password():
-    change_res = Auth(settings.template_tests_email, settings.template_tests_password).forgot_password(settings.template_tests_email)
+@when('User send request to forgot password endpoint')
+def change_password(register):
+    change_res = Auth(
+        settings.template_tests_email, 
+        settings.template_tests_password).\
+            forgot_password(register['email'])
     assert change_res[0] == 'OK'
 
 @then('User get new email with code', target_fixture='parse_code')
@@ -263,35 +254,27 @@ def parse_code(create_temporary_template):
     return {'code': recovery_data['code']}
 
 @then('User change password using code from email')
-def change_password_with_code(parse_code):
-    recovery_resp = Auth(settings.template_tests_email, 'testpassword1').\
+def change_password_with_code(parse_code, register):
+    recovery_resp = Auth(register['email'], 'testpassword1').\
         password_recovery('testpassword2', parse_code['code'])
-    assert recovery_resp[0] == 'OK'
+    assert recovery_resp[0] == 'OK', f"Expected that result will be 'OK' but returned: {recovery_resp[0]}; Code: {parse_code['code']}; Email: {register['email']}"
 
 @then('User can not auth with old password')
-def log_in_with_new_password(auth):
-    token = auth(settings.template_tests_email, settings.template_tests_password, False)
+def log_in_with_new_password(auth, register):
+    token = auth(register['email'], settings.template_tests_password, False)
     assert token[0] == 401
     assert token[1] == '{"message":"InvalidUserNameOrPassword"}'
 
 @then('User can auth with new password', target_fixture='log_in_with_new_password')
-def log_in_with_new_password(auth):
-    token = auth(settings.template_tests_email, 'testpassword2')
+def log_in_with_new_password(auth, register):
+    token = auth(register['email'], 'testpassword2')
     assert type(token) == str
     return { "token": token}
 
-@then('User comeback old password')
-def comeback_old_password(log_in_with_new_password):
-    set_new_password = Auth(settings.template_tests_email, 'testpassword1').change_password(
-        log_in_with_new_password['token'],
-        'testpassword2', 
-        'testpassword1'
-        )
-    assert set_new_password['result'] == 'OK', f"Expected: 'OK' returned: {set_new_password}"
 
-@scenario(f'../features/receive_email.feature', 'ReRegistration')
-def test_re_registration():
-    pass
+##############################################################################################################
+
+
 @given('ReRegistration mail on inbox after existing user pass registration')
 def register_n_check_email(create_temporary_template):
     token = Auth(settings.template_tests_email, 'testpassword1').register()

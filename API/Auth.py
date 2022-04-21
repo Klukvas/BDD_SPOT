@@ -181,7 +181,7 @@ class Auth(MainObj):
 
     def password_recovery(self, password, code) -> list[str] or int:
         url = f"{self.main_url}PasswordRecoveryCode"
-
+        print(f'"email": {self.email},"password": {password},"code": {code}')
         payload = json.dumps({
             "email": self.email,
             "password": password,
