@@ -14,3 +14,4 @@ __pycache__
 todo
 Pipfile.lock
 .DS_Store
+.idea
