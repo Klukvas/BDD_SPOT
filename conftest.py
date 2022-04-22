@@ -4,7 +4,17 @@ import pytest
 import settings
 from GRPC.ChangeBalance.change_balance import changeBalance
 from time import sleep
+from Database.db import get_db_client
 from API.GmailApi import GmailApi
+from sqlalchemy import Numeric
+
+@pytest.fixture(scope='session')
+def db_connection():
+    if settings.db_connection_string:
+        return get_db_client()
+    else:
+        assert False, 'db_connection_string is not set'
+
 @pytest.fixture
 def auth():
     def get_tokens(email, password, *args):
@@ -34,7 +44,7 @@ def clear_emailbox():
     gmail_api._deleteParsedMessage()
 
 def pytest_configure(config):
-    
+
     config.addinivalue_line(
         "markers", "email_test: mark test to run only on named environment"
     )

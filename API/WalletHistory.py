@@ -13,7 +13,6 @@ class WalletHistory(MainObj):
 
     def balance(self, token) -> list[dict] or int:
         url = f"{self.main_url}balance-history"
-        payload={}
         headers = {
             'Authorization': f'Bearer {token}'
         }
@@ -21,11 +20,11 @@ class WalletHistory(MainObj):
         r = get(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, data=payload)
+                verify=False,
+                headers=headers)
 
         if r.status_code == 200:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             return parse_resp['data']
         else:
             return r.status_code
@@ -80,19 +79,18 @@ class WalletHistory(MainObj):
             url = f"{self.main_url}operation-history?assetId={asset}"
         else:
             url = f"{self.main_url}operation-history"
-        payload={}
         headers = {
             'Authorization': f'Bearer {token}'
         }
 
-        r = get(url, 
-                pkcs12_filename=self.cert_name, 
+        r = get(url,
+                pkcs12_filename=self.cert_name,
                 pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, data=payload)
+                verify=False,
+                headers=headers)
 
         if r.status_code == 200:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             try:
                 return parse_resp['data']
             except:
