@@ -1,16 +1,32 @@
 class RequestError(Exception):
     pass
 
+
 class SomethingWentWrong(Exception):
     pass
+
 
 class CantParseJSON(Exception):
     pass
 
+
 class MessageNotFound(Exception):
     pass
 
+
+class SoupGeneratingError(Exception):
+    pass
+
 class TooManyMessagesFound(Exception):
+    pass
+
+class CanNotFindTemplateData(Exception):
+    pass
+
+class CanNotFindKey(Exception):
+    pass
+
+class ParsingError(Exception):
     pass
 #
 #

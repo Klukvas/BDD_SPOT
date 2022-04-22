@@ -5,6 +5,7 @@ from time import sleep
 import API.Exceptions as Exceptions
 from bs4 import BeautifulSoup
 import os
+from  API.Exceptions import *
 SCOPES = ['https://mail.google.com/']
 
 class GmailApi:
@@ -17,8 +18,8 @@ class GmailApi:
                 ).execute()
         if result['resultSizeEstimate'] > 0:
             for item in result['messages']:
-                deleteResult = self._service.users().messages().delete(userId='me', id=item['id']).execute()
-            return deleteResult
+                self._service.users().messages().delete(userId='me', id=item['id']).execute()
+
     def generateCreds(self):
         path = os.path.join(
             os.getcwd(),
@@ -77,17 +78,17 @@ class GmailApi:
         try:
             self.generateCreds()
         except Exception as err:
-            print(f"Error of generating creds")
+            print(f"Error of generating creds\n Error: {err}")
             return
         try:
             self.generateService()
         except Exception as err:
-            print(f"Error of generating Service")
+            print(f"Error of generating Service\n Error: {err}")
             return
         try:
             messageId = self.getMessageId(subject)
         except Exception as err:
-            print(err)
+            print("Error of getting message id.\n Error: {err}")
             return
         msgData = self.getMessageById(messageId)
         parsedMessage = self.parseMessage(msgData)
@@ -135,10 +136,20 @@ class ParseMessage:
         messageData = self.api.main(self.mailsEnum[self.searchedType])
         if templateSaver:
             self.saveTemplate(messageData['htmlView'])
-        soup = self.createSoup(messageData['htmlView'])
-        templateData = self.funcsEnum[
-                self.searchedType
-            ](soup)
+        try:
+            soup = self.createSoup(messageData['htmlView'])
+        except Exception as error:
+            raise SoupGeneratingError(
+                f"Can not create soup of {self.searchedType}\nError: {error}"
+            )
+        try:
+            templateData = self.funcsEnum[
+                    self.searchedType
+                ](soup)
+        except Exception as error:
+            raise CanNotFindTemplateData(
+                f"Can not get data of template: {self.saveTemplate()} with error: {error}"
+            )
         templateData['message_body'] = messageData['htmlView']
         return templateData
     
@@ -199,9 +210,6 @@ class ParseMessage:
         tableParts = soup.find_all('tr')
         amount, asset = tableParts[8].find_all('div')[1].text.split(' ')
         fee = tableParts[9].find_all('div')[1].text
-        # try:
-        #     destination = tableParts[10].find_all('div')[0].text
-        # except:
         destination = tableParts[11].find_all('div')[0].text
 
         ip = tableParts[16].find_all('div')[1].text

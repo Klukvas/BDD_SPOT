@@ -3,7 +3,7 @@ from requests_pkcs12 import get, post
 import settings
 from bs4 import BeautifulSoup
 from API.Main import MainObj
-
+from API.Exceptions import *
 
 
 class Verify(MainObj):
@@ -32,11 +32,18 @@ class Verify(MainObj):
         try:
             parse_resp = json.loads(r.text)
             try:
-                return {"data": parse_resp['result'] }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code   
+                return {"data": parse_resp['result']}
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Can not get all nedee keys from response of email-verification/verify Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"""
+                    Can not parse response from email-verification/verify
+                    Error: {err}
+                """
+            )
     
     def client_data(self, token):
         url = f"https://wallet-api-uat.simple-spot.biz/api/v1/info/session-info"
@@ -56,12 +63,19 @@ class Verify(MainObj):
             parse_resp =  json.loads(r.text)
             try:
                 return {"data": parse_resp['data'] }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code   
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Can not get all nedee keys from response of api/session-info Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"""
+                    Can not parse response from api/session-info
+                    Error: {err}
+                """
+            )
 
-    def verify_withdrawal(self,token, withdrawalProcessId):
+    def verify_withdrawal(self, token, withdrawalProcessId):
         url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={withdrawalProcessId}&code=000000"
 
         headers = {
@@ -74,11 +88,18 @@ class Verify(MainObj):
                 pkcs12_password=self.cert_pass,
                 verify=False,
                 headers=headers)
+        except Exception as err:
+            raise RequestError(
+                f"Error with sending request to withdrawal-verification\nError: {err}"
+            )
+        try:
             soup = BeautifulSoup(r.text, 'html.parser')
             title = soup.find('title').text
             return title
         except Exception as err:
-            return err,
+            raise ParsingError(
+                f"Error of parsing response from: withdrawal-verification/verify Error: {err}"
+            )
     
     def verify_transfer(self, token, code):
         url = f"{self.main_url}transfer-verification/verify?transferProcessId={code}&code=000000&brand=simple"
@@ -87,20 +108,21 @@ class Verify(MainObj):
             'Content-Type': 'application/json'
         }
 
-        r = get(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers)
-
         try:
-            r = get(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers)
+            r = get(url,
+                    pkcs12_filename=self.cert_name,
+                    pkcs12_password=self.cert_pass,
+                    verify=False,
+                    headers=headers)
+        except Exception as err:
+            raise RequestError(
+                f"Error with sending request to withdrawal-verification Error {err}"
+            )
+        try:
             soup = BeautifulSoup(r.text, 'html.parser')
             title = soup.find('title').text
             return title
         except Exception as err:
-            return err,
+            raise ParsingError(
+                f"Error of parsing response from: withdrawal-verification/verify Error: {err}"
+            )

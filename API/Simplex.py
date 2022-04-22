@@ -2,7 +2,7 @@ import json
 from requests_pkcs12 import post
 import settings
 from API.Main import MainObj
-
+from API.Exceptions import *
 
 class Simplex(MainObj):
 
@@ -28,20 +28,16 @@ class Simplex(MainObj):
                 verify = False,
                 headers=headers, data=payload)
         try:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             try:
                 return {"result": parse_resp['result']}
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
-        
-            #         return [parse_resp]
-            # else:
-            #     try:
-            #         parse_resp =  json.loads(r.text)
-            #         return (r.status_code, parse_resp)
-            #     except:
-            #         return (r.status_code, r.text)
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/get-encryption-key. Error: {err}"
+            )
 
     

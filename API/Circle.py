@@ -4,7 +4,8 @@ from requests import Response
 import settings
 from uuid import uuid4
 from API.Main import MainObj
-from API.Exceptions import RequestError, SomethingWentWrong, CantParseJSON
+from API.Exceptions import *
+
 
 class Circle(MainObj):
 
@@ -24,17 +25,21 @@ class Circle(MainObj):
         r = get(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
+                verify=False,
                 headers=headers)
 
         try:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             try:
                 return {"data": parse_resp['data']}
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/get-encryption-key. Error: {err}"
+            )
 
     def encrypt_data(self, token, enc_key):
         url = f"{self.debug_url}circle-encrypt-data"
@@ -55,13 +60,17 @@ class Circle(MainObj):
                 headers=headers, data=payload)
 
         try:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             try:
-                return {"data": parse_resp['data'] }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+                return {"data": parse_resp['data']}
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/get-encryption-key. Error: {err}"
+            )
     
     def add_card(self, token, encryption_data, keyId):
         url = f"{self.main_url}add-card"
@@ -95,10 +104,14 @@ class Circle(MainObj):
             parse_resp =  json.loads(r.text)
             try:
                 return {"data": parse_resp['data'] }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/get-encryption-key. Error: {err}"
+            )
 
     def create_payment(self, token, encryption_data, keyId, cardId, currency='USD', amount=10):
         url = f"{self.main_url}create-payment"
@@ -123,13 +136,17 @@ class Circle(MainObj):
                 headers=headers, data=payload)
 
         try:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             try:
-                return {"data": parse_resp['data'] }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+                return {"data": parse_resp['data']}
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/get-encryption-key. Error: {err}"
+            )
 
     def delete_card(self, token, cardId):
         url = f"{self.main_url}delete-card"
@@ -152,10 +169,14 @@ class Circle(MainObj):
             parse_resp =  json.loads(r.text)
             try:
                 return {"data": parse_resp['data'] }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/get-encryption-key. Error: {err}"
+            )
     
     def get_card(self, token, cardId):
         url = f"{self.main_url}get-card"
@@ -178,10 +199,14 @@ class Circle(MainObj):
             parse_resp =  json.loads(r.text)
             try:
                 return {"data": parse_resp['data'] }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/get-encryption-key. Error: {err}"
+            )
 
     def get_all_cards(self, token):
         url = f"{self.main_url}get-cards-all"
@@ -201,10 +226,14 @@ class Circle(MainObj):
             parse_resp =  json.loads(r.text)
             try:
                 return {"data": parse_resp['data']}
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/get-encryption-key. Error: {err}"
+            )
 
     def add_bank_account(self, token: str, bank_country: str, billing_country: str, account_number: str,
                          iban: str, routing_number: str, guid: str) -> dict:
@@ -364,7 +393,7 @@ class Circle(MainObj):
                      verify=False,
                      headers=headers,
                      json=payload)
-        except:
+        except Exception as err:
             raise RequestError
 
         if isinstance(r, Response):

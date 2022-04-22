@@ -3,6 +3,7 @@ import json
 from requests_pkcs12 import post
 import settings
 from API.Main import MainObj
+from API.Exceptions import *
 
 
 class Auth(MainObj):
@@ -63,7 +64,6 @@ class Auth(MainObj):
                  verify=False,
                  headers=self.headers, data=kwargs['reg_data'])
         if len(args[0]):
-            print(f'askdaskldjaslk|||len(args): {len(args[0])}')
             return {"response": r.text, "status": r.status_code}
         else:
             if r.status_code == 200:
@@ -73,62 +73,48 @@ class Auth(MainObj):
                         "token": parse_resp['token'],
                         "refreshToken": parse_resp['refreshToken']
                     }
-                except:
-                    return r.text,
+                except Exception as error:
+                    raise CantParseJSON(
+                        f'''
+                             Can not parse json.
+                             Response from api/Register: {r.text} with status code: {r.status_code}
+                             Error message: {error}
+                         '''
+                    )
             else:
-                return r.status_code
+                raise RequestError(
+                    f"Negative status code from {url}: code {r.status_code}"
+                )
 
-    def authenticate(self, *args) -> list[str] or int:
+    @negative_cases_handler
+    def authenticate(self, *args, **kwargs) -> list[str] or int:
         url = f"{self.main_url}Authenticate"
-
-        if self.email == "empty" and self.password == "empty":
-            payload = json.dumps({
-                "email": f"",
-                "password": f""
-            })
-
-        elif self.email == "null" and self.password == "null":
-            payload = json.dumps({})
-
-        elif self.password == "empty" and self.email != "empty":
-            payload = json.dumps({
-                "email": f"{self.email}",
-                "password": f""
-            })
-        elif self.password != "empty" and self.email == "empty":
-            payload = json.dumps({
-                "email": f"",
-                "password": f"{self.password}"
-            })
-
-        elif self.password == "null" and self.email != "null":
-            payload = json.dumps({
-                "email": f"{self.email}"
-            })
-        elif self.password != "null" and self.email == "null":
-            payload = json.dumps({
-                "password": f"{self.password}"
-            })
-
-        else:
-            payload = json.dumps({
-                "email": f"{self.email}",
-                "password": f"{self.password}"
-            })
 
         r = post(url,
                  pkcs12_filename=self.cert_name,
                  pkcs12_password=self.cert_pass,
                  verify=False,
-                 headers=self.headers, data=payload)
+                 headers=self.headers, data=kwargs['reg_data'])
         if args:
             return {"response": r.text, "status": r.status_code}
         else:
             if r.status_code == 200:
-                parse_resp = json.loads(r.text)['data']
-                return [parse_resp['token'], parse_resp['refreshToken']]
+                try:
+                    parse_resp = json.loads(r.text)['data']
+                    return [parse_resp['token'], parse_resp['refreshToken']]
+                except Exception as error:
+                    raise CantParseJSON(
+                        f'''
+                            Can not parse json.
+                            Response from api/Authenticate: {r.text} with status code: {r.status_code}
+                            Error message: {error}
+                        '''
+                    )
+
             else:
-                return (r.status_code, r.text)
+                raise RequestError(
+                    f"Negative status code from {url}: code {r.status_code}"
+                )
 
     def change_password(self, token, oldPassword, newPassword, *args) -> list[str] or int or dict:
         url = f"{self.main_url}ChangePassword"
@@ -154,10 +140,19 @@ class Auth(MainObj):
                 try:
                     parse_resp = json.loads(r.text)['result']
                     return {'result': parse_resp}
-                except:
-                    return r.text,
+                except Exception as error:
+                    raise CantParseJSON(
+                        f'''
+                            Can not parse json.
+                            Response from api/ChangePassword: {r.text} with status code: {r.status_code}
+                            Error message: {error}
+                        '''
+                    )
+
             else:
-                return r.status_code
+                raise RequestError(
+                    f"Negative status code from {url}: code {r.status_code}"
+                )
 
     def forgot_password(self, email) -> list[str] or int:
         url = f"{self.main_url}ForgotPasswordCode"
@@ -174,14 +169,25 @@ class Auth(MainObj):
                  headers=self.headers, data=payload)
 
         if r.status_code == 200:
-            parse_resp = json.loads(r.text)
-            return [parse_resp['result']]
+            try:
+                parse_resp = json.loads(r.text)
+                return [parse_resp['result']]
+            except Exception as error:
+                raise CantParseJSON(
+                    f'''
+                        Can not parse json.
+                        Response from api/ForgotPasswordCode: {r.text} with status code: {r.status_code}
+                        Error message: {error}
+                    '''
+                )
+
         else:
-            return r.status_code
+            raise RequestError(
+                f"Negative status code from {url}: code {r.status_code}"
+            )
 
     def password_recovery(self, password, code) -> list[str] or int:
         url = f"{self.main_url}PasswordRecoveryCode"
-        print(f'"email": {self.email},"password": {password},"code": {code}')
         payload = json.dumps({
             "email": self.email,
             "password": password,
@@ -195,10 +201,22 @@ class Auth(MainObj):
                  headers=self.headers, data=payload)
 
         if r.status_code == 200:
-            parse_resp = json.loads(r.text)
-            return [parse_resp['result']]
+            try:
+                parse_resp = json.loads(r.text)
+                return [parse_resp['result']]
+            except Exception as error:
+                raise CantParseJSON(
+                    f'''
+                        Can not parse json.
+                        Response from api/PasswordRecoveryCode: {r.text} with status code: {r.status_code}
+                        Error message: {error}
+                    '''
+                )
+
         else:
-            return r.status_code
+            raise RequestError(
+                f"Negative status code from {url}: code {r.status_code}"
+            )
 
     def logout(self, token) -> list[str] or int or dict:
         url = f"{self.main_url}Logout"
@@ -217,10 +235,19 @@ class Auth(MainObj):
             try:
                 parse_resp = json.loads(r.text)
                 return {"response": parse_resp}
-            except:
-                return r.text,
+            except Exception as error:
+                raise CantParseJSON(
+                    f'''
+                        Can not parse json.
+                        Response from api/Logout: {r.text} with status code: {r.status_code}
+                        Error message: {error}
+                    '''
+                )
+
         else:
-            return r.status_code
+            raise RequestError(
+                f"Negative status code from {url}: code {r.status_code}"
+            )
 
     def refresh(self, refreshToken) -> list[str] or int or dict:
         url = f"{self.main_url}RefreshToken"
@@ -239,7 +266,16 @@ class Auth(MainObj):
             try:
                 parse_resp = json.loads(r.text)
                 return {"response": parse_resp}
-            except:
-                return r.text,
+            except Exception as error:
+                raise CantParseJSON(
+                    f'''
+                        Can not parse json.
+                        Response from api/RefreshToken: {r.text} with status code: {r.status_code}
+                        Error message: {error}
+                    '''
+                )
+
         else:
-            return r.status_code
+            raise RequestError(
+                f"Negative status code from {url}: code {r.status_code}"
+            )

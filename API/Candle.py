@@ -2,7 +2,7 @@ import json
 from requests_pkcs12 import get
 import settings
 from API.Main import MainObj
-
+from API.Exceptions import *
 
 class Candle(MainObj):
 
@@ -10,7 +10,7 @@ class Candle(MainObj):
         super().__init__()
         self.main_url = settings.url_candles
 
-    def get_candels(self,token, type, instrument, fromDate, toDate, mergeCount):
+    def get_candels(self, token, type, instrument, fromDate, toDate, mergeCount):
         url = f"{self.main_url}/{type}?Instruction={instrument}&BidOrAsk=0&FromDate={fromDate}&ToDate={toDate}&MergeCandlesCount={mergeCount}"
         headers = {
             'Authorization': f'Bearer {token}',
@@ -24,7 +24,9 @@ class Candle(MainObj):
                 headers=headers)
 
         try:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             return {"data": parse_resp, "url": url}
-        except:
-            return r.status_code   
+        except Exception as error:
+            raise CantParseJSON(
+                f"Can not parse response from api/candles.\nError: {error}"
+            )

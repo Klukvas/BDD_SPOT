@@ -245,10 +245,10 @@ def get_quote_with_min_max_volume(min_max, fixed, auth, get_assets_with_min_max_
         token = auth(settings.me_tests_email, settings.me_tests_password)
         swapApi = Swap()
         if min_max == 'min':
-            volume = get_assets_with_min_max_volume['min_float'] - ( get_assets_with_min_max_volume['min_float'] * 0.1 )
+            volume = get_assets_with_min_max_volume['min_float'] - (get_assets_with_min_max_volume['min_float'] * 0.1 )
         else:
-            volume = get_assets_with_min_max_volume['max_float'] + ( get_assets_with_min_max_volume['max_float'] * 0.1 )
-        if fixed == True:
+            volume = get_assets_with_min_max_volume['max_float'] + (get_assets_with_min_max_volume['max_float'] * 0.1 )
+        if fixed:
             quote = swapApi.get_quote(
                 token,
                 get_assets_with_min_max_volume['asset'],

@@ -3,6 +3,7 @@ from requests_pkcs12 import post
 import settings
 from uuid import uuid4
 from API.Main import MainObj
+from API.Exceptions import *
 
 
 class Blockchain(MainObj):
@@ -35,10 +36,14 @@ class Blockchain(MainObj):
                 verify = False,
                 headers=headers, data=payload)
         try:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             try:
-                return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId) }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+                return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId)}
+            except Exception as error:
+                raise CantParseJSON(
+                    f"Can not get all nedeed keys from response of api/withdrawal. Error message: {error}"
+                )
+        except Exception as error:
+            raise CantParseJSON(
+                f"Can not parse response from api/withdrawal. Error message: {error}"
+            )

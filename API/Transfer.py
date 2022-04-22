@@ -3,7 +3,7 @@ from requests_pkcs12 import post
 from datetime import datetime
 import settings
 from API.Main import MainObj
-
+from API.Exceptions import *
 
 class Transfer(MainObj):
 
@@ -39,13 +39,17 @@ class Transfer(MainObj):
                 headers=headers, data=payload)
 
         try:
-            parse_resp =  json.loads(r.text)
+            parse_resp = json.loads(r.text)
             try:
                 return {"operationId": parse_resp['data']['operationId'], "requestId": uniqId }
-            except:
-                return [parse_resp, r.status_code]
-        except:
-            return r.status_code
+            except Exception as err:
+               raise CanNotFindKey(
+                   f"Can not find all nedeed keys from api/by-phone. Error: {err}"
+               )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/by-phone. Error: {err}"
+            )
 
     def get_transfer_info(self, token, transferId) -> dict or list:
         url = f"{self.main_url}transfer-info"
@@ -64,12 +68,18 @@ class Transfer(MainObj):
                 pkcs12_password=self.cert_pass,
                 verify = False,
                 headers=headers, data=payload)
-
-        parse_resp =  json.loads(r.text)
         try:
-            return parse_resp['data']
-        except:
-            return [parse_resp, r.status_code]
+            parse_resp = json.loads(r.text)
+            try:
+                return parse_resp['data']
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Can not find all nedeed keys from api/transfer-info. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/transfer-info. Error: {err}"
+            )
 
     def cancel_transfer(self, token, transferId) -> dict or list:
         url = f"{self.main_url}transfer-cancel"
@@ -88,9 +98,15 @@ class Transfer(MainObj):
                 pkcs12_password=self.cert_pass,
                 verify = False,
                 headers=headers, data=payload)
-
-        parse_resp =  json.loads(r.text)
         try:
-            return parse_resp['data']
-        except:
-            return [parse_resp, r.status_code]
+            parse_resp = json.loads(r.text)
+            try:
+                return parse_resp['data']
+            except Exception as err:
+                raise CanNotFindKey(
+                    f"Can not find all nedeed keys from api/transfer-info. Error: {err}"
+                )
+        except Exception as err:
+            raise CantParseJSON(
+                f"Can not parse response from api/transfer-info. Error: {err}"
+            )
