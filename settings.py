@@ -25,6 +25,11 @@ circle_empty_bank_accounts_email = data['circle_test']['empty_bank_accounts_emai
 circle_empty_bank_accounts_password = data['circle_test']['empty_bank_accounts_password']
 circle_empty_bank_accounts_client_id = data['circle_test']['empty_bank_accounts_client_id']
 
+autoinvest_email = data['autoinvest_test']['email']
+autoinvest_password = data['autoinvest_test']['password']
+autoinvest_client_id = data['autoinvest_test']['client_id']
+autoinvest_wallet_id = data['autoinvest_test']['wallet_id']
+
 me_tests_email = data['me_tests']['email']
 me_tests_password = data['me_tests']['password']
 me_tests_client_id = data['me_tests']['client_id']
@@ -32,6 +37,9 @@ me_tests_from_phone_number = data['me_tests']['from_phone_number']
 me_tests_transfer_to_phone = data['me_tests']['transfer_to_phone']
 me_tests_receive_email = data['me_tests']['receive_email']
 me_tests_circle_test_currency = data['me_tests']['circle_test_currency']
+
+db_connection_string = data['db_connection_string']
+
 #Имейл на который прихоят письма
 template_tests_email = data['template_tests']['email']
 template_tests_client_id = data['template_tests']['client_id']
@@ -51,6 +59,7 @@ url_wallet_history = data['urls']['wallet_history']
 url_wallet = data['urls']['wallet']
 url_signalR = data['urls']['signalR']
 url_swap = data['urls']['swap']
+url_invest = data['urls']['invest']
 url_trading = data['urls']['trading']
 url_transfer = data['urls']['transfer']
 url_blockchain = data['urls']['blockchain']

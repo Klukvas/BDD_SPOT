@@ -1,6 +1,5 @@
 from API.WalletHistory import WalletHistory
 from API.Circle import Circle
-from API.Auth import Auth
 from API.Wallet import Wallet
 from API.Exceptions import RequestError, SomethingWentWrong, CantParseJSON
 from pytest_bdd import scenarios, given, when, then, parsers
@@ -48,7 +47,7 @@ def add_card(enc_data, get_enc_key):
 
 @when('user add bank account', target_fixture="add_bank_account_response")
 def add_bank_account(auth, bank_country, billing_country, account_number, routing_number, iban, guid):
-    token = auth('okn193322@mailinator.com', 'testpassword1')
+    token = auth(settings.circle_email, settings.circle_password)
     try:
         response = Circle().add_bank_account(token, bank_country, billing_country,
                                              account_number, iban, routing_number, guid)

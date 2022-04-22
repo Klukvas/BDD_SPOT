@@ -13,6 +13,7 @@
                 "circle_bank_accounts": true
             },
             "test_data": {
+                "db_connection_string": "postgresql://jetwallet@jetwallet-uat:1$hhhg138ye8#ddud8h@jetwallet-uat.postgres.database.azure.com:5432/uat",
                 "template_tests":{
                     "email": "spotacc1425@gmail.com",
                     "client_id": "6489b030bb074c3ebf75c12239a9ca68",
@@ -31,6 +32,12 @@
                     "empty_bank_accounts_email": "okn193323@mailinator.com",
                     "empty_bank_accounts_password": "testpassword1",
                     "empty_bank_accounts_client_id": "a3d31bd7f90e4e228bfb4ece3b6378ff"
+                },
+                "autoinvest_test": {
+                    "email": "withdrawal.test@mailinator.com",
+                    "password": "testpassword1",
+                    "client_id": "9ddecae3dba14861a934551b0bfa9e33",
+                    "wallet_id": "SP-9ddecae3dba14861a934551b0bfa9e33"
                 },
                 "me_tests": {
                     "email": "baseuser1@mailinator.com",
@@ -52,6 +59,7 @@
                     "wallet": "https://wallet-api-uat.mnftx.biz/api/v1/wallet/",
                     "signalR": "https://wallet-api-uat.simple-spot.biz/api/v1/signalr/",
                     "swap": "https://wallet-api-uat.simple-spot.biz/api/v1/trading/swap/",
+                    "invest": "https://wallet-api-uat.simple-spot.biz/api/v1/trading/invest/",
                     "trading": "https://wallet-api-uat.mnftx.biz/api/v1/trading/",
                     "transfer": "https://wallet-api-uat.simple-spot.biz/api/v1/transfer/",
                     "blockchain": "https://wallet-api-uat.simple-spot.biz/api/v1/blockchain/",
@@ -76,6 +84,7 @@
                 "circle_bank_accounts": true
             },
             "test_data": {
+                "db_connection_string": null,
                 "template_tests":{
                     "email": "baseuser@mailforspam.com",
                     "client_id": "",
@@ -94,6 +103,12 @@
                     "empty_bank_accounts_email": "",
                     "empty_bank_accounts_password": "",
                     "empty_bank_accounts_client_id": ""
+                },
+                "autoinvest_test": {
+                    "email": "",
+                    "password": "",
+                    "client_id": "",
+                    "wallet_id": ""
                 },
                 "me_tests": {
                     "email": "",
@@ -115,6 +130,7 @@
                     "wallet": "https://wallet-api.mnftx.biz/api/v1/wallet/",
                     "signalR": "https://wallet-api.simple-spot.biz/api/v1/signalr/",
                     "swap": "https://wallet-api.simple-spot.biz/api/v1/trading/swap/",
+                    "invest": "https://wallet-api.simple-spot.biz/api/v1/trading/invest/",
                     "trading": "https://wallet-api.mnftx.biz/api/v1/trading/",
                     "transfer": "https://wallet-api.simple-spot.biz/api/v1/transfer/",
                     "blockchain": "https://wallet-api.simple-spot.biz/api/v1/blockchain/",
