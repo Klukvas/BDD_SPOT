@@ -1,9 +1,37 @@
+import uuid
+
 from API.WalletHistory import WalletHistory
 from API.Auth import Auth 
 from pytest_bdd import scenario, given, when, then, parsers
 import settings
 from uuid import uuid4
+import json
 
+
+@scenario(f'../features/auth.feature', 'Blocker after incorrect password')
+def test_inc_password_blocker():
+    pass
+
+@given('User make the registration', target_fixture='register_for_inc_password')
+def register_for_inc_password():
+    email = "test_user_" + str(uuid.uuid4()) + '@mailinator.com'
+    auth_object = Auth(email, 'testpassword1')
+    reg_data = auth_object.register()
+    assert all(k in reg_data.keys() for k in ("token", "refreshToken")), \
+        f"Expected that reg_data object has 2 keys but returned: {reg_data}"
+    return {"token": reg_data['token'], "auth_object": auth_object, "email": email}
+
+
+@when("User input incorrect password for few times", target_fixture='login_with_enc_password')
+def login_with_enc_password(auth, register_for_inc_password):
+    for _ in range(0, 4):
+        auth_data = auth(register_for_inc_password['email'], "testpassword2", 'test_blocker')
+    return auth_data
+
+
+@then("User has blocker for login")
+def check_for_blocker(login_with_enc_password):
+    assert json.loads(login_with_enc_password['response'])['result'] == "OperationBlocked"
 
 @scenario(f'../features/auth.feature', 'Change password')
 def test_change_password():

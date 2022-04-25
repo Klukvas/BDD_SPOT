@@ -3,6 +3,12 @@
 Feature: Authentification
     # Enter feature description here
     auth service
+    @email_test
+    Scenario: Blocker after incorrect password
+        Given User make the registration
+        When User input incorrect password for few times
+        Then User has blocker for login
+
     Scenario: Refresh token
         Given User logIn to his account
         And User can interact with endpoints

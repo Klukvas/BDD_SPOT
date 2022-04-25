@@ -2,7 +2,6 @@
 @emails
 Feature: Emails receive
   # Enter feature description here
-  @email_test
   Scenario: Email confirmation
     Given User registration
     And User has new email with code

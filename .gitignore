@@ -12,6 +12,6 @@ allureReport/*
 __pycache__
 .env
 todo
-Pipfile.lock
+.lock
 .DS_Store
 .idea

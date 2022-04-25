@@ -50,7 +50,7 @@ template_tests_to_phone_transfer = data['template_tests']['to_phone_transfer']
 
 auth_tests_email_for_change_password = data['auth_tests']['email_for_change_password']
 auth_tests_password_for_change_password = data['auth_tests']['password_for_change_password']
-
+auth_tests_repeat_count = data['auth_tests']['repeat_count']
 
 url_candles = data['urls']['candles']
 url_verify = data['urls']['verify']
