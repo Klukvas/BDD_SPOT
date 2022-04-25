@@ -1,31 +1,71 @@
-import uuid
-
 from API.WalletHistory import WalletHistory
-from API.Auth import Auth 
+from API.Auth import Auth
+from API.Transfer import Transfer
+from API.Blockchain import Blockchain
 from pytest_bdd import scenario, given, when, then, parsers
 import settings
-from uuid import uuid4
 import json
+import uuid
+
+
+@scenario(f'../features/auth.feature', 'Blocker after password change')
+def test_blocker_after_change_password():
+    pass
+
+@given('User change password', target_fixture='change_password_blocker')
+def change_password_blocker(register):
+    email = "test_user_" + str(uuid.uuid4()) + '@mailinator.com'
+    password = 'testpassword1'
+    new_password = password + 'r2'
+    register_data = register(email, password)
+    Auth(email, 'testpassword').change_password(
+        register_data['token'],
+        f"{password}",
+        f"{new_password}"
+    )
+    return {"email": email, "new_password": new_password}
+@then("User can not make a transfer")
+def transfer_with_blocker(auth, change_password_blocker):
+    token = auth(
+        change_password_blocker['email'],
+        change_password_blocker['new_password']
+    )
+    transfer_data = Transfer().create_transfer(
+        token,
+        "+091212122",
+        'USD',
+        10,
+        'negative_test'
+    )
+
+    assert transfer_data['result'] == 'OperationBlocked'
+
+@then("User can not make a withdrawal")
+def transfer_with_blocker(auth, change_password_blocker):
+    token = auth(
+        change_password_blocker['email'],
+        change_password_blocker['new_password']
+    )
+    wd_data = Blockchain().withdrawal(
+        token,
+        'BCH',
+        0.001,
+        "bchtest:qqanfzd2k8tc5tvggwc0s6lwzllaqt9gzgpp6ylpex",
+        'negative_test'
+    )
+
+    assert wd_data['result'] == 'OperationBlocked'
 
 
 @scenario(f'../features/auth.feature', 'Blocker after incorrect password')
 def test_inc_password_blocker():
     pass
 
-@given('User make the registration', target_fixture='register_for_inc_password')
-def register_for_inc_password():
-    email = "test_user_" + str(uuid.uuid4()) + '@mailinator.com'
-    auth_object = Auth(email, 'testpassword1')
-    reg_data = auth_object.register()
-    assert all(k in reg_data.keys() for k in ("token", "refreshToken")), \
-        f"Expected that reg_data object has 2 keys but returned: {reg_data}"
-    return {"token": reg_data['token'], "auth_object": auth_object, "email": email}
 
-
-@when("User input incorrect password for few times", target_fixture='login_with_enc_password')
-def login_with_enc_password(auth, register_for_inc_password):
+@given("User input incorrect password for few times", target_fixture='login_with_enc_password')
+def login_with_enc_password(auth, register):
     for _ in range(0, 4):
-        auth_data = auth(register_for_inc_password['email'], "testpassword2", 'test_blocker')
+        auth_data = auth(register['email'], "testpassword2", 'test_blocker')
     return auth_data
 
 
@@ -33,45 +73,37 @@ def login_with_enc_password(auth, register_for_inc_password):
 def check_for_blocker(login_with_enc_password):
     assert json.loads(login_with_enc_password['response'])['result'] == "OperationBlocked"
 
+
 @scenario(f'../features/auth.feature', 'Change password')
 def test_change_password():
     pass
 
 
-@given('User pass the registration', target_fixture="register")
-def register():
-    password = settings.template_tests_password
-    email = str(uuid4()).replace('-', '') + '@mailinator.com'
-    auth_object = Auth(email, password)
-    reg_data = auth_object.register()
-    assert all(k in reg_data.keys() for k in ("token", "refreshToken")), \
-        f"Expected that reg_data object has 2 keys but returned: {reg_data}"
-    return {"token": reg_data['token'], "auth_object": auth_object, "email":  email}
-
-
-@when('User change his password')
+@given('User change his password', target_fixture='password_changed')
 def change_password(register):
-    ch_pass_data = register['auth_object'].change_password(
-        register['token'],
-        settings.template_tests_password,
-        'newpassword1'
+    email = "test_user_" + str(uuid.uuid4()) + '@mailinator.com'
+    password = 'testpassword1'
+    new_password = password + 'r2'
+    register_data = register(email, password)
+    ch_pass_data = Auth(email, password).change_password(
+        register_data['token'],
+        password,
+        new_password
     )
     assert type(ch_pass_data) == dict, f"Expected: type == dict\nReturned: {type(ch_pass_data)}\tch_pass_data: {ch_pass_data}"
+    return {"email": email, "new_password": new_password, "old_password": password}
 
-
-@then('User can not logIn by old password')
-def log_in_by_old_password(auth, register):
-    auth_data = auth(register['email'], settings.template_tests_password, 'incorrect password')
-    assert type(auth_data) == tuple, \
-        f"Expected that response will be turple vut returned: {type(auth_data)}\tauth_data: {auth_data}"
-    assert auth_data[0] == 401, f"Expected that status code will be 401 but returned: {auth_data[0]}"
-    assert auth_data[1] == '{"message":"InvalidUserNameOrPassword"}', \
+@when('User can not logIn by old password')
+def log_in_by_old_password(auth, password_changed):
+    auth_data = auth(password_changed['email'], password_changed['old_password'], 'incorrect password')
+    assert auth_data['status'] == 401, f"Expected that status code will be 401 but returned: {auth_data[0]}"
+    assert auth_data['response'] == '{"message":"InvalidUserNameOrPassword"}', \
         f"Expecte thatn auth resp will be: 'message': 'InvalidUserNameOrPassword' but returned: {auth_data[1]}"
 
 
 @then('User can logIn by new password')
-def log_in_by_new_password(auth, register):
-    auth_data = auth(register['email'], 'newpassword1')
+def log_in_by_new_password(auth, password_changed):
+    auth_data = auth(password_changed['email'], password_changed['new_password'])
     assert type(auth_data) == str, f"Expected that response will be str vut returned: {type(auth_data)}\tauth_data:{auth_data}"
 
 

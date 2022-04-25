@@ -12,7 +12,7 @@ class Blockchain(MainObj):
         super().__init__()
         self.main_url = settings.url_blockchain
     
-    def withdrawal(self, token, asset, amount, address):
+    def withdrawal(self, token, asset, amount, address, *args):
         url = f"{self.main_url}withdrawal"
 
         uniqId = uuid4()
@@ -37,12 +37,15 @@ class Blockchain(MainObj):
                 headers=headers, data=payload)
         try:
             parse_resp = json.loads(r.text)
-            try:
-                return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId)}
-            except Exception as error:
-                raise CantParseJSON(
-                    f"Can not get all nedeed keys from response of api/withdrawal. Error message: {error}"
-                )
+            if args:
+                return parse_resp
+            else:
+                try:
+                    return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId)}
+                except Exception as error:
+                    raise CantParseJSON(
+                        f"Can not get all nedeed keys from response of api/withdrawal. Error message: {error}"
+                    )
         except Exception as error:
             raise CantParseJSON(
                 f"Can not parse response from api/withdrawal. Error message: {error}"

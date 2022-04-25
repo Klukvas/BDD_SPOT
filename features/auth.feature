@@ -3,10 +3,15 @@
 Feature: Authentification
     # Enter feature description here
     auth service
-    @email_test
+
+
+    Scenario: Blocker after password change
+        Given User change password
+        Then User can not make a transfer
+        And  User can not make a withdrawal
+
     Scenario: Blocker after incorrect password
-        Given User make the registration
-        When User input incorrect password for few times
+        Given User input incorrect password for few times
         Then User has blocker for login
 
     Scenario: Refresh token
@@ -14,11 +19,12 @@ Feature: Authentification
         And User can interact with endpoints
         When User make Refresh of token
         Then User can interact with endpoint with new token
+    @email_test
     Scenario: Change password
-        Given User pass the registration
-        When User change his password
-        Then User can not logIn by old password
-        And User can logIn by new password
+        Given User change his password
+        When User can not logIn by old password
+        Then User can logIn by new password
+
     Scenario: LogOut
         Given User logIn to account
         And User can interact with any endpoint

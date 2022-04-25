@@ -1,5 +1,6 @@
 from API.Auth import Auth
 from API.Wallet import Wallet
+from API.Verify import Verify
 import pytest
 import settings
 from GRPC.ChangeBalance.change_balance import changeBalance
@@ -7,7 +8,7 @@ from time import sleep
 from Database.db import get_db_client
 from API.GmailApi import GmailApi
 from sqlalchemy import Numeric
-
+import uuid
 @pytest.fixture(scope='session')
 def db_connection():
     if settings.db_connection_string:
@@ -15,14 +16,24 @@ def db_connection():
     else:
         assert False, 'db_connection_string is not set'
 
+@pytest.fixture()
+def register():
+    def inner(email, password, *args):
+        print(f"Register by: {email} with password: {password}")
+        response = Auth(email, password).register()
+        Verify().verify_email(response['token'], '000000')
+        return response
+    return inner
+
 @pytest.fixture
 def auth():
     def get_tokens(email, password, *args):
         print(f"Log in by: {email}")
-        token = Auth(email, password).authenticate()
         if args:
+            token = Auth(email, password).authenticate(args[0])
             return token
         else:
+            token = Auth(email, password).authenticate()
             assert type(token) == list
             return token[0]
     return get_tokens
@@ -36,12 +47,15 @@ def create_temporary_template():
             data = f.read()
         return data
     return inner
+
+
 @pytest.fixture(scope='session', autouse=True)
 def clear_emailbox():
     gmail_api = GmailApi()
     gmail_api.generateCreds()
     gmail_api.generateService()
     gmail_api._deleteParsedMessage()
+
 
 def pytest_configure(config):
 
