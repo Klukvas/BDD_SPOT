@@ -11,7 +11,7 @@ class Transfer(MainObj):
         super().__init__()
         self.main_url = settings.url_transfer
     
-    def create_transfer(self, token, phone, asset, amount) -> dict or list:
+    def create_transfer(self, token, phone, asset, amount, *args) -> dict or list:
         url = f"{self.main_url}by-phone"
 
         uniqId = str(datetime.strftime(datetime.today(), '%m%d%H%s%f'))
@@ -40,12 +40,15 @@ class Transfer(MainObj):
 
         try:
             parse_resp = json.loads(r.text)
-            try:
-                return {"operationId": parse_resp['data']['operationId'], "requestId": uniqId }
-            except Exception as err:
-               raise CanNotFindKey(
-                   f"Can not find all nedeed keys from api/by-phone. Error: {err}"
-               )
+            if args:
+                return parse_resp
+            else:
+                try:
+                    return {"operationId": parse_resp['data']['operationId'], "requestId": uniqId }
+                except Exception as err:
+                   raise CanNotFindKey(
+                       f"Can not find all nedeed keys from api/by-phone. Error: {err}"
+                   )
         except Exception as err:
             raise CantParseJSON(
                 f"Can not parse response from api/by-phone. Error: {err}"
