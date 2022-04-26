@@ -1,5 +1,5 @@
+@simplex
 Feature: Simplex
-
     Scenario Outline: Make a deposit by simplex
         Given User try to make a deposit from <from_asset> to <to_asset> with amount <amount>
         Examples:

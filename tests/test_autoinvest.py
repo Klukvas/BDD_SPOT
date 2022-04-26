@@ -34,7 +34,10 @@ def check_is_datetime(date_string):
 def get_given_arguments(scheduleType, isFromFixed, volume, fromAsset, toAsset, auth):
     return {'recurringBuy': dict(scheduleType=int(scheduleType)), 'isFromFixed': bool(isFromFixed),
             'volume': float(volume), 'fromAsset': fromAsset, 'toAsset': toAsset,
-            'auth_token': auth(settings.autoinvest_email, settings.autoinvest_password)}
+            'auth_token': auth(
+                settings.autoinvest_email,
+                settings.autoinvest_password
+            )['token']}
 
 @when('user create instruction (method 1)', target_fixture='executed_quote_response')
 def create_instruction(given_args):

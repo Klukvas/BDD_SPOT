@@ -121,6 +121,7 @@
                     "circle_test_currency": ""
                 },
                 "auth_tests": {
+                    "repeat_count": 5,
                     "email_for_change_password": "email_change_password@mailinator.com",
                     "password_for_change_password": "testpassword1"
                 },

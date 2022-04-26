@@ -7,14 +7,15 @@ from GRPC.ChangeBalance.change_balance import changeBalance
 from time import sleep
 from Database.db import get_db_client
 from API.GmailApi import GmailApi
-from sqlalchemy import Numeric
-import uuid
+
+
 @pytest.fixture(scope='session')
 def db_connection():
     if settings.db_connection_string:
         return get_db_client()
     else:
         assert False, 'db_connection_string is not set'
+
 
 @pytest.fixture()
 def register():
@@ -25,18 +26,16 @@ def register():
         return response
     return inner
 
+
 @pytest.fixture
 def auth():
-    def get_tokens(email, password, *args):
+    def get_tokens(email, password, specific_case=False):
+        auth_data = Auth(email, password).authenticate(specific_case)
         print(f"Log in by: {email}")
-        if args:
-            token = Auth(email, password).authenticate(args[0])
-            return token
-        else:
-            token = Auth(email, password).authenticate()
-            assert type(token) == list
-            return token[0]
+        return auth_data
     return get_tokens
+
+
 @pytest.fixture
 def create_temporary_template():
     def inner(body, name):
@@ -81,6 +80,9 @@ def pytest_configure(config):
         "markers", "circle_cards: mark1 test to run only on named environment"
     )
     config.addinivalue_line(
+        "markers", "simplex: asd"
+    )
+    config.addinivalue_line(
         "markers", "circle_bank_accounts: mark1 test to run only on named environment"
     )
     config.addinivalue_line(
@@ -99,13 +101,19 @@ def pytest_bdd_before_scenario(request, feature, scenario):
         'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
         assets_for_update = []
         if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
-            token = Auth(settings.template_tests_email, settings.template_tests_password).authenticate()
+            token = Auth(
+                settings.template_tests_email,
+                settings.template_tests_password
+            ).authenticate()['token']
             client_Id = settings.template_tests_client_id
         else:
-            token = Auth(settings.me_tests_email, settings.me_tests_password).authenticate()                    
+            token = Auth(
+                settings.me_tests_email,
+                settings.me_tests_password
+            ).authenticate()['token']
             client_Id = settings.me_tests_client_id
 
-        balances = Wallet().balances(token[0])
+        balances = Wallet().balances(token)
         assets_not_in_balance = [
             asset
             for asset in settings.balance_asssets.keys()

@@ -31,12 +31,16 @@ class Transfer(MainObj):
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
-
-        r = post(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, data=payload)
+        try:
+            r = post(url,
+                    pkcs12_filename=self.cert_name,
+                    pkcs12_password=self.cert_pass,
+                    verify = False,
+                    headers=headers, data=payload)
+        except Exception as err:
+            raise RequestError(
+                f"Error sending request to {url}.\n{err}"
+            )
 
         try:
             parse_resp = json.loads(r.text)
@@ -51,7 +55,12 @@ class Transfer(MainObj):
                    )
         except Exception as err:
             raise CantParseJSON(
-                f"Can not parse response from api/by-phone. Error: {err}"
+                f"""
+                Can not parse response from {url}.
+                Response:{r.text}
+                Status code:{r.status_code}
+                Error: {err}
+                """
             )
 
     def get_transfer_info(self, token, transferId) -> dict or list:

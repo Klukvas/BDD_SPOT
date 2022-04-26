@@ -1,5 +1,6 @@
-from ast import arg
 import json
+
+from requests import Response
 from requests_pkcs12 import post
 import settings
 from API.Main import MainObj
@@ -15,55 +16,52 @@ class Auth(MainObj):
         self.email = email
         self.password = password
 
-    def negative_cases_handler(func):
-        def inner(self, *args):
-            if self.email == "empty" and self.password == "empty":
-                payload = json.dumps({
-                    "email": f"",
-                    "password": f""
-                })
+    def negative_cases_handler(self):
+        if self.email == "empty" and self.password == "empty":
+            payload = json.dumps({
+                "email": f"",
+                "password": f""
+            })
 
-            elif self.email == "null" and self.password == "null":
-                payload = json.dumps({})
+        elif self.email == "null" and self.password == "null":
+            payload = json.dumps({})
 
-            elif self.password == "empty" and self.email != "empty":
-                payload = json.dumps({
-                    "email": f"{self.email}",
-                    "password": f""
-                })
-            elif self.password != "empty" and self.email == "empty":
-                payload = json.dumps({
-                    "email": f"",
-                    "password": f"{self.password}"
-                })
+        elif self.password == "empty" and self.email != "empty":
+            payload = json.dumps({
+                "email": f"{self.email}",
+                "password": f""
+            })
+        elif self.password != "empty" and self.email == "empty":
+            payload = json.dumps({
+                "email": f"",
+                "password": f"{self.password}"
+            })
 
-            elif self.password == "null" and self.email != "null":
-                payload = json.dumps({
-                    "email": f"{self.email}"
-                })
-            elif self.password != "null" and self.email == "null":
-                payload = json.dumps({
-                    "password": f"{self.password}"
-                })
+        elif self.password == "null" and self.email != "null":
+            payload = json.dumps({
+                "email": f"{self.email}"
+            })
+        elif self.password != "null" and self.email == "null":
+            payload = json.dumps({
+                "password": f"{self.password}"
+            })
 
-            else:
-                payload = json.dumps({
-                    "email": f"{self.email}",
-                    "password": f"{self.password}"
-                })
-            return func(self, args, reg_data=payload)
+        else:
+            payload = json.dumps({
+                "email": f"{self.email}",
+                "password": f"{self.password}"
+            })
+        return payload
 
-        return inner
-
-    @negative_cases_handler
-    def register(self, *args, **kwargs) -> list[str] or int or dict:
+    def register(self, specific_case=False) -> list[str] or int or dict:
         url = f"{self.main_url}Register"
+        payload = self.negative_cases_handler()
         r = post(url,
                  pkcs12_filename=self.cert_name,
                  pkcs12_password=self.cert_pass,
                  verify=False,
-                 headers=self.headers, data=kwargs['reg_data'])
-        if len(args[0]):
+                 headers=self.headers, data=payload)
+        if specific_case:
             return {"response": r.text, "status": r.status_code}
         else:
             if r.status_code == 200:
@@ -86,22 +84,24 @@ class Auth(MainObj):
                     f"Negative status code from {url}: code {r.status_code}"
                 )
 
-    @negative_cases_handler
-    def authenticate(self, *args, **kwargs) -> list[str] or int:
-        url = f"{self.main_url}Authenticate"
-
-        r = post(url,
-                 pkcs12_filename=self.cert_name,
-                 pkcs12_password=self.cert_pass,
-                 verify=False,
-                 headers=self.headers, data=kwargs['reg_data'])
-        if len(args[0]):
+    def authenticate(self, specific_case=False) -> dict:
+        url: str = f"{self.main_url}Authenticate"
+        payload: str = self.negative_cases_handler()
+        r: Response = post(url,
+                           pkcs12_filename=self.cert_name,
+                           pkcs12_password=self.cert_pass,
+                           verify=False,
+                           headers=self.headers, data=payload)
+        if specific_case:
             return {"response": r.text, "status": r.status_code}
         else:
             if r.status_code == 200:
                 try:
                     parse_resp = json.loads(r.text)['data']
-                    return [parse_resp['token'], parse_resp['refreshToken']]
+                    return {
+                        "token": parse_resp['token'],
+                        "refreshToken": parse_resp['refreshToken']
+                    }
                 except Exception as error:
                     raise CantParseJSON(
                         f'''

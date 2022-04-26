@@ -19,6 +19,7 @@ google-auth-httplib2 = "*"
 google-auth-oauthlib = "*"
 sqlalchemy = "*"
 python-dateutil = "*"
+psycopg2 = "*"
 
 [dev-packages]
 

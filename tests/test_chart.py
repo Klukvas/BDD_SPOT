@@ -10,9 +10,16 @@ def test_chart_data():
 
 @given(parsers.parse('User send request for chart with next data: {instrument}, {period}'))
 def get_enc_key(instrument, period, auth):
-    token = auth( settings.me_tests_email, settings.me_tests_password )
+    token = auth(
+        settings.me_tests_email,
+        settings.me_tests_password
+    )['token']
     
-    fromDate = int( (datetime.datetime.today() - datetime.timedelta(days = settings.chart_data[period]['dateFromDifferetn'])).timestamp() * 1000)
+    fromDate = int(
+            (datetime.datetime.today() - datetime.timedelta(
+                days=settings.chart_data[period]['dateFromDifferetn']
+            )
+         ).timestamp() * 1000)
     toDate = int((datetime.datetime.today() - datetime.timedelta(days = 1)).timestamp() *1000)
     
     can = Candle().get_candels(

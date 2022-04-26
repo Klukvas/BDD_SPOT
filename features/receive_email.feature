@@ -1,5 +1,5 @@
 # Created by andrey.p at 30.11.2021
-@emails
+
 Feature: Emails receive
   # Enter feature description here
   Scenario: Email confirmation
@@ -17,6 +17,7 @@ Feature: Emails receive
     Examples:
       | asset | phone         |
       | LTC   | +111111123123 |
+  @emails
   Scenario Outline: Internal withdrawal
     Given User send withdrawal request wiht asset: <asset>, to address: <address>
     When User has new email with appove withdwal link with <feeAmount> and <feeAsset>
