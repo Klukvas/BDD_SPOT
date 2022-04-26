@@ -50,6 +50,7 @@ def transfer_with_blocker(auth, change_password_blocker):
         change_password_blocker['email'],
         change_password_blocker['new_password']
     )['token']
+
     wd_data = Blockchain().withdrawal(
         token,
         'BCH',
@@ -59,6 +60,7 @@ def transfer_with_blocker(auth, change_password_blocker):
     )
 
     assert wd_data['result'] == 'OperationBlocked'
+
 
 
 @scenario(f'../features/auth.feature', 'Blocker after incorrect password')
@@ -77,6 +79,7 @@ def login_with_enc_password(auth, register):
             "testpassword2",
             specific_case=True
         )
+
     return auth_data
 
 
@@ -113,6 +116,7 @@ def log_in_by_old_password(auth, password_changed):
         password_changed['old_password'],
         specific_case=True
     )
+
     assert auth_data['status'] == 401, f"Expected that status code will be 401 but returned: {auth_data[0]}"
     assert auth_data['response'] == '{"message":"InvalidUserNameOrPassword"}', \
         f"Expecte thatn auth resp will be: 'message': 'InvalidUserNameOrPassword' but returned: {auth_data[1]}"
@@ -124,6 +128,7 @@ def log_in_by_new_password(auth, password_changed):
         password_changed['email'],
         password_changed['new_password']
     )['token']
+
     assert type(auth_data) == str, \
         f"Expected that response will be str vut returned: {type(auth_data)}\tauth_data:{auth_data}"
 
@@ -139,6 +144,7 @@ def get_token(auth):
         settings.template_tests_email,
         settings.template_tests_password
     )['token']
+
     return {"token": token}
 
 
@@ -178,6 +184,7 @@ def get_token(auth):
         settings.template_tests_email,
         settings.template_tests_password,
     )
+
     return {"tokens": tokens}
 
 
@@ -190,6 +197,7 @@ def check_token(get_token):
 @when('User make Refresh of token', target_fixture="refresh")
 def refresh(get_token):
     new_token = Auth(None, None).refresh(get_token['tokens']['refreshToken'])
+
     assert all(
         [k in ['refreshToken', 'token'] for k in list(new_token['response']['data'].keys())]
     ), f"""Expected that response contains next keys: refreshToken, token;
@@ -248,6 +256,7 @@ def handle_password_negative(auth, password_old, password_new, response, status_
         settings.auth_tests_email_for_change_password,
         settings.auth_tests_password_for_change_password
     )['token']
+
     if password_old == 'default':
         password_old = settings.auth_tests_password_for_change_password
     change_password_resp = Auth(

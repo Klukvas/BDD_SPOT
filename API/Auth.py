@@ -84,6 +84,7 @@ class Auth(MainObj):
                     f"Negative status code from {url}: code {r.status_code}"
                 )
 
+
     def authenticate(self, specific_case=False) -> dict:
         url: str = f"{self.main_url}Authenticate"
         payload: str = self.negative_cases_handler()

@@ -8,7 +8,6 @@ from time import sleep
 from Database.db import get_db_client
 from API.GmailApi import GmailApi
 
-
 @pytest.fixture(scope='session')
 def db_connection():
     if settings.db_connection_string:
@@ -32,7 +31,7 @@ def auth():
     def get_tokens(email, password, specific_case=False):
         auth_data = Auth(email, password).authenticate(specific_case)
         print(f"Log in by: {email}")
-        return auth_data
+
     return get_tokens
 
 
