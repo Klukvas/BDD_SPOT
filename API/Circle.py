@@ -37,9 +37,7 @@ class Circle(MainObj):
                     f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def encrypt_data(self, token, enc_key):
         url = f"{self.debug_url}circle-encrypt-data"
@@ -68,9 +66,7 @@ class Circle(MainObj):
                     f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
     
     def add_card(self, token, encryption_data, keyId):
         url = f"{self.main_url}add-card"
@@ -109,9 +105,7 @@ class Circle(MainObj):
                     f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def create_payment(self, token, encryption_data, keyId, cardId, currency='USD', amount=10):
         url = f"{self.main_url}create-payment"
@@ -144,9 +138,7 @@ class Circle(MainObj):
                     f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def delete_card(self, token, cardId):
         url = f"{self.main_url}delete-card"
@@ -174,9 +166,7 @@ class Circle(MainObj):
                     f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
     
     def get_card(self, token, cardId):
         url = f"{self.main_url}get-card"
@@ -204,9 +194,7 @@ class Circle(MainObj):
                     f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def get_all_cards(self, token):
         url = f"{self.main_url}get-cards-all"
@@ -231,9 +219,7 @@ class Circle(MainObj):
                     f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def add_bank_account(self, token: str, bank_country: str, billing_country: str, account_number: str,
                          iban: str, routing_number: str, guid: str) -> dict:
@@ -294,8 +280,8 @@ class Circle(MainObj):
             if r.status_code == 200:
                 try:
                     resp = r.json()
-                except:
-                    raise CantParseJSON
+                except Exception as error:
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
                 return {'status': r.status_code, 'data': resp}
             else:
                 raise RequestError(url, r.status_code)
@@ -320,8 +306,8 @@ class Circle(MainObj):
             if r.status_code == 200:
                 try:
                     resp = r.json()
-                except:
-                    raise CantParseJSON
+                except Exception as error:
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
                 return {'status': r.status_code, 'data': resp}
             else:
                 raise RequestError(url, r.status_code)
@@ -354,8 +340,8 @@ class Circle(MainObj):
             if r.status_code == 200:
                 try:
                     resp = r.json()
-                except:
-                    raise CantParseJSON
+                except Exception as error:
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
                 return {'status': r.status_code, 'data': resp}
             else:
                 raise RequestError(url, r.status_code)
@@ -388,8 +374,8 @@ class Circle(MainObj):
             if r.status_code == 200:
                 try:
                     resp = r.json()
-                except:
-                    raise CantParseJSON
+                except Exception as error:
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
                 return {'status': r.status_code, 'data': resp}
             else:
                 raise RequestError(url, r.status_code)

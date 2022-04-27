@@ -29,9 +29,7 @@ class Wallet(MainObj):
                 parse_resp = json.loads(r.text)
                 return parse_resp['data']['balances']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from wallet-balances with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
         else:
             raise RequestError(r.url, r.status_code)
 
@@ -54,8 +52,6 @@ class Wallet(MainObj):
                 parse_resp = json.loads(r.text)
                 return parse_resp['data']['maps']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from base-currency-converter-map with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
         else:
             raise RequestError(r.url, r.status_code)

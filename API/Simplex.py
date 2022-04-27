@@ -36,8 +36,6 @@ class Simplex(MainObj):
                     f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     

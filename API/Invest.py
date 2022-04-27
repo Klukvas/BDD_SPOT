@@ -10,8 +10,8 @@ def parse_response(r):
             try:
                 resp = r.json()
                 return {'status': r.status_code, 'data': resp}
-            except:
-                raise CantParseJSON(str({'status': r.status_code, 'data': r.text}))
+            except Exception as error:
+                raise CantParseJSON(r.url, r.text, r.status_code, error)
         else:
             return {'status': r.status_code, 'data': None}
             # raise RequestError(r.url, r.status_code)

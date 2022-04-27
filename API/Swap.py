@@ -36,9 +36,7 @@ class Swap(MainObj):
             try:
                 parse_resp = json.loads(r.text)
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse json from api/get-quote. Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
             try:
                 if specific_case:
                     return parse_resp['result']
@@ -51,9 +49,7 @@ class Swap(MainObj):
             try:
                 parse_resp = json.loads(r.text)
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse json from api/get-quote. Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
             try:
                 return {"response": parse_resp, "code": 400}
             except Exception as err:
@@ -81,9 +77,7 @@ class Swap(MainObj):
             try:
                 parse_resp = json.loads(r.text)
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse json from api/execute-quote. Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
             try:
                 return parse_resp['data']
             except Exception as err:

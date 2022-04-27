@@ -19,7 +19,23 @@ class SomethingWentWrong(Exception):
         return f"Something went wrong. requests lib didn't return response. It returns {type(self.r)}"
 
 class CantParseJSON(Exception):
-    pass
+    def __init__(self, url, response_text, status_code, *args):
+        self.url = url
+        self.response_text = response_text
+        self.status_code = status_code
+        if args:
+            self.message = args[0]
+
+    def __str__(self):
+        msg = f"Can not parse json\n" \
+              f"{self.url} status code is {self.status_code}\n" \
+              f"Response text is:\n" \
+              f"{self.response_text}"
+        if self.message:
+            msg += f'\nException message is:\n' \
+                   f'{self.message}'
+        return msg
+
 
 class MessageNotFound(Exception):
     pass

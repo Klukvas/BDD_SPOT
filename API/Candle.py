@@ -27,6 +27,4 @@ class Candle(MainObj):
             parse_resp = json.loads(r.text)
             return {"data": parse_resp, "url": url}
         except Exception as error:
-            raise CantParseJSON(
-                f"Can not parse response from api/candles.\nError: {error}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, error)

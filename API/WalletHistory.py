@@ -28,9 +28,7 @@ class WalletHistory(MainObj):
                 parse_resp = json.loads(r.text)
                 return parse_resp['data']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from: balance-history with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
         else:
             raise RequestError(r.url, r.status_code)
 
@@ -52,9 +50,7 @@ class WalletHistory(MainObj):
                 parse_resp = json.loads(r.text)
                 hist = parse_resp['data']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from: balance-history with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
             if hist is None:
                 return []
             else:
@@ -80,9 +76,7 @@ class WalletHistory(MainObj):
             try:
                 return parse_resp['data']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from: balance-history with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
         else:
             raise RequestError(r.url, r.status_code)
 
@@ -107,8 +101,6 @@ class WalletHistory(MainObj):
             try:
                 return parse_resp['data']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from: operation-history with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
         else:
             raise RequestError(r.url, r.status_code)

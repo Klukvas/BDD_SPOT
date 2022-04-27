@@ -49,14 +49,7 @@ class Transfer(MainObj):
                        f"Can not find all nedeed keys from api/by-phone. Error: {err}"
                    )
         except Exception as err:
-            raise CantParseJSON(
-                f"""
-                Can not parse response from {url}.
-                Response:{r.text}
-                Status code:{r.status_code}
-                Error: {err}
-                """
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def get_transfer_info(self, token, transferId) -> dict or list:
         url = f"{self.main_url}transfer-info"
@@ -84,9 +77,7 @@ class Transfer(MainObj):
                     f"Can not find all nedeed keys from api/transfer-info. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/transfer-info. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def cancel_transfer(self, token, transferId) -> dict or list:
         url = f"{self.main_url}transfer-cancel"
@@ -114,6 +105,4 @@ class Transfer(MainObj):
                     f"Can not find all nedeed keys from api/transfer-info. Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/transfer-info. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)

@@ -38,12 +38,7 @@ class Verify(MainObj):
                     f"Can not get all nedee keys from response of email-verification/verify Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"""
-                    Can not parse response from email-verification/verify
-                    Error: {err}
-                """
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
     
     def client_data(self, token):
         url = f"https://wallet-api-uat.simple-spot.biz/api/v1/info/session-info"
@@ -68,12 +63,7 @@ class Verify(MainObj):
                     f"Can not get all nedee keys from response of api/session-info Error: {err}"
                 )
         except Exception as err:
-            raise CantParseJSON(
-                f"""
-                    Can not parse response from api/session-info
-                    Error: {err}
-                """
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def verify_withdrawal(self, token, withdrawalProcessId):
         url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={withdrawalProcessId}&code=000000"
