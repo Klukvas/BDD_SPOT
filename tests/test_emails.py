@@ -300,7 +300,7 @@ def log_in_with_new_password(auth, register):
         specific_case=True
     )
     assert token['status'] == 401
-    assert token['response'] == '{"message":"InvalidUserNameOrPassword"}'
+    assert token['response']['message'] == "InvalidUserNameOrPassword"
 
 
 @then('User can auth with new password', target_fixture='log_in_with_new_password')

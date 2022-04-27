@@ -166,7 +166,7 @@ def quote_more_than_balance(auth):
             recurringBuy=False,
             specific_case=True
         )
-    assert quote == "LowBalance", \
+    assert quote['response']['result'] == "LowBalance", \
         f"Expected that response from get quote is: 'result': 'LowBalance' but returned: {quote}"
 
 
@@ -191,7 +191,7 @@ def quote_nonexisting_asset_from(auth):
     )
     assert quote['response'] == {"message": "FromAsset or ToAsset do not found"}, \
         f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
-    assert quote['code'] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
+    assert quote['status'] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
 
 
 @scenario(f'../features/swap.feature', 'Swap with nonexisting asset to')
@@ -215,7 +215,7 @@ def quote_nonexisting_asset_from(auth):
         )
     assert quote['response'] == {"message": "FromAsset or ToAsset do not found"}, \
         f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
-    assert quote['code'] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
+    assert quote['status'] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
 
 
 @scenario(f'../features/swap.feature', 'Swap with min && max amount')
@@ -290,7 +290,7 @@ def get_quote_with_min_max_volume(min_max, fixed, auth, get_assets_with_min_max_
             )
         expected_response = 'AmountIsSmall' if min_max == 'min' else 'AmountToLarge'
         print(f"quote: {quote}")
-        assert quote == expected_response, f"Exp: {expected_response}  Returned: {quote}"
+        assert quote['response']['result'] == expected_response, f"Exp: {expected_response}  Returned: {quote}"
     except Exception as err:
         raise Exception(err)
     finally:

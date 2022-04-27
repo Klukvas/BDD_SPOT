@@ -12,7 +12,7 @@ class Wallet(MainObj):
         self.main_url = settings.url_wallet
         self.signalrUrl = settings.url_signalR
 
-    def balances(self, token) -> list[dict] or int:
+    def balances(self, token, specific_case=False) -> list[dict] or int:
         url = self.signalrUrl + 'wallet/wallet-balances'
         headers = {
             'Authorization': f'Bearer {token}'
@@ -21,20 +21,12 @@ class Wallet(MainObj):
         r = get(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
+                verify=False,
                 headers=headers)
 
-        if r.status_code == 200:
-            try:
-                parse_resp = json.loads(r.text)
-                return parse_resp['data']['balances']
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-        else:
-            raise RequestError(r.url, r.status_code)
+        return self.parse_response(r, specific_case)
 
-
-    def converter_map(self, asset,  token) -> list[dict] or int:
+    def converter_map(self, asset,  token, specific_case=False) -> list[dict] or int:
         url = f"{self.main_url}base-currency-converter-map/{asset}"
         payload = {}
         headers = {
@@ -45,13 +37,6 @@ class Wallet(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify=False,
-                headers=headers, data=payload)
+                headers=headers, json=payload)
 
-        if r.status_code == 200:
-            try:
-                parse_resp = json.loads(r.text)
-                return parse_resp['data']['maps']
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-        else:
-            raise RequestError(r.url, r.status_code)
+        return self.parse_response(r, specific_case)

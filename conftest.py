@@ -20,7 +20,7 @@ def db_connection():
 def register():
     def inner(email, password, *args):
         print(f"Register by: {email} with password: {password}")
-        response = Auth(email, password).register()
+        response = Auth(email, password).register()['response']['data']
         Verify().verify_email(response['token'], '000000')
         return response
     return inner
@@ -31,7 +31,7 @@ def auth():
     def get_tokens(email, password, specific_case=False):
         auth_data = Auth(email, password).authenticate(specific_case)
         print(f"Log in by: {email}")
-
+        return auth_data
     return get_tokens
 
 

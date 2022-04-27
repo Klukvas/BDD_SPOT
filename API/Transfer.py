@@ -12,13 +12,13 @@ class Transfer(MainObj):
         super().__init__()
         self.main_url = settings.url_transfer
 
-    def create_transfer(self, token, phone, asset, amount, *args) -> dict or list:
+    def create_transfer(self, token, phone, asset, amount, specific_case=False) -> dict or list:
         url = f"{self.main_url}by-phone"
 
         uniqId = str(datetime.strftime(datetime.today(), '%m%d%H%s%f'))
         phone_code = phone[:3]
         phone_body = phone[3:]
-        payload = json.dumps({
+        payload = {
             "requestId": uniqId,
             "assetSymbol": asset,
             "amount": amount,
@@ -26,7 +26,7 @@ class Transfer(MainObj):
             "toPhoneCode": phone_code,
             "toPhoneBody": phone_body,
             "toPhoneIso": "UKR"
-        })
+        }
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -36,26 +36,16 @@ class Transfer(MainObj):
                  pkcs12_filename=self.cert_name,
                  pkcs12_password=self.cert_pass,
                  verify=False,
-                 headers=headers, data=payload)
+                 headers=headers, json=payload)
 
-        try:
-            parse_resp = json.loads(r.text)
-            if args:
-                return parse_resp
-            else:
-                try:
-                    return {"operationId": parse_resp['data']['operationId'], "requestId": uniqId}
-                except Exception as err:
-                    raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
 
-    def get_transfer_info(self, token, transferId) -> dict or list:
+    def get_transfer_info(self, token, transferId, specific_case) -> dict or list:
         url = f"{self.main_url}transfer-info"
 
-        payload = json.dumps({
+        payload = {
             "transferId": transferId
-        })
+        }
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -66,22 +56,15 @@ class Transfer(MainObj):
                  pkcs12_filename=self.cert_name,
                  pkcs12_password=self.cert_pass,
                  verify=False,
-                 headers=headers, data=payload)
-        try:
-            parse_resp = json.loads(r.text)
-            try:
-                return parse_resp['data']
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+                 headers=headers, json=payload)
+        return self.parse_response(r, specific_case)
 
-    def cancel_transfer(self, token, transferId) -> dict or list:
+    def cancel_transfer(self, token, transferId, specific_case=False) -> dict or list:
         url = f"{self.main_url}transfer-cancel"
 
-        payload = json.dumps({
+        payload = {
             "transferId": transferId
-        })
+        }
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -92,12 +75,6 @@ class Transfer(MainObj):
                  pkcs12_filename=self.cert_name,
                  pkcs12_password=self.cert_pass,
                  verify=False,
-                 headers=headers, data=payload)
-        try:
-            parse_resp = json.loads(r.text)
-            try:
-                return parse_resp['data']
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+                 headers=headers, json=payload)
+
+        return self.parse_response(r, specific_case)
