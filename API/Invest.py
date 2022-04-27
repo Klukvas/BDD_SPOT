@@ -16,7 +16,7 @@ def parse_response(r):
             return {'status': r.status_code, 'data': None}
             # raise RequestError(r.url, r.status_code)
     else:
-        raise SomethingWentWrong
+        raise SomethingWentWrong(r)
 
 class Invest(MainObj):
     def __init__(self) -> None:

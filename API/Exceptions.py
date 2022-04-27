@@ -12,7 +12,11 @@ class RequestError(Exception):
         return msg
 
 class SomethingWentWrong(Exception):
-    pass
+    def __init__(self, r):
+        self.r = r
+
+    def __str__(self):
+        return f"Something went wrong. requests lib didn't return response. It returns {type(self.r)}"
 
 class CantParseJSON(Exception):
     pass

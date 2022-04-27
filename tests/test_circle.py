@@ -5,7 +5,6 @@ from API.Exceptions import *
 from pytest_bdd import scenarios, given, when, then, parsers
 from time import sleep
 import settings
-import inspect
 
 
 scenarios('../features/circle.feature')

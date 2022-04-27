@@ -300,7 +300,7 @@ class Circle(MainObj):
             else:
                 raise RequestError(url, r.status_code)
         else:
-            raise SomethingWentWrong
+            raise SomethingWentWrong(r)
 
     def get_bank_account_all(self, token: str) -> dict:
         url = f"{self.main_url}get-bank-account-all"
@@ -326,7 +326,7 @@ class Circle(MainObj):
             else:
                 raise RequestError(url, r.status_code)
         else:
-            raise SomethingWentWrong
+            raise SomethingWentWrong(r)
 
     def delete_bank_account(self, token: str, bank_account_id: str) -> dict:
         url = f"{self.main_url}delete-bank-account"
@@ -360,7 +360,7 @@ class Circle(MainObj):
             else:
                 raise RequestError(url, r.status_code)
         else:
-            raise SomethingWentWrong
+            raise SomethingWentWrong(r)
 
     def get_bank_account(self, token: str, bank_account_id: str) -> dict:
         url = f"{self.main_url}get-bank-account"
@@ -394,4 +394,4 @@ class Circle(MainObj):
             else:
                 raise RequestError(url, r.status_code)
         else:
-            raise SomethingWentWrong
+            raise SomethingWentWrong(r)
