@@ -1,5 +1,7 @@
 Feature: Autoinvest
 
+    @smoke
+    @autoinvest
     Scenario Outline: create instruction (method №1) - execute it
         Given scheduleType is <scheduleType>; isFromFixed is <isFromFixed>; volume is <volume>; fromAsset is <fromAsset>; toAsset is <toAsset>
 #         method 1 - /get-quote with recurringBuy - /execute quote
@@ -21,7 +23,9 @@ Feature: Autoinvest
         | 3            | false       | 0.001   | BTC       | ETH     |
         | 4            | true        | 0.001   | BTC       | ETH     |
         | 4            | false       | 0.001   | BTC       | ETH     |
-#
+
+    @smoke
+    @autoinvest
     Scenario Outline: create instruction (method №2) - execute it
         Given scheduleType is <scheduleType>; isFromFixed is <isFromFixed>; volume is <volume>; fromAsset is <fromAsset>; toAsset is <toAsset>
 #         method 1 - /get-quote with recurringBuy - /execute quote
@@ -44,6 +48,7 @@ Feature: Autoinvest
         | 4            | true        | 0.001   | BTC       | ETH     |
         | 4            | false       | 0.001   | BTC       | ETH     |
 
+    @autoinvest
     Scenario Outline: create-switch-execute
         Given scheduleType is <scheduleType>; isFromFixed is <isFromFixed>; volume is <volume>; fromAsset is <fromAsset>; toAsset is <toAsset>
         When user create instruction (method 1)
@@ -57,7 +62,7 @@ Feature: Autoinvest
         | scheduleType | isFromFixed | volume  | fromAsset | toAsset |
         | 1            | true        | 0.001   | BTC       | ETH     |
 
-
+    @autoinvest
     Scenario Outline: create-delete-execute
         Given scheduleType is <scheduleType>; isFromFixed is <isFromFixed>; volume is <volume>; fromAsset is <fromAsset>; toAsset is <toAsset>
         When user create instruction (method 1)

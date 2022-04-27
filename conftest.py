@@ -56,7 +56,9 @@ def clear_emailbox():
 
 
 def pytest_configure(config):
-
+    config.addinivalue_line(
+        "markers", "autoinvest: mark test to run only on named environment"
+    )
     config.addinivalue_line(
         "markers", "email_test: mark test to run only on named environment"
     )
