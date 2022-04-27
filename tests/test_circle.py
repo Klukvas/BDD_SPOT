@@ -12,7 +12,10 @@ scenarios('../features/circle.feature')
 
 @given('User get encryption key', target_fixture="get_enc_key")
 def get_enc_key(auth):
-    token = auth(settings.me_tests_email, settings.me_tests_password)
+    token = auth(
+        settings.me_tests_email,
+        settings.me_tests_password
+    )['token']
     enc_key = Circle().get_encryption_key(token)
     assert type(enc_key) == dict, f"Expected: type == dict\nReturned: {type(enc_key)}"
     assert len(enc_key['data'].keys()) == 2, f"Expected that enc key object has 2 keys but returned: {len(enc_key['data'].keys())}"
@@ -47,7 +50,10 @@ def add_card(enc_data, get_enc_key):
 
 @when('user add bank account', target_fixture="add_bank_account_response")
 def add_bank_account(auth, bank_country, billing_country, account_number, routing_number, iban, guid):
-    token = auth(settings.circle_email, settings.circle_password)
+    token = auth(
+        settings.circle_email,
+        settings.circle_password
+    )['token']
     try:
         response = Circle().add_bank_account(token, bank_country, billing_country,
                                              account_number, iban, routing_number, guid)
@@ -135,7 +141,10 @@ def get_variables(bank_country, billing_country, account_number, iban, routing_n
 
 @when('user add bank account', target_fixture="response")
 def add_bank_account(auth, variables_dict):
-    token = auth(settings.circle_email, settings.circle_password)
+    token = auth(
+        settings.circle_email,
+        settings.circle_password
+    )['token']
     try:
         response = Circle().add_bank_account(token, variables_dict['bank_country'], variables_dict['billing_country'],
                                              variables_dict['account_number'], variables_dict['iban'],
@@ -201,9 +210,15 @@ def check_add_bank_account_response_data(variables_dict, response):
 @given(parsers.parse('user send request to parse existed bank_account_id ({count})'), target_fixture='resp')
 def get_all_bank_accounts(auth, count):
     if count == '>=1':
-        token = auth(settings.circle_email, settings.circle_password)
+        token = auth(
+            settings.circle_email,
+            settings.circle_password
+        )['token']
     elif count == '0':
-        token = auth(settings.circle_empty_bank_accounts_email, settings.circle_empty_bank_accounts_password)
+        token = auth(
+            settings.circle_empty_bank_accounts_email,
+            settings.circle_empty_bank_accounts_password
+        )['token']
     try:
         response = Circle().get_bank_account_all(token)
         response['token'] = token
@@ -223,9 +238,15 @@ def get_all_bank_accounts(auth, count):
 @when(parsers.parse("user send request to get all bank accounts ({count})"), target_fixture='response')
 def get_all_bank_accounts_1(auth, count):
     if count == '>=1':
-        token = auth(settings.circle_email, settings.circle_password)
+        token = auth(
+            settings.circle_email,
+            settings.circle_password
+        )['token']
     elif count == '0':
-        token = auth(settings.circle_empty_bank_accounts_email, settings.circle_empty_bank_accounts_password)
+        token = auth(
+            settings.circle_empty_bank_accounts_email,
+            settings.circle_empty_bank_accounts_password
+        )['token']
     try:
         response = Circle().get_bank_account_all(token)
         response['token'] = token
@@ -290,7 +311,10 @@ def check_all_bank_accounts_empty(response):
 @when(parsers.parse('user send request to get bank account {state}'), target_fixture='response')
 def get_bank_account(auth, state):
     if state != 'with no auth token':
-        token = auth(settings.circle_email, settings.circle_password)
+        token = auth(
+            settings.circle_email,
+            settings.circle_password
+        )['token']
     try:
         if state == 'if it exist':
             response = Circle().get_bank_account(token, settings.circle_my_bank_account_id)
@@ -391,7 +415,10 @@ def check_delete_deleted_bank_account(resp):
 
 @when('user2 send request to delete bank account', target_fixture='response')
 def delete_bank_account_2(auth, resp):
-    token = auth(settings.circle_empty_bank_accounts_email, settings.circle_empty_bank_accounts_password)
+    token = auth(
+        settings.circle_empty_bank_accounts_email,
+        settings.circle_empty_bank_accounts_password
+    )['token']
     try:
         response = Circle().delete_bank_account(token, resp['bankaccountid_to_delete'])
         return response

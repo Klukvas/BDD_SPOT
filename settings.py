@@ -1,16 +1,49 @@
 import os
 import json
-cert_name = os.environ['cert_name']
-cert_pass = os.environ['cert_pass']
-with open('settings.json') as f:
-    data = json.load(f)
+
+
+def set_env_variables():
+    path_to_env_file: str = os.path.join(
+        os.path.dirname(
+            os.getcwd()
+        ),
+        '.env'
+    )
+    with open(path_to_env_file, 'r') as f:
+        for item in f.readlines():
+            if "=" in item:
+                variable_name, variable_data = item.split('=')
+                os.environ[variable_name] = str(variable_data)
+
+
+cert_name = os.environ.get('cert_name', "NOT_SET")
+cert_pass = os.environ.get('cert_pass', "NOT_SET")
+
+if cert_pass == "NOT_SET" or cert_name == "NOT_SET":
+    set_env_variables()
+
+try:
+    with open('settings.json') as f:
+        data = json.load(f)
+except FileNotFoundError:
+    path_to_env_file = os.path.join(
+        os.path.dirname(
+            os.getcwd()
+        ),
+        'settings.json'
+    )
+    with open(path_to_env_file, 'r') as f:
+        data = json.load(f)
+
 envs = data['env'].keys()
 test_data_seted = False
+
 for env in envs:
     if data['env'][env]['is_actual']:
         data = data['env'][env]['test_data']
         test_data_seted = True
         break
+
 if not test_data_seted:
     raise 'Can not set settings. All "is_actual" fields are eql to false'
 

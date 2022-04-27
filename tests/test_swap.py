@@ -15,11 +15,15 @@ def test_make_swap():
 
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
-    token = auth(settings.me_tests_email, settings.me_tests_password)
+    token = auth(
+        settings.me_tests_email,
+        settings.me_tests_password
+    )['token']
     balances = Wallet().balances(token)
     assert type(balances) == list
     assert len(balances) > 0
-    return [token, balances] #{"token": token }
+    return [token, balances]  # {"token": token }
+
 
 @when(parsers.parse('User gets swap quote with from fixed {isFromFixed} from asset {fromAsset} to  asset {toAsset}'), target_fixture="get_quote")
 def get_quote(get_balance,isFromFixed, fromAsset, toAsset):
@@ -47,9 +51,8 @@ def get_quote(get_balance,isFromFixed, fromAsset, toAsset):
     else:
         assert quote['toAssetVolume'] == volume
     assert quote['isFromFixed'] == isFromFixed
-   
-    
     return {"quote": quote, "SwapApiObject": swapApi, "isFromFixed": isFromFixed}
+
 
 @when('User execute quote', target_fixture="exec")
 def exec(get_balance, get_quote):
@@ -62,6 +65,7 @@ def exec(get_balance, get_quote):
     assert response['isFromFixed'] == get_quote["isFromFixed"]
     operationId = response['operationId']
     return [operationId, response]
+
 
 @then('User has new record in operation history')
 def hist(get_balance, exec):
@@ -107,6 +111,7 @@ def hist(get_balance, exec):
             assert item['swapInfo']['sellAmount'] == exec[1]['fromAssetVolume']
             assert item['swapInfo']['buyAssetId'] == exec[1]['toAsset']
 
+
 @then('User`s balance is changed')
 def hist2(get_balance, exec):
     assets = [
@@ -140,25 +145,29 @@ def hist2(get_balance, exec):
                     assert old_balances[jitem]['balance'] < new_balances[item]['balance']
 
 
-
 @scenario(f'../features/swap.feature', 'Swap with amount more than balance')
 def test_make_swap_more_than_balance():
     pass
 
+
 @given('User try to get quote with amount more than has on balance. User get an lowBalance error')
 def quote_more_than_balance(auth):
-    token = auth(settings.me_tests_email, settings.me_tests_password)
+    token = auth(
+        settings.me_tests_email,
+        settings.me_tests_password
+    )['token']
     from_asset = choice(list(settings.balance_asssets.keys()))
     quote = Swap().get_quote(
-            token, 
-            from_asset,
-            'USD',
-            settings.balance_asssets[from_asset] * 2,
-            True
+            token=token,
+            _from=from_asset,
+            to='USD',
+            fromToVol=settings.balance_asssets[from_asset] * 2,
+            fix=True,
+            recurringBuy=False,
+            specific_case=True
         )
-    assert quote[0] == {"result": "LowBalance"}, f"Expected that response from get quote is: 'result': 'LowBalance' but returned: {quote}"
-
-
+    assert quote == "LowBalance", \
+        f"Expected that response from get quote is: 'result': 'LowBalance' but returned: {quote}"
 
 
 @scenario(f'../features/swap.feature', 'Swap with nonexisting asset from')
@@ -167,16 +176,23 @@ def test_make_swap_nonexisting_asset_from():
 
 @given('User try to get quote with nonexisting asset from. User get an Asset do not found error')
 def quote_nonexisting_asset_from(auth):
-    token = auth(settings.me_tests_email, settings.me_tests_password)
+    token = auth(
+        settings.me_tests_email,
+        settings.me_tests_password
+    )['token']
     quote = Swap().get_quote(
-            token, 
-            'asd',
-            'USD',
-            2,
-            True
-        )
-    assert quote[1] == {"message": "FromAsset or ToAsset do not found"}, f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
-    assert quote[0] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
+        token=token,
+        _from='asdasdasd',
+        to='LTC',
+        fromToVol=0.00002,
+        fix=True,
+        recurringBuy=False,
+        specific_case=True
+    )
+    assert quote['response'] == {"message": "FromAsset or ToAsset do not found"}, \
+        f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
+    assert quote['code'] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
+
 
 @scenario(f'../features/swap.feature', 'Swap with nonexisting asset to')
 def test_make_swap_nonexisting_asset_to():
@@ -184,43 +200,44 @@ def test_make_swap_nonexisting_asset_to():
 
 @given('User try to get quote with nonexisting asset to. User get an Asset do not found error')
 def quote_nonexisting_asset_from(auth):
-    token = auth(settings.me_tests_email, settings.me_tests_password)
+    token = auth(
+        settings.me_tests_email,
+        settings.me_tests_password
+    )['token']
     quote = Swap().get_quote(
-            token, 
-            'LTC',
-            'asdasd',
-            0.00002,
-            True
+            token=token,
+            _from='LTC',
+            to='asdasd',
+            fromToVol=0.00002,
+            fix=True,
+            recurringBuy=False,
+            specific_case=True
         )
-    assert quote[1] == {"message": "FromAsset or ToAsset do not found"}, f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
-    assert quote[0] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
+    assert quote['response'] == {"message": "FromAsset or ToAsset do not found"}, \
+        f"Expected that response from get quote is: message: FromAsset or ToAsset do not found but returned: {quote}"
+    assert quote['code'] == 400, f"Expected that response from get quote is 400 but returned: {quote}"
 
-
-
-
-# Scenario: Swap with min && max amount
-#         Given User try to get assets with setted min and max amount
-#         Given User try to get quote with min and max amout
 
 @scenario(f'../features/swap.feature', 'Swap with min && max amount')
 def test_swap_min_max_amount():
     pass
 
+
 @given(parsers.parse("User set to {asset} min and max amount"), target_fixture="get_assets_with_min_max_volume")
 def get_assets_with_min_max_volume(asset):
 
     response = assetsInfo.get_asset_by_id(asset)
-    assert response != None, f"Error of getting asset"
+    assert response is not None, f"Error of getting asset"
     
     min_vol = helper.string_to_decimal(
-        str(settings.balance_asssets[asset]* 0.2) #20%
+        str(settings.balance_asssets[asset] * 0.2)  # 20%
     )
-    assert min_vol != None, f"Error of getting min volume as dict"
+    assert min_vol is not None, f"Error of getting min volume as dict"
     
     max_vol = helper.string_to_decimal(
-        str(settings.balance_asssets[asset]*0.5) #50%
+        str(settings.balance_asssets[asset]*0.5)  # 50%
     )
-    assert max_vol != None, f"Error of getting max volume as dict"
+    assert max_vol is not None, f"Error of getting max volume as dict"
 
     min_max = {
         "MaxTradeValue": max_vol,
@@ -242,7 +259,10 @@ def get_assets_with_min_max_volume(asset):
 @given(parsers.parse("User try to get quote with {min_max} amout and fixed {fixed}"))
 def get_quote_with_min_max_volume(min_max, fixed, auth, get_assets_with_min_max_volume):
     try:
-        token = auth(settings.me_tests_email, settings.me_tests_password)
+        token = auth(
+            settings.me_tests_email,
+            settings.me_tests_password
+        )['token']
         swapApi = Swap()
         if min_max == 'min':
             volume = get_assets_with_min_max_volume['min_float'] - (get_assets_with_min_max_volume['min_float'] * 0.1 )
@@ -250,21 +270,23 @@ def get_quote_with_min_max_volume(min_max, fixed, auth, get_assets_with_min_max_
             volume = get_assets_with_min_max_volume['max_float'] + (get_assets_with_min_max_volume['max_float'] * 0.1 )
         if fixed:
             quote = swapApi.get_quote(
-                token,
-                get_assets_with_min_max_volume['asset'],
-                choice(list(settings.balance_asssets.keys())),
-                volume,
-                True,
-                'MIN_MAX_TESTS'
+                token=token,
+                _from=get_assets_with_min_max_volume['asset'],
+                to=choice(list(settings.balance_asssets.keys())),
+                fromToVol=volume,
+                fix=True,
+                recurringBuy=False,
+                specspecific_case=True
             )
         else:
             quote = swapApi.get_quote(
-                token, 
-                choice(list(settings.balance_asssets.keys())),
-                get_assets_with_min_max_volume['asset'],
-                volume,
-                False,
-                'MIN_MAX_TESTS'
+                token=token,
+                _from=choice(list(settings.balance_asssets.keys())),
+                to=get_assets_with_min_max_volume['asset'],
+                fromToVol=volume,
+                fix=False,
+                recurringBuy=False,
+                specspecific_case=True
             )
         expected_response = 'AmountIsSmall' if min_max == 'min' else 'AmountToLarge'
         print(f"quote: {quote}")

@@ -13,7 +13,7 @@ import settings
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
     print(f'call get_balance ')
-    token = auth(settings.me_tests_email, settings.me_tests_password)
+    token = auth(settings.me_tests_email, settings.me_tests_password)['token']
     balances = Wallet().balances(token)
     assert type(balances) == list
     assert len(balances) > 0
@@ -87,7 +87,10 @@ def balance_change_after_transfer(get_balance, send_transfer):
 
 @then('Receive user has new record in operation history', target_fixture="receive_operation_history")
 def receive_operation_history(auth, send_transfer):
-    token = auth(settings.me_tests_receive_email, settings.me_tests_password)
+    token = auth(
+        settings.me_tests_receive_email,
+        settings.me_tests_password
+    )['token']
     counter = 0 
     while True:
         counter += 1
@@ -202,7 +205,10 @@ def change_balance_after_withdrawal(get_balance, create_withdrawal):
 
 @then('Receive user has new record(deposit) in operation history', target_fixture="deposit_operation_history")
 def deposit_operation_history(auth, create_withdrawal):
-    token = auth(settings.me_tests_receive_email, settings.me_tests_password)
+    token = auth(
+        settings.me_tests_receive_email,
+        settings.me_tests_password
+    )['token']
     counter = 0 
     while True:
         counter += 1

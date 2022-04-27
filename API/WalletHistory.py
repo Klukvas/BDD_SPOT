@@ -89,7 +89,8 @@ class WalletHistory(MainObj):
             raise RequestError(
                 f"Negative status code from {url}: code {r.status_code}"
             )
-    def operations_history(self, token, asset=None) -> dict or list[dict] or int:
+
+    def operations_history(self, token, asset=None, specific_case=False) -> dict or list[dict] or int:
         if asset:
             url = f"{self.main_url}operation-history?assetId={asset}"
         else:
@@ -103,7 +104,8 @@ class WalletHistory(MainObj):
                 pkcs12_password=self.cert_pass,
                 verify=False,
                 headers=headers)
-
+        if specific_case:
+            return {"response": r.text, "code": r.status_code}
         if r.status_code == 200:
             parse_resp = json.loads(r.text)
             try:

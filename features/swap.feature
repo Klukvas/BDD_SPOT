@@ -1,6 +1,7 @@
-@swap
+
 Feature: Swap
     Convert one crypto to another
+    @swap
     Scenario Outline: Make a swap
         Given Some crypto on balance
         When User gets swap quote with from fixed <isFromFixed> from asset <fromAsset> to  asset <toAsset>
@@ -29,6 +30,7 @@ Feature: Swap
             | LTC       | BCH       | False       |
             | ETH       | LTC       | False       |
             | BCH       | BTC       | False       |
+
     Scenario: Swap with amount more than balance
         Given User try to get quote with amount more than has on balance. User get an lowBalance error
     Scenario: Swap with nonexisting asset from
