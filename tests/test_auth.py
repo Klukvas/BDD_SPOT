@@ -62,7 +62,6 @@ def transfer_with_blocker(auth, change_password_blocker):
     assert wd_data['result'] == 'OperationBlocked'
 
 
-
 @scenario(f'../features/auth.feature', 'Blocker after incorrect password')
 def test_inc_password_blocker():
     pass

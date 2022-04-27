@@ -43,11 +43,14 @@ class MessageNotFound(Exception):
 class SoupGeneratingError(Exception):
     pass
 
+
 class TooManyMessagesFound(Exception):
     pass
 
+
 class CanNotFindTemplateData(Exception):
     pass
+
 
 class CanNotFindKey(Exception):
     def __init__(self, url, *args):
@@ -60,6 +63,7 @@ class CanNotFindKey(Exception):
         if self.message:
             msg += f'\nException message:\n{self.message}'
         return msg
+
 
 class ParsingError(Exception):
     pass
