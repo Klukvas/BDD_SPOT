@@ -105,16 +105,16 @@ def pytest_bdd_before_scenario(request, feature, scenario):
             token = Auth(
                 settings.template_tests_email,
                 settings.template_tests_password
-            ).authenticate()['token']
+            ).authenticate()['response']['data']['token']
             client_Id = settings.template_tests_client_id
         else:
             token = Auth(
                 settings.me_tests_email,
                 settings.me_tests_password
-            ).authenticate()['token']
+            ).authenticate()['response']['data']['token']
             client_Id = settings.me_tests_client_id
 
-        balances = Wallet().balances(token)
+        balances = Wallet().balances(token)['response']['data']['balances']
         assets_not_in_balance = [
             asset
             for asset in settings.balance_asssets.keys()
@@ -168,14 +168,16 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                 f'SP-{client_Id}',
                 item[0]
             )
-            assert bl_change_result != None, 'Ошибка при пополнении баланса'
+            assert bl_change_result is not None, 'Ошибка при пополнении баланса'
+
 
 def pytest_bdd_after_scenario(request, feature, scenario):
     sleep(10)
 
+
 def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args) :
     print(f'Step: {step} of scenario: {scenario.name} PASSED')
 
+
 def pytest_bdd_step_error(request, feature, scenario, step, step_func, step_func_args, exception):
     print(f'Step: {step} of scenario: {scenario.name} FAILED\nException: {exception}')
-
