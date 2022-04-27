@@ -82,16 +82,11 @@ class Verify(MainObj):
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
-        try:
-            r = get(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify=False,
-                headers=headers)
-        except Exception as err:
-            raise RequestError(
-                f"Error with sending request to withdrawal-verification\nError: {err}"
-            )
+        r = get(url,
+            pkcs12_filename=self.cert_name,
+            pkcs12_password=self.cert_pass,
+            verify=False,
+            headers=headers)
         try:
             soup = BeautifulSoup(r.text, 'html.parser')
             title = soup.find('title').text
@@ -108,16 +103,11 @@ class Verify(MainObj):
             'Content-Type': 'application/json'
         }
 
-        try:
-            r = get(url,
-                    pkcs12_filename=self.cert_name,
-                    pkcs12_password=self.cert_pass,
-                    verify=False,
-                    headers=headers)
-        except Exception as err:
-            raise RequestError(
-                f"Error with sending request to withdrawal-verification Error {err}"
-            )
+        r = get(url,
+                pkcs12_filename=self.cert_name,
+                pkcs12_password=self.cert_pass,
+                verify=False,
+                headers=headers)
         try:
             soup = BeautifulSoup(r.text, 'html.parser')
             title = soup.find('title').text

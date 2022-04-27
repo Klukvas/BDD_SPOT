@@ -33,9 +33,7 @@ class Wallet(MainObj):
                     f"Can not parse response from wallet-balances with Error: {err}"
                 )
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)
 
 
     def converter_map(self, asset,  token) -> list[dict] or int:
@@ -60,6 +58,4 @@ class Wallet(MainObj):
                     f"Can not parse response from base-currency-converter-map with Error: {err}"
                 )
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)

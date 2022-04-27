@@ -2,7 +2,7 @@ import time
 from API.Swap import Swap
 from API.WalletHistory import WalletHistory
 from API.Invest import Invest
-from API.Exceptions import RequestError, SomethingWentWrong, CantParseJSON
+from API.Exceptions import *
 from pytest_bdd import scenarios, given, when, then, parsers
 import settings
 import inspect

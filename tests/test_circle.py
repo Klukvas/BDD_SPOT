@@ -1,7 +1,7 @@
 from API.WalletHistory import WalletHistory
 from API.Circle import Circle
 from API.Wallet import Wallet
-from API.Exceptions import RequestError, SomethingWentWrong, CantParseJSON
+from API.Exceptions import *
 from pytest_bdd import scenarios, given, when, then, parsers
 from time import sleep
 import settings
@@ -54,16 +54,9 @@ def add_bank_account(auth, bank_country, billing_country, account_number, routin
         settings.circle_email,
         settings.circle_password
     )['token']
-    try:
-        response = Circle().add_bank_account(token, bank_country, billing_country,
-                                             account_number, iban, routing_number, guid)
-        return response
-    except RequestError:
-        assert 1 == 0, 'Cant send add_bank_account request'
-    except CantParseJSON:
-        assert 1 == 0, 'Cant parse json from add_bank_account response'
-    except SomethingWentWrong:
-        assert 1 == 0, 'Something went wrong while sending add_bank_account request'
+    response = Circle().add_bank_account(token, bank_country, billing_country,
+                                         account_number, iban, routing_number, guid)
+    return response
 
 @then('User create deposit via card', target_fixture="create_deposit")
 def create_deposit(add_card, get_enc_key, enc_data):
@@ -145,17 +138,10 @@ def add_bank_account(auth, variables_dict):
         settings.circle_email,
         settings.circle_password
     )['token']
-    try:
-        response = Circle().add_bank_account(token, variables_dict['bank_country'], variables_dict['billing_country'],
-                                             variables_dict['account_number'], variables_dict['iban'],
-                                             variables_dict['routing_number'], variables_dict['guid'])
-        return response
-    except RequestError:
-        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
-    except CantParseJSON:
-        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
-    except SomethingWentWrong:
-        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+    response = Circle().add_bank_account(token, variables_dict['bank_country'], variables_dict['billing_country'],
+                                         variables_dict['account_number'], variables_dict['iban'],
+                                         variables_dict['routing_number'], variables_dict['guid'])
+    return response
 
 @then(parsers.parse('response status code has to be equals to {status_code}'))
 def check_response_status_code(status_code, response):
@@ -219,7 +205,7 @@ def get_all_bank_accounts(auth, count):
             settings.circle_empty_bank_accounts_email,
             settings.circle_empty_bank_accounts_password
         )['token']
-    try:
+
         response = Circle().get_bank_account_all(token)
         response['token'] = token
         response['accounts_count'] = len(response['data']['data'])
@@ -228,12 +214,6 @@ def get_all_bank_accounts(auth, count):
         except IndexError:
             pass
         return response
-    except RequestError:
-        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
-    except CantParseJSON:
-        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
-    except SomethingWentWrong:
-        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
 
 @when(parsers.parse("user send request to get all bank accounts ({count})"), target_fixture='response')
 def get_all_bank_accounts_1(auth, count):
@@ -247,7 +227,7 @@ def get_all_bank_accounts_1(auth, count):
             settings.circle_empty_bank_accounts_email,
             settings.circle_empty_bank_accounts_password
         )['token']
-    try:
+
         response = Circle().get_bank_account_all(token)
         response['token'] = token
         response['accounts_count'] = len(response['data']['data'])
@@ -256,12 +236,6 @@ def get_all_bank_accounts_1(auth, count):
         except IndexError:
             pass
         return response
-    except RequestError:
-        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
-    except CantParseJSON:
-        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
-    except SomethingWentWrong:
-        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
 
 @then('response must contains info about all bank accounts')
 def check_all_bank_accounts(response):
@@ -315,7 +289,7 @@ def get_bank_account(auth, state):
             settings.circle_email,
             settings.circle_password
         )['token']
-    try:
+
         if state == 'if it exist':
             response = Circle().get_bank_account(token, settings.circle_my_bank_account_id)
         elif state == "if bank_account_id is not my":
@@ -327,12 +301,6 @@ def get_bank_account(auth, state):
         elif state == 'if bank_account_id is invalid':
             response = Circle().get_bank_account(token, settings.circle_invalid_bank_account_id)
         return response
-    except RequestError:
-        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
-    except CantParseJSON:
-        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
-    except SomethingWentWrong:
-        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
 
 @then('response must contains info about bank account')
 def check_get_bank_account(response):
@@ -383,16 +351,10 @@ def get_resp(resp):
 @when('user send request to delete bank account', target_fixture='response')
 def delete_bank_account(resp):
     bankaccountid_to_delete = resp['bankaccountid_to_delete']
-    try:
-        response = Circle().delete_bank_account(resp['token'], bankaccountid_to_delete)
-        response['deleted_bankaccountid'] = bankaccountid_to_delete
-        return response
-    except RequestError:
-        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
-    except CantParseJSON:
-        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
-    except SomethingWentWrong:
-        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+
+    response = Circle().delete_bank_account(resp['token'], bankaccountid_to_delete)
+    response['deleted_bankaccountid'] = bankaccountid_to_delete
+    return response
 
 @then('response must contains deleted true')
 def check_delete_bank_account_response(response):
@@ -419,25 +381,12 @@ def delete_bank_account_2(auth, resp):
         settings.circle_empty_bank_accounts_email,
         settings.circle_empty_bank_accounts_password
     )['token']
-    try:
-        response = Circle().delete_bank_account(token, resp['bankaccountid_to_delete'])
-        return response
-    except RequestError:
-        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
-    except CantParseJSON:
-        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
-    except SomethingWentWrong:
-        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+
+    response = Circle().delete_bank_account(token, resp['bankaccountid_to_delete'])
+    return response
 
 @when('user send request to delete bank account without token', target_fixture='response')
 def delete_bank_account_3(resp):
-    try:
-        response = Circle().delete_bank_account('', resp['bankaccountid_to_delete'])
-        return response
-    except RequestError:
-        assert 1 == 0, f'Cant send {inspect.stack()[0][3]} request'
-    except CantParseJSON:
-        assert 1 == 0, f'Cant parse json from {inspect.stack()[0][3]} response'
-    except SomethingWentWrong:
-        assert 1 == 0, f'Something went wrong while sending {inspect.stack()[0][3]} request'
+    response = Circle().delete_bank_account('', resp['bankaccountid_to_delete'])
+    return response
 

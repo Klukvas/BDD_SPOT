@@ -32,9 +32,8 @@ class WalletHistory(MainObj):
                     f"Can not parse response from: balance-history with Error: {err}"
                 )
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)
+
     def swap(self, token) -> list[dict] or int:
         url = f"{self.main_url}swap-history"
         payload={}
@@ -61,9 +60,8 @@ class WalletHistory(MainObj):
             else:
                 return hist
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)
+
     def trade(self, token) -> list[dict] or int:
         url = f"{self.main_url}trade-history"
         payload={}
@@ -86,9 +84,7 @@ class WalletHistory(MainObj):
                     f"Can not parse response from: balance-history with Error: {err}"
                 )
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)
 
     def operations_history(self, token, asset=None, specific_case=False) -> dict or list[dict] or int:
         if asset:
@@ -115,6 +111,4 @@ class WalletHistory(MainObj):
                     f"Can not parse response from: operation-history with Error: {err}"
                 )
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)

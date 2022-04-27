@@ -284,14 +284,11 @@ class Circle(MainObj):
             "routingNumber": f'{routing_number}'
         }
 
-        try:
-            r = post(url,
-                pkcs12_filename=self.cert_name,
-                pkcs12_password=self.cert_pass,
-                verify=False,
-                headers=headers, json=payload)
-        except:
-            raise RequestError
+        r = post(url,
+            pkcs12_filename=self.cert_name,
+            pkcs12_password=self.cert_pass,
+            verify=False,
+            headers=headers, json=payload)
 
         if isinstance(r, Response):
             if r.status_code == 200:
@@ -301,7 +298,7 @@ class Circle(MainObj):
                     raise CantParseJSON
                 return {'status': r.status_code, 'data': resp}
             else:
-                return {'status': r.status_code, 'data': None}
+                raise RequestError(url, r.status_code)
         else:
             raise SomethingWentWrong
 
@@ -313,14 +310,11 @@ class Circle(MainObj):
             'Content-Type': 'application/json'
         }
 
-        try:
-            r = get(url,
-                    pkcs12_filename=self.cert_name,
-                    pkcs12_password=self.cert_pass,
-                    verify=False,
-                    headers=headers)
-        except:
-            raise RequestError
+        r = get(url,
+                pkcs12_filename=self.cert_name,
+                pkcs12_password=self.cert_pass,
+                verify=False,
+                headers=headers)
 
         if isinstance(r, Response):
             if r.status_code == 200:
@@ -330,7 +324,7 @@ class Circle(MainObj):
                     raise CantParseJSON
                 return {'status': r.status_code, 'data': resp}
             else:
-                return {'status': r.status_code, 'data': None}
+                raise RequestError(url, r.status_code)
         else:
             raise SomethingWentWrong
 
@@ -349,15 +343,12 @@ class Circle(MainObj):
             "bankAccountId": f"{bank_account_id}"
         }
 
-        try:
-            r = post(url,
-                     pkcs12_filename=self.cert_name,
-                     pkcs12_password=self.cert_pass,
-                     verify=False,
-                     headers=headers,
-                     json=payload)
-        except:
-            raise RequestError
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers,
+                 json=payload)
 
         if isinstance(r, Response):
             if r.status_code == 200:
@@ -367,7 +358,7 @@ class Circle(MainObj):
                     raise CantParseJSON
                 return {'status': r.status_code, 'data': resp}
             else:
-                return {'status': r.status_code, 'data': None}
+                raise RequestError(url, r.status_code)
         else:
             raise SomethingWentWrong
 
@@ -386,15 +377,12 @@ class Circle(MainObj):
             "bankAccountId": f"{bank_account_id}"
         }
 
-        try:
-            r = post(url,
-                     pkcs12_filename=self.cert_name,
-                     pkcs12_password=self.cert_pass,
-                     verify=False,
-                     headers=headers,
-                     json=payload)
-        except Exception as err:
-            raise RequestError
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers,
+                 json=payload)
 
         if isinstance(r, Response):
             if r.status_code == 200:
@@ -404,6 +392,6 @@ class Circle(MainObj):
                     raise CantParseJSON
                 return {'status': r.status_code, 'data': resp}
             else:
-                return {'status': r.status_code, 'data': None}
+                raise RequestError(url, r.status_code)
         else:
             raise SomethingWentWrong

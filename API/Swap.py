@@ -61,9 +61,7 @@ class Swap(MainObj):
                     f"Can not find all keys from api/get-quote. Error: {err}"
                 )
         else:
-            raise RequestError(
-                f"Negative status code of response from api/get-quote. Status code: {r.status_code}"
-            )
+            raise RequestError(url, r.status_code)
 
     def execute_quote(self, token, body) -> dict or int or list:
         url = f"{self.main_url}execute-quote"
@@ -93,6 +91,4 @@ class Swap(MainObj):
                     f"Can not find all keys from api/execute-quote. Error: {err}"
                 )
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(url, r.status_code)

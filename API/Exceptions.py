@@ -1,18 +1,24 @@
 class RequestError(Exception):
-    pass
+    def __init__(self, url, status_code, *args):
+        self.url = url
+        self.status_code = status_code
+        if args:
+            self.message = args[0]
 
+    def __str__(self):
+        msg = f'Negative status code from {self.url}. Status code is {self.status_code}'
+        if self.message:
+            msg += f'\n{self.message}'
+        return msg
 
 class SomethingWentWrong(Exception):
     pass
 
-
 class CantParseJSON(Exception):
     pass
 
-
 class MessageNotFound(Exception):
     pass
-
 
 class SoupGeneratingError(Exception):
     pass
@@ -28,6 +34,7 @@ class CanNotFindKey(Exception):
 
 class ParsingError(Exception):
     pass
+
 #
 #
 # class ExceptionsFabric:

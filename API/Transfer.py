@@ -31,16 +31,11 @@ class Transfer(MainObj):
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
-        try:
-            r = post(url,
-                    pkcs12_filename=self.cert_name,
-                    pkcs12_password=self.cert_pass,
-                    verify = False,
-                    headers=headers, data=payload)
-        except Exception as err:
-            raise RequestError(
-                f"Error sending request to {url}.\n{err}"
-            )
+        r = post(url,
+                pkcs12_filename=self.cert_name,
+                pkcs12_password=self.cert_pass,
+                verify=False,
+                headers=headers, data=payload)
 
         try:
             parse_resp = json.loads(r.text)
