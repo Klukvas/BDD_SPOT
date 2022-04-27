@@ -72,17 +72,9 @@ class Auth(MainObj):
                         "refreshToken": parse_resp['refreshToken']
                     }
                 except Exception as error:
-                    raise CantParseJSON(
-                        f'''
-                             Can not parse json.
-                             Response from api/Register: {r.text} with status code: {r.status_code}
-                             Error message: {error}
-                         '''
-                    )
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
             else:
-                raise RequestError(
-                    f"Negative status code from {url}: code {r.status_code}"
-                )
+                raise RequestError(url, r.status_code)
 
 
     def authenticate(self, specific_case=False) -> dict:
@@ -104,18 +96,9 @@ class Auth(MainObj):
                         "refreshToken": parse_resp['refreshToken']
                     }
                 except Exception as error:
-                    raise CantParseJSON(
-                        f'''
-                            Can not parse json.
-                            Response from api/Authenticate: {r.text} with status code: {r.status_code}
-                            Error message: {error}
-                        '''
-                    )
-
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
             else:
-                raise RequestError(
-                    f"Negative status code from {url}: code {r.status_code}"
-                )
+                raise RequestError(url, r.status_code)
 
     def change_password(self, token, oldPassword, newPassword, *args) -> list[str] or int or dict:
         url = f"{self.main_url}ChangePassword"
@@ -142,18 +125,9 @@ class Auth(MainObj):
                     parse_resp = json.loads(r.text)['result']
                     return {'result': parse_resp}
                 except Exception as error:
-                    raise CantParseJSON(
-                        f'''
-                            Can not parse json.
-                            Response from api/ChangePassword: {r.text} with status code: {r.status_code}
-                            Error message: {error}
-                        '''
-                    )
-
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
             else:
-                raise RequestError(
-                    f"Negative status code from {url}: code {r.status_code}"
-                )
+                raise RequestError(url, r.status_code)
 
     def forgot_password(self, email) -> list[str] or int:
         url = f"{self.main_url}ForgotPasswordCode"
@@ -174,18 +148,9 @@ class Auth(MainObj):
                 parse_resp = json.loads(r.text)
                 return [parse_resp['result']]
             except Exception as error:
-                raise CantParseJSON(
-                    f'''
-                        Can not parse json.
-                        Response from api/ForgotPasswordCode: {r.text} with status code: {r.status_code}
-                        Error message: {error}
-                    '''
-                )
-
+                raise CantParseJSON(r.url, r.text, r.status_code, error)
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(url, r.status_code)
 
     def password_recovery(self, password, code) -> list[str] or int:
         url = f"{self.main_url}PasswordRecoveryCode"
@@ -206,18 +171,9 @@ class Auth(MainObj):
                 parse_resp = json.loads(r.text)
                 return [parse_resp['result']]
             except Exception as error:
-                raise CantParseJSON(
-                    f'''
-                        Can not parse json.
-                        Response from api/PasswordRecoveryCode: {r.text} with status code: {r.status_code}
-                        Error message: {error}
-                    '''
-                )
-
+                raise CantParseJSON(r.url, r.text, r.status_code, error)
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(url, r.status_code)
 
     def logout(self, token) -> list[str] or int or dict:
         url = f"{self.main_url}Logout"
@@ -237,18 +193,9 @@ class Auth(MainObj):
                 parse_resp = json.loads(r.text)
                 return {"response": parse_resp}
             except Exception as error:
-                raise CantParseJSON(
-                    f'''
-                        Can not parse json.
-                        Response from api/Logout: {r.text} with status code: {r.status_code}
-                        Error message: {error}
-                    '''
-                )
-
+                raise CantParseJSON(r.url, r.text, r.status_code, error)
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(url, r.status_code)
 
     def refresh(self, refreshToken) -> list[str] or int or dict:
         url = f"{self.main_url}RefreshToken"
@@ -268,15 +215,6 @@ class Auth(MainObj):
                 parse_resp = json.loads(r.text)
                 return {"response": parse_resp}
             except Exception as error:
-                raise CantParseJSON(
-                    f'''
-                        Can not parse json.
-                        Response from api/RefreshToken: {r.text} with status code: {r.status_code}
-                        Error message: {error}
-                    '''
-                )
-
+                raise CantParseJSON(r.url, r.text, r.status_code, error)
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(url, r.status_code)

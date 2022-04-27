@@ -36,34 +36,24 @@ class Swap(MainObj):
             try:
                 parse_resp = json.loads(r.text)
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse json from api/get-quote. Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
             try:
                 if specific_case:
                     return parse_resp['result']
                 return parse_resp['data']
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not find all keys from api/get-quote. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         elif r.status_code == 400 and specific_case:
             try:
                 parse_resp = json.loads(r.text)
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse json from api/get-quote. Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
             try:
                 return {"response": parse_resp, "code": 400}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not find all keys from api/get-quote. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         else:
-            raise RequestError(
-                f"Negative status code of response from api/get-quote. Status code: {r.status_code}"
-            )
+            raise RequestError(url, r.status_code)
 
     def execute_quote(self, token, body) -> dict or int or list:
         url = f"{self.main_url}execute-quote"
@@ -83,16 +73,10 @@ class Swap(MainObj):
             try:
                 parse_resp = json.loads(r.text)
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse json from api/execute-quote. Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
             try:
                 return parse_resp['data']
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not find all keys from api/execute-quote. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(url, r.status_code)

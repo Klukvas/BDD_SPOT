@@ -34,16 +34,9 @@ class Verify(MainObj):
             try:
                 return {"data": parse_resp['result']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not get all nedee keys from response of email-verification/verify Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"""
-                    Can not parse response from email-verification/verify
-                    Error: {err}
-                """
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
     
     def client_data(self, token):
         url = f"https://wallet-api-uat.simple-spot.biz/api/v1/info/session-info"
@@ -64,16 +57,9 @@ class Verify(MainObj):
             try:
                 return {"data": parse_resp['data'] }
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not get all nedee keys from response of api/session-info Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"""
-                    Can not parse response from api/session-info
-                    Error: {err}
-                """
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def verify_withdrawal(self, token, withdrawalProcessId):
         url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={withdrawalProcessId}&code=000000"
@@ -82,16 +68,11 @@ class Verify(MainObj):
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
-        try:
-            r = get(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify=False,
-                headers=headers)
-        except Exception as err:
-            raise RequestError(
-                f"Error with sending request to withdrawal-verification\nError: {err}"
-            )
+        r = get(url,
+            pkcs12_filename=self.cert_name,
+            pkcs12_password=self.cert_pass,
+            verify=False,
+            headers=headers)
         try:
             soup = BeautifulSoup(r.text, 'html.parser')
             title = soup.find('title').text
@@ -108,16 +89,11 @@ class Verify(MainObj):
             'Content-Type': 'application/json'
         }
 
-        try:
-            r = get(url,
-                    pkcs12_filename=self.cert_name,
-                    pkcs12_password=self.cert_pass,
-                    verify=False,
-                    headers=headers)
-        except Exception as err:
-            raise RequestError(
-                f"Error with sending request to withdrawal-verification Error {err}"
-            )
+        r = get(url,
+                pkcs12_filename=self.cert_name,
+                pkcs12_password=self.cert_pass,
+                verify=False,
+                headers=headers)
         try:
             soup = BeautifulSoup(r.text, 'html.parser')
             title = soup.find('title').text

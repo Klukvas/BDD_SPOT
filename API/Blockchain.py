@@ -33,7 +33,7 @@ class Blockchain(MainObj):
         r = post(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
+                verify=False,
                 headers=headers, data=payload)
         try:
             parse_resp = json.loads(r.text)
@@ -43,10 +43,6 @@ class Blockchain(MainObj):
                 try:
                     return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId)}
                 except Exception as error:
-                    raise CantParseJSON(
-                        f"Can not get all nedeed keys from response of api/withdrawal. Error message: {error}"
-                    )
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
         except Exception as error:
-            raise CantParseJSON(
-                f"Can not parse response from api/withdrawal. Error message: {error}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, error)

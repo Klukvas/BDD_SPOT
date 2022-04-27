@@ -28,13 +28,10 @@ class WalletHistory(MainObj):
                 parse_resp = json.loads(r.text)
                 return parse_resp['data']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from: balance-history with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)
+
     def swap(self, token) -> list[dict] or int:
         url = f"{self.main_url}swap-history"
         payload={}
@@ -53,17 +50,14 @@ class WalletHistory(MainObj):
                 parse_resp = json.loads(r.text)
                 hist = parse_resp['data']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from: balance-history with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
             if hist is None:
                 return []
             else:
                 return hist
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)
+
     def trade(self, token) -> list[dict] or int:
         url = f"{self.main_url}trade-history"
         payload={}
@@ -82,13 +76,9 @@ class WalletHistory(MainObj):
             try:
                 return parse_resp['data']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from: balance-history with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)
 
     def operations_history(self, token, asset=None, specific_case=False) -> dict or list[dict] or int:
         if asset:
@@ -111,10 +101,6 @@ class WalletHistory(MainObj):
             try:
                 return parse_resp['data']
             except Exception as err:
-                raise CantParseJSON(
-                    f"Can not parse response from: operation-history with Error: {err}"
-                )
+                raise CantParseJSON(r.url, r.text, r.status_code, err)
         else:
-            raise RequestError(
-                f"Negative status code from {url}: code {r.status_code}"
-            )
+            raise RequestError(r.url, r.status_code)

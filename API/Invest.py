@@ -2,7 +2,7 @@ from requests_pkcs12 import post, delete
 import settings
 from API.Main import MainObj
 from requests import Response
-from API.Exceptions import RequestError, SomethingWentWrong, CantParseJSON
+from API.Exceptions import *
 
 def parse_response(r):
     if isinstance(r, Response):
@@ -10,12 +10,13 @@ def parse_response(r):
             try:
                 resp = r.json()
                 return {'status': r.status_code, 'data': resp}
-            except:
-                raise CantParseJSON(str({'status': r.status_code, 'data': r.text}))
+            except Exception as error:
+                raise CantParseJSON(r.url, r.text, r.status_code, error)
         else:
             return {'status': r.status_code, 'data': None}
+            # raise RequestError(r.url, r.status_code)
     else:
-        raise SomethingWentWrong
+        raise SomethingWentWrong(r)
 
 class Invest(MainObj):
     def __init__(self) -> None:
@@ -26,13 +27,10 @@ class Invest(MainObj):
         url = f"{self.main_url}create"
         headers = {'Authorization': f'Bearer {token}'}
         payload = {'quoteId': quote_id, 'scheduleType': schedule_type}
-        try:
-            r = post(url,
-                     pkcs12_filename=self.cert_name,
-                     pkcs12_password=self.cert_pass,
-                     verify=False, headers=headers, json=payload)
-        except:
-            raise RequestError(f'url: {url}\nheaders: {headers}\npayload: {payload}')
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                verify=False, headers=headers, json=payload)
 
         return parse_response(r)
 
@@ -43,13 +41,10 @@ class Invest(MainObj):
         url = f"{self.main_url}switch"
         headers = {'Authorization': f'Bearer {token}'}
         payload = {'instructionId': instruction_id, 'isEnable': is_enable}
-        try:
-            r = post(url,
-                     pkcs12_filename=self.cert_name,
-                     pkcs12_password=self.cert_pass,
-                     verify=False, headers=headers, json=payload)
-        except:
-            raise RequestError(f'url: {url}\nheaders: {headers}\npayload: {payload}')
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False, headers=headers, json=payload)
 
         return parse_response(r)
 
@@ -57,12 +52,9 @@ class Invest(MainObj):
         url = f"{self.main_url}delete"
         headers = {'Authorization': f'Bearer {token}'}
         payload = {'instructionId': instruction_id}
-        try:
-            r = delete(url,
-                     pkcs12_filename=self.cert_name,
-                     pkcs12_password=self.cert_pass,
-                     verify=False, headers=headers, json=payload)
-        except:
-            raise RequestError(f'url: {url}\nheaders: {headers}\npayload: {payload}')
+        r = delete(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False, headers=headers, json=payload)
 
         return parse_response(r)

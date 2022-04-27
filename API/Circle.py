@@ -33,13 +33,9 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def encrypt_data(self, token, enc_key):
         url = f"{self.debug_url}circle-encrypt-data"
@@ -64,13 +60,9 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
     
     def add_card(self, token, encryption_data, keyId):
         url = f"{self.main_url}add-card"
@@ -105,13 +97,9 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data'] }
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def create_payment(self, token, encryption_data, keyId, cardId, currency='USD', amount=10):
         url = f"{self.main_url}create-payment"
@@ -140,13 +128,9 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def delete_card(self, token, cardId):
         url = f"{self.main_url}delete-card"
@@ -170,13 +154,9 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data'] }
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
     
     def get_card(self, token, cardId):
         url = f"{self.main_url}get-card"
@@ -200,13 +180,9 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data'] }
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def get_all_cards(self, token):
         url = f"{self.main_url}get-cards-all"
@@ -227,13 +203,9 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
-            raise CantParseJSON(
-                f"Can not parse response from api/get-encryption-key. Error: {err}"
-            )
+            raise CantParseJSON(r.url, r.text, r.status_code, err)
 
     def add_bank_account(self, token: str, bank_country: str, billing_country: str, account_number: str,
                          iban: str, routing_number: str, guid: str) -> dict:
@@ -284,26 +256,23 @@ class Circle(MainObj):
             "routingNumber": f'{routing_number}'
         }
 
-        try:
-            r = post(url,
-                pkcs12_filename=self.cert_name,
-                pkcs12_password=self.cert_pass,
-                verify=False,
-                headers=headers, json=payload)
-        except:
-            raise RequestError
+        r = post(url,
+            pkcs12_filename=self.cert_name,
+            pkcs12_password=self.cert_pass,
+            verify=False,
+            headers=headers, json=payload)
 
         if isinstance(r, Response):
             if r.status_code == 200:
                 try:
                     resp = r.json()
-                except:
-                    raise CantParseJSON
+                except Exception as error:
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
                 return {'status': r.status_code, 'data': resp}
             else:
-                return {'status': r.status_code, 'data': None}
+                raise RequestError(url, r.status_code)
         else:
-            raise SomethingWentWrong
+            raise SomethingWentWrong(r)
 
     def get_bank_account_all(self, token: str) -> dict:
         url = f"{self.main_url}get-bank-account-all"
@@ -313,26 +282,23 @@ class Circle(MainObj):
             'Content-Type': 'application/json'
         }
 
-        try:
-            r = get(url,
-                    pkcs12_filename=self.cert_name,
-                    pkcs12_password=self.cert_pass,
-                    verify=False,
-                    headers=headers)
-        except:
-            raise RequestError
+        r = get(url,
+                pkcs12_filename=self.cert_name,
+                pkcs12_password=self.cert_pass,
+                verify=False,
+                headers=headers)
 
         if isinstance(r, Response):
             if r.status_code == 200:
                 try:
                     resp = r.json()
-                except:
-                    raise CantParseJSON
+                except Exception as error:
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
                 return {'status': r.status_code, 'data': resp}
             else:
-                return {'status': r.status_code, 'data': None}
+                raise RequestError(url, r.status_code)
         else:
-            raise SomethingWentWrong
+            raise SomethingWentWrong(r)
 
     def delete_bank_account(self, token: str, bank_account_id: str) -> dict:
         url = f"{self.main_url}delete-bank-account"
@@ -349,27 +315,24 @@ class Circle(MainObj):
             "bankAccountId": f"{bank_account_id}"
         }
 
-        try:
-            r = post(url,
-                     pkcs12_filename=self.cert_name,
-                     pkcs12_password=self.cert_pass,
-                     verify=False,
-                     headers=headers,
-                     json=payload)
-        except:
-            raise RequestError
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers,
+                 json=payload)
 
         if isinstance(r, Response):
             if r.status_code == 200:
                 try:
                     resp = r.json()
-                except:
-                    raise CantParseJSON
+                except Exception as error:
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
                 return {'status': r.status_code, 'data': resp}
             else:
-                return {'status': r.status_code, 'data': None}
+                raise RequestError(url, r.status_code)
         else:
-            raise SomethingWentWrong
+            raise SomethingWentWrong(r)
 
     def get_bank_account(self, token: str, bank_account_id: str) -> dict:
         url = f"{self.main_url}get-bank-account"
@@ -386,24 +349,21 @@ class Circle(MainObj):
             "bankAccountId": f"{bank_account_id}"
         }
 
-        try:
-            r = post(url,
-                     pkcs12_filename=self.cert_name,
-                     pkcs12_password=self.cert_pass,
-                     verify=False,
-                     headers=headers,
-                     json=payload)
-        except Exception as err:
-            raise RequestError
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers,
+                 json=payload)
 
         if isinstance(r, Response):
             if r.status_code == 200:
                 try:
                     resp = r.json()
-                except:
-                    raise CantParseJSON
+                except Exception as error:
+                    raise CantParseJSON(r.url, r.text, r.status_code, error)
                 return {'status': r.status_code, 'data': resp}
             else:
-                return {'status': r.status_code, 'data': None}
+                raise RequestError(url, r.status_code)
         else:
-            raise SomethingWentWrong
+            raise SomethingWentWrong(r)
