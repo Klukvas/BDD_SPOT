@@ -33,9 +33,7 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
 
@@ -62,9 +60,7 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
     
@@ -101,9 +97,7 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data'] }
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
 
@@ -134,9 +128,7 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
 
@@ -162,9 +154,7 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data'] }
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
     
@@ -190,9 +180,7 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data'] }
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
 
@@ -215,9 +203,7 @@ class Circle(MainObj):
             try:
                 return {"data": parse_resp['data']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
 

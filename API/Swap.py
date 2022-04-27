@@ -42,9 +42,7 @@ class Swap(MainObj):
                     return parse_resp['result']
                 return parse_resp['data']
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not find all keys from api/get-quote. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         elif r.status_code == 400 and specific_case:
             try:
                 parse_resp = json.loads(r.text)
@@ -53,9 +51,7 @@ class Swap(MainObj):
             try:
                 return {"response": parse_resp, "code": 400}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not find all keys from api/get-quote. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         else:
             raise RequestError(url, r.status_code)
 
@@ -81,8 +77,6 @@ class Swap(MainObj):
             try:
                 return parse_resp['data']
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not find all keys from api/execute-quote. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         else:
             raise RequestError(url, r.status_code)

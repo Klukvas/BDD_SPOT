@@ -34,9 +34,7 @@ class Verify(MainObj):
             try:
                 return {"data": parse_resp['result']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not get all nedee keys from response of email-verification/verify Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
     
@@ -59,9 +57,7 @@ class Verify(MainObj):
             try:
                 return {"data": parse_resp['data'] }
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Can not get all nedee keys from response of api/session-info Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
 

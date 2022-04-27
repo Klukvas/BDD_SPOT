@@ -32,9 +32,7 @@ class Simplex(MainObj):
             try:
                 return {"result": parse_resp['result']}
             except Exception as err:
-                raise CanNotFindKey(
-                    f"Response from api/get-encryption-key is not contains all needen keys. Error: {err}"
-                )
+                raise CanNotFindKey(r.url, err)
         except Exception as err:
             raise CantParseJSON(r.url, r.text, r.status_code, err)
 

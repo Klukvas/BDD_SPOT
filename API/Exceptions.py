@@ -50,7 +50,16 @@ class CanNotFindTemplateData(Exception):
     pass
 
 class CanNotFindKey(Exception):
-    pass
+    def __init__(self, url, *args):
+        self.url = url
+        if args:
+            self.message = args[0]
+
+    def __str__(self):
+        msg = f'Response from {self.url} is not contains all needed keys.'
+        if self.message:
+            msg += f'\nException message:\n{self.message}'
+        return msg
 
 class ParsingError(Exception):
     pass
