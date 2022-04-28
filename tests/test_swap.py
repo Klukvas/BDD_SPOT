@@ -92,8 +92,8 @@ def hist(get_balance, exec):
         if len(executed_swap) == 2 and \
                 executed_swap[0]['status'] == 0 and \
                 executed_swap[1]['status'] == 0 and \
-                executed_swap[1]['balanceChange'] is not 0 and \
-                executed_swap[0]['balanceChange'] is not 0:
+                executed_swap[1]['balanceChange'] != 0 and \
+                executed_swap[0]['balanceChange'] != 0:
             break
         elif counter > 5:
             raise ValueError('Can not find operations with status 0 for 15 seconds')

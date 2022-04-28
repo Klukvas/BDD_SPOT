@@ -12,10 +12,8 @@ class Blockchain(MainObj):
         super().__init__()
         self.main_url = settings.url_blockchain
     
-    def withdrawal(self, token, asset, amount, address, specific_case=False):
+    def withdrawal(self, token, uniqId, asset, amount, address, specific_case=False):
         url = f"{self.main_url}withdrawal"
-
-        uniqId = uuid4()
 
         payload = {
                 "requestId": f"{uniqId}",

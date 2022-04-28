@@ -2,6 +2,7 @@ import settings
 from API.Exceptions import *
 from json.decoder import JSONDecodeError
 
+
 class MainObj:
 
     def __init__(self) -> None:

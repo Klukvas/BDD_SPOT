@@ -7,6 +7,7 @@ Feature: Transfer
 
     Scenario Outline: Make a transfer by phone
         When User send <asset> to phone number
+        When User approve transfer by code
         Then User has new record in operation history
         And User`s balance is changed
         And Receive user has new record in operation history

@@ -48,29 +48,38 @@ class Verify(MainObj):
         return self.parse_response(r, specific_case)
 
     def verify_withdrawal(self, token, withdrawalProcessId, specific_case=False):
-        url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={withdrawalProcessId}&code=000000"
-
+        url = f"{self.main_url}withdrawal-verification/verify-code"
+        payload = {
+            "code": "000000",
+            "operationId": withdrawalProcessId,
+            "brand": "simple"
+        }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
-        r = get(url,
+        r = post(url,
             pkcs12_filename=self.cert_name,
             pkcs12_password=self.cert_pass,
             verify=False,
-            headers=headers)
+            headers=headers, json=payload)
         return self.parse_response(r, specific_case)
     
-    def verify_transfer(self, token, code, specific_case=False):
-        url = f"{self.main_url}transfer-verification/verify?transferProcessId={code}&code=000000&brand=simple"
+    def verify_transfer(self, token, operation_id, specific_case=False):
+        url = f"{self.main_url}transfer-verification/verify-code"
+        payload = {
+          "code": "000000",
+          "operationId": operation_id,
+          "brand": "simple"
+        }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
 
-        r = get(url,
+        r = post(url,
                 pkcs12_filename=self.cert_name,
                 pkcs12_password=self.cert_pass,
                 verify=False,
-                headers=headers)
+                headers=headers, json=payload)
         return self.parse_response(r, specific_case)

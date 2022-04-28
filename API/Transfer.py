@@ -1,4 +1,6 @@
 import json
+import uuid
+
 from requests_pkcs12 import post
 from datetime import datetime
 import settings
@@ -12,14 +14,13 @@ class Transfer(MainObj):
         super().__init__()
         self.main_url = settings.url_transfer
 
-    def create_transfer(self, token, phone, asset, amount, specific_case=False) -> dict or list:
+    def create_transfer(self, token, request_id, phone, asset, amount, specific_case=False) -> dict or list:
         url = f"{self.main_url}by-phone"
 
-        uniqId = str(datetime.strftime(datetime.today(), '%m%d%H%s%f'))
         phone_code = phone[:3]
         phone_body = phone[3:]
         payload = {
-            "requestId": uniqId,
+            "requestId": request_id,
             "assetSymbol": asset,
             "amount": amount,
             "lang": "Ru",
