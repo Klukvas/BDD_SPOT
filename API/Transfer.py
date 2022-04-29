@@ -20,7 +20,7 @@ class Transfer(MainObj):
         phone_code = phone[:3]
         phone_body = phone[3:]
         payload = {
-            "requestId": request_id,
+            "requestId": str(request_id),
             "assetSymbol": asset,
             "amount": amount,
             "lang": "Ru",
