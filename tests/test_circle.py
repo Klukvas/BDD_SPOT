@@ -90,7 +90,7 @@ def check_op(get_enc_key, create_deposit):
                 deposit[0]['balanceChange'] != 0:
                 break
         elif counter > 5:
-            raise ValueError(f'Can not find operations({create_deposit["depositId"]}) with status 0 for 15 seconds\nop_history: {deposit}') 
+            raise ValueError(f'Can not find operations({create_deposit["depositId"]}) with status 0 for 15 seconds\nop_history: {deposit}')
     assert len(deposit) == 1, f'Expected that operationId of transfer will be unique but gets:\nrequestId: {create_deposit["data"]["depositId"]}\n{deposit}\n'
     assert deposit[0]['operationType'] == 0, f"Expected deposit in operation history has operationType: 0. But returned: {deposit[0]['operationType']}"
     assert deposit[0]['assetId'] == 'USD', f"Expected deposit in operation history has assetId: USD. But returned: {deposit[0]['assetId']}"
@@ -388,4 +388,3 @@ def delete_bank_account_2(auth, resp):
 def delete_bank_account_3(resp):
     response = Circle().delete_bank_account('', resp['bankaccountid_to_delete'])
     return response
-

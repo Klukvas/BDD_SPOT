@@ -80,11 +80,10 @@ class Circle(MainObj):
 
         return self.parse_response(r, specific_case)
 
-    def create_payment(self, token, encryption_data, keyId, cardId, currency='USD', amount=10, specific_case=False):
+    def create_payment(self, token, requestGuid, encryption_data, keyId, cardId, currency='USD', amount=10, specific_case=False):
         url = f"{self.main_url}create-payment"
-        requestGuid = uuid4()
         payload = {
-            "requestGuid": str(requestGuid),
+            "requestGuid": requestGuid,
             "keyId": keyId,
             "cardId": cardId,
             "amount": amount,

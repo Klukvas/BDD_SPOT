@@ -54,10 +54,9 @@ class CanNotFindTemplateData(Exception):
 
 
 class CanNotFindKey(Exception):
-    def __init__(self, url, *args):
+    def __init__(self, url, message=None):
         self.url = url
-        if args:
-            self.message = args[0]
+        self.message = message
 
     def __str__(self):
         msg = f'Response from {self.url} is not contains all needed keys.'
