@@ -14,6 +14,7 @@
                 "autoinvest": false
             },
             "test_data": {
+                "signalr_url": "wss://wallet-api-uat.simple-spot.biz/signalr",
                 "db_connection_string": "postgresql://jetwallet@jetwallet-uat:1$hhhg138ye8#ddud8h@jetwallet-uat.postgres.database.azure.com:5432/uat",
                 "template_tests":{
                     "email": "spotacc1425@gmail.com",
@@ -87,6 +88,7 @@
             },
             "test_data": {
                 "db_connection_string": null,
+                "signalr_url": "",
                 "template_tests":{
                     "email": "baseuser@mailforspam.com",
                     "client_id": "",
