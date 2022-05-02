@@ -11,7 +11,8 @@
                 "circle_all": false,
                 "circle_cards": false,
                 "circle_bank_accounts": true,
-                "autoinvest": false
+                "autoinvest": false,
+                "signalr": false
             },
             "test_data": {
                 "signalr_url": "wss://wallet-api-uat.simple-spot.biz/signalr",
@@ -34,6 +35,10 @@
                     "empty_bank_accounts_email": "okn193323@mailinator.com",
                     "empty_bank_accounts_password": "testpassword1",
                     "empty_bank_accounts_client_id": "a3d31bd7f90e4e228bfb4ece3b6378ff"
+                },
+                "signalr_test": {
+                    "email": "withdrawal.test@mailinator.com",
+                    "password": "testpassword1"
                 },
                 "autoinvest_test": {
                     "email": "withdrawal.test@mailinator.com",
@@ -84,7 +89,9 @@
                 "swap": false,
                 "circle_all": false,
                 "circle_cards": false,
-                "circle_bank_accounts": true
+                "circle_bank_accounts": true,
+                "autoinvest": false,
+                "signalr": false
             },
             "test_data": {
                 "db_connection_string": null,
@@ -107,6 +114,10 @@
                     "empty_bank_accounts_email": "",
                     "empty_bank_accounts_password": "",
                     "empty_bank_accounts_client_id": ""
+                },
+                "signalr_test": {
+                    "email": "",
+                    "password": ""
                 },
                 "autoinvest_test": {
                     "email": "",

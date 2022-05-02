@@ -74,6 +74,8 @@ me_tests_circle_test_currency = data['me_tests']['circle_test_currency']
 db_connection_string = data['db_connection_string']
 
 signalr_url = data['signalr_url']
+signalr_email = data['signalr_test']['email']
+signalr_password = data['signalr_test']['password']
 
 #Имейл на который прихоят письма
 template_tests_email = data['template_tests']['email']

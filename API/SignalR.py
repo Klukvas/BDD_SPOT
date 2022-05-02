@@ -12,11 +12,18 @@ import settings
 # Add this to self.hub_connection to enable debug logging
 # .configure_logging(logging.DEBUG, socket_trace=True, handler=handler) \
 
+# Add this to hub_connection to automate reconnecting at close
+# .with_automatic_reconnect({
+#             "type": "interval",
+#             "keep_alive_interval": 10,
+#             "reconnect_interval": 5,
+#             "max_attempts": 5})
+
 # En example to add new hub parser to SignalR class:
-# 1:
+# 1: add to init
 # self.hub_connection.on("prices-base-currency", lambda response: self.get_prices_base_currency(response))
 # self.prices_base_currency = []
-# 2:
+# 2: create a function
 #  def get_prices_base_currency(self, response):
 #    self.prices_base_currency.append(*response)
 # 3:
@@ -28,17 +35,11 @@ class SignalR:
         self.exit = False
         self.hub_connection = HubConnectionBuilder() \
             .with_url(settings.signalr_url, options={"verify_ssl": False, "skip_negotiation": True}) \
-            .with_hub_protocol(JsonHubProtocol()) \
-            .with_automatic_reconnect({
-            "type": "interval",
-            "keep_alive_interval": 10,
-            "reconnect_interval": 5,
-            "max_attempts": 5
-        }).build()
+            .with_hub_protocol(JsonHubProtocol()).build()
 
         self.hub_connection.on_open(self.send_init)
-        self.hub_connection.on_close(lambda: print("connection closed"))
-        self.hub_connection.on_reconnect(lambda: print("reconnection in progress"))
+        self.hub_connection.on_close(lambda: print("SignalR connection is closed"))
+        self.hub_connection.on_reconnect(lambda: print("SignalR reconnection is in progress"))
         self.hub_connection.on_error(lambda msg: self.raise_on_error(msg.error))
 
         self.hub_connection.on("prices-base-currency", lambda response: self.get_prices_base_currency(response))
