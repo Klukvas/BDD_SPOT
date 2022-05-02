@@ -7,6 +7,7 @@ from GRPC.ChangeBalance.change_balance import changeBalance
 from time import sleep
 from Database.db import get_db_client
 from API.GmailApi import GmailApi
+from API.OpenVPN import OpenVPN
 
 @pytest.fixture(scope='session')
 def db_connection():
@@ -15,6 +16,9 @@ def db_connection():
     else:
         assert False, 'db_connection_string is not set'
 
+@pytest.fixture(scope='session')
+def openvpn_client():
+    return OpenVPN()
 
 @pytest.fixture()
 def register():
