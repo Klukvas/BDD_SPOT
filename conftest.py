@@ -31,7 +31,7 @@ def auth():
     def get_tokens(email, password, specific_case=False):
         auth_data = Auth(email, password).authenticate(specific_case)
         print(f"Log in by: {email}")
-
+        return auth_data
     return get_tokens
 
 
@@ -58,6 +58,9 @@ def clear_emailbox():
 def pytest_configure(config):
     config.addinivalue_line(
         "markers", "autoinvest: mark test to run only on named environment"
+    )
+    config.addinivalue_line(
+        "markers", "signalr: mark test to run only on named environment"
     )
     config.addinivalue_line(
         "markers", "email_test: mark test to run only on named environment"
