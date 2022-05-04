@@ -13,7 +13,7 @@ class MainObj:
         if specific_case:
             try:
                 return {"status": r.status_code, "response": r.json()}
-            except JSONDecodeError:  # case when response is empty
+            except JSONDecodeError:
                 return {"status": r.status_code, "response": r.text}
         if r.status_code == 200:
             try:
