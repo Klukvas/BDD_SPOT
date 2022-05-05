@@ -1,7 +1,7 @@
 {
     "env":{
         "UAT": {
-            "is_actual": true,
+            "is_actual": false,
             "start_settings": {
                 "regression": false,
                 "new_scenario": false,
@@ -80,7 +80,7 @@
 
         },
         "PROD": {
-            "is_actual": false,
+            "is_actual": true,
             "start_settings": {
                 "regression": false,
                 "new_scenario": false,

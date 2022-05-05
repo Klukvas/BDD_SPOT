@@ -1,0 +1,145 @@
+syntax = "proto3";
+package Service.BonusCampaign.Grpc;
+import "empty.proto";
+import "bcl.proto"; // schema for protobuf-net's handling of core .NET types
+
+message AccessCriteriaGrpcModel {
+   CriteriaType CriteriaType = 1;
+   map<string,string> Parameters = 2;
+   string CriteriaId = 3;
+}
+enum ActionEnum {
+   None = 0;
+   Login = 1;
+   ConfirmEmail = 2;
+   ForgotPassword = 3;
+   ConfirmWithdrawal = 4;
+   ConfirmTransfer = 5;
+   InviteFriend = 6;
+}
+message BlockUserRequest {
+   string CampaignId = 1;
+   string ClientId = 2;
+}
+message CampaignClientContextGrpcModel {
+   string ClientId = 1;
+   string CampaignId = 2;
+   .bcl.DateTime ActivationTime = 3;
+   repeated ConditionStateGrpcModel Conditions = 4;
+}
+message CampaignGrpcModel {
+   string Id = 1;
+   string TitleTemplateId = 2;
+   .bcl.DateTime FromDateTime = 3;
+   .bcl.DateTime ToDateTime = 4;
+   bool IsEnabled = 5;
+   CampaignStatus Status = 6;
+   string ImageUrl = 7;
+   repeated AccessCriteriaGrpcModel CriteriaList = 8;
+   repeated ConditionGrpcModel Conditions = 9;
+   string DescriptionTemplateId = 11;
+   string SerializedRequest = 12;
+   ActionEnum Action = 13;
+   string Name = 14;
+   int32 Weight = 15;
+   bool ShowReferrerStats = 16;
+}
+enum CampaignStatus {
+   Scheduled = 0;
+   Active = 1;
+   Finished = 2;
+}
+message ConditionGrpcModel {
+   string CampaignId = 1;
+   ConditionType Type = 2;
+   map<string,string> Parameters = 3;
+   repeated RewardGrpcModel Rewards = 4;
+   ConditionStatus Status = 5;
+   string ConditionId = 6;
+   .bcl.TimeSpan TimeToComplete = 7;
+}
+message ConditionStateGrpcModel {
+   string ClientId = 1;
+   string CampaignId = 2;
+   string ConditionId = 3;
+   ConditionType Type = 4;
+   ConditionStatus Status = 5;
+   .bcl.DateTime ExpirationTime = 6;
+   string Params = 7;
+}
+enum ConditionStatus {
+   NotMet = 0;
+   Met = 1;
+   Expired = 2;
+   Blocked = 3;
+}
+enum ConditionType {
+   KYCCondition = 0;
+   TradeCondition = 1;
+   ReferralCondition = 2;
+   DepositCondition = 3;
+   WithdrawalCondition = 4;
+   ConditionsCondition = 5;
+   ConditionType_None = -1;
+}
+enum CriteriaType {
+   RegistrationType = 0;
+   KycType = 1;
+   ReferralType = 2;
+   CriteriaType_None = -1;
+}
+message GetAllCampaignsResponse {
+   repeated CampaignGrpcModel Campaigns = 1;
+}
+message GetContextsByCampaignRequest {
+   string CampaignId = 1;
+   int32 Skip = 2;
+   int32 Take = 3;
+}
+message GetContextsByClientRequest {
+   string ClientId = 1;
+   int32 Skip = 2;
+   int32 Take = 3;
+}
+message GetContextsResponse {
+   repeated CampaignClientContextGrpcModel Contexts = 1;
+}
+message OperationResponse {
+   bool IsSuccess = 1;
+   string ErrorMessage = 2;
+}
+message ParamEntity {
+   string Type = 1;
+   repeated ParamsDict Params = 2;
+}
+message ParamsDict {
+   string ParamName = 1;
+   string ParamType = 2;
+}
+message ParamsResponse {
+   repeated ParamEntity CriteriaParams = 1;
+   repeated ParamEntity ConditionParams = 2;
+   repeated ParamEntity RewardParams = 3;
+}
+message RewardGrpcModel {
+   string RewardId = 1;
+   RewardType Type = 2;
+   map<string,string> Parameters = 3;
+   string ConditionId = 4;
+}
+enum RewardType {
+   FeeShareAssignment = 0;
+   ReferrerPaymentAbsolute = 1;
+   ClientPaymentAbsolute = 2;
+   ReferrerPaymentRelative = 3;
+   ClientPaymentRelative = 4;
+}
+service CampaignManager {
+   rpc BlockUserInCampaign (BlockUserRequest) returns (OperationResponse);
+   rpc CreateOrUpdateCampaign (CampaignGrpcModel) returns (OperationResponse);
+   rpc GetAllCampaigns (.google.protobuf.Empty) returns (GetAllCampaignsResponse);
+   rpc GetAllParams (.google.protobuf.Empty) returns (ParamsResponse);
+   rpc GetContextsByCampaign (GetContextsByCampaignRequest) returns (GetContextsResponse);
+   rpc GetContextsByClient (GetContextsByClientRequest) returns (GetContextsResponse);
+   rpc UnblockUserInCampaign (BlockUserRequest) returns (OperationResponse);
+}
