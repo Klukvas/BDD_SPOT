@@ -13,7 +13,7 @@ def get_enc_key(instrument, period, auth):
     token = auth(
         settings.me_tests_email,
         settings.me_tests_password
-    )['token']
+    )['response']['data']['token']
     
     fromDate = int(
             (datetime.datetime.today() - datetime.timedelta(

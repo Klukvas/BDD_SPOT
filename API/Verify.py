@@ -12,12 +12,12 @@ class Verify(MainObj):
         super().__init__()
         self.main_url = settings.url_verify
 
-    def verify_email(self, token, code):
+    def verify_email(self, token, code, specific_case=False):
         url = f"{self.main_url}email-verification/verify"
 
-        payload = json.dumps({
+        payload = {
                 "code": f"{code}"
-            })
+            }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -27,18 +27,11 @@ class Verify(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify=False,
-                headers=headers, data=payload)
+                headers=headers, json=payload)
 
-        try:
-            parse_resp = json.loads(r.text)
-            try:
-                return {"data": parse_resp['result']}
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
     
-    def client_data(self, token):
+    def client_data(self, token, specific_case=False):
         url = f"https://wallet-api-uat.simple-spot.biz/api/v1/info/session-info"
 
         headers = {
@@ -52,53 +45,41 @@ class Verify(MainObj):
                 verify=False,
                 headers=headers)
 
-        try:
-            parse_resp =  json.loads(r.text)
-            try:
-                return {"data": parse_resp['data'] }
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
 
-    def verify_withdrawal(self, token, withdrawalProcessId):
-        url = f"{self.main_url}withdrawal-verification/verify?brand=simple&withdrawalProcessId={withdrawalProcessId}&code=000000"
-
+    def verify_withdrawal(self, token, withdrawalProcessId, specific_case=False):
+        url = f"{self.main_url}withdrawal-verification/verify-code"
+        payload = {
+            "code": "000000",
+            "operationId": withdrawalProcessId,
+            "brand": "simple"
+        }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
-        r = get(url,
+        r = post(url,
             pkcs12_filename=self.cert_name,
             pkcs12_password=self.cert_pass,
             verify=False,
-            headers=headers)
-        try:
-            soup = BeautifulSoup(r.text, 'html.parser')
-            title = soup.find('title').text
-            return title
-        except Exception as err:
-            raise ParsingError(
-                f"Error of parsing response from: withdrawal-verification/verify Error: {err}"
-            )
+            headers=headers, json=payload)
+        return self.parse_response(r, specific_case)
     
-    def verify_transfer(self, token, code):
-        url = f"{self.main_url}transfer-verification/verify?transferProcessId={code}&code=000000&brand=simple"
+    def verify_transfer(self, token, operation_id, specific_case=False):
+        url = f"{self.main_url}transfer-verification/verify-code"
+        payload = {
+          "code": "000000",
+          "operationId": operation_id,
+          "brand": "simple"
+        }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
 
-        r = get(url,
+        r = post(url,
                 pkcs12_filename=self.cert_name,
                 pkcs12_password=self.cert_pass,
                 verify=False,
-                headers=headers)
-        try:
-            soup = BeautifulSoup(r.text, 'html.parser')
-            title = soup.find('title').text
-            return title
-        except Exception as err:
-            raise ParsingError(
-                f"Error of parsing response from: withdrawal-verification/verify Error: {err}"
-            )
+                headers=headers, json=payload)
+        return self.parse_response(r, specific_case)

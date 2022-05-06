@@ -20,7 +20,7 @@ def db_connection():
 def register():
     def inner(email, password, *args):
         print(f"Register by: {email} with password: {password}")
-        response = Auth(email, password).register()
+        response = Auth(email, password).register()['response']['data']
         Verify().verify_email(response['token'], '000000')
         return response
     return inner
@@ -108,16 +108,16 @@ def pytest_bdd_before_scenario(request, feature, scenario):
             token = Auth(
                 settings.template_tests_email,
                 settings.template_tests_password
-            ).authenticate()['token']
+            ).authenticate()['response']['data']['token']
             client_Id = settings.template_tests_client_id
         else:
             token = Auth(
                 settings.me_tests_email,
                 settings.me_tests_password
-            ).authenticate()['token']
+            ).authenticate()['response']['data']['token']
             client_Id = settings.me_tests_client_id
 
-        balances = Wallet().balances(token)
+        balances = Wallet().balances(token)['response']['data']['balances']
         assets_not_in_balance = [
             asset
             for asset in settings.balance_asssets.keys()
@@ -147,7 +147,6 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                                     correct_amount
                                 ]
                             )
-                        print(f"assets_for_update: {assets_for_update}")
                     elif item['balance'] > settings.balance_asssets[item['assetId']]:
                         correct_amount = (item['balance'] - settings.balance_asssets[item['assetId']] ) * -1
                         if correct_amount * -1 > 0.0001:
@@ -164,21 +163,22 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                     item[1]
                 ) 
         for item in assets_for_update:
-            print(f"item[1]: {item[1]}\titem[0]: {item[0]}")
             bl_change_result = changeBalance(
                 client_Id,
                 item[1],
                 f'SP-{client_Id}',
                 item[0]
             )
-            assert bl_change_result != None, 'Ошибка при пополнении баланса'
+            assert bl_change_result is not None, 'Ошибка при пополнении баланса'
+
 
 def pytest_bdd_after_scenario(request, feature, scenario):
-    sleep(10)
+    sleep(2)
+
 
 def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args) :
     print(f'Step: {step} of scenario: {scenario.name} PASSED')
 
+
 def pytest_bdd_step_error(request, feature, scenario, step, step_func, step_func_args, exception):
     print(f'Step: {step} of scenario: {scenario.name} FAILED\nException: {exception}')
-

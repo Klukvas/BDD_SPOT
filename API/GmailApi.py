@@ -2,10 +2,14 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import base64
 from time import sleep
-import API.Exceptions as Exceptions
+try:
+    import API.Exceptions as Exceptions
+except ModuleNotFoundError:
+    import Exceptions as Exceptions
+
 from bs4 import BeautifulSoup
 import os
-from  API.Exceptions import *
+
 SCOPES = ['https://mail.google.com/']
 
 class GmailApi:
@@ -21,11 +25,23 @@ class GmailApi:
                 self._service.users().messages().delete(userId='me', id=item['id']).execute()
 
     def generateCreds(self):
-        path = os.path.join(
-            os.getcwd(),
-            'token.json'
-        )
-        self._creds = Credentials.from_authorized_user_file(path, SCOPES)
+        try:
+            path = os.path.join(
+                os.getcwd(),
+                'token.json'
+            )
+            self._creds = Credentials.from_authorized_user_file(path, SCOPES)
+        except:
+            path = os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.getcwd(), os.pardir
+                    )
+                ), 'token.json'
+            )
+            print(path)
+            self._creds = Credentials.from_authorized_user_file(path, SCOPES)
+
     
     def generateService(self):
         self._service = build('gmail', 'v1', credentials=self._creds)
@@ -133,13 +149,16 @@ class ParseMessage:
         return self.mailsEnum[self.searchedType]
 
     def getMessage(self, templateSaver=False):
-        messageData = self.api.main(self.mailsEnum[self.searchedType])
+        messageData = self.api.main(
+            self.mailsEnum[self.searchedType]
+        )
+        print(messageData)
         if templateSaver:
             self.saveTemplate(messageData['htmlView'])
         try:
             soup = self.createSoup(messageData['htmlView'])
         except Exception as error:
-            raise SoupGeneratingError(
+            raise Exceptions.SoupGeneratingError(
                 f"Can not create soup of {self.searchedType}\nError: {error}"
             )
         try:
@@ -147,16 +166,27 @@ class ParseMessage:
                     self.searchedType
                 ](soup)
         except Exception as error:
-            raise CanNotFindTemplateData(
+            raise Exceptions.CanNotFindTemplateData(
                 f"Can not get data of template: {self.saveTemplate()} with error: {error}"
             )
         templateData['message_body'] = messageData['htmlView']
         return templateData
     
     def saveTemplate(self, html):
-        with open(f"templates/{self.mailsEnum[self.searchedType]}.html", 'w') as f:
-            f.writelines(html)
-    
+        try:
+            with open(f"templates/{self.mailsEnum[self.searchedType]}.html", 'w') as f:
+                f.writelines(html)
+        except:
+            path = os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.getcwd(), os.pardir
+                    )
+                ), 'templates', self.mailsEnum[self.searchedType]
+            )
+            with open(f"{path}.html", 'w') as f:
+                f.writelines(html)
+
     def createSoup(self, html:str) -> BeautifulSoup:
         soup = BeautifulSoup(html, 'html.parser')
         return soup
@@ -269,4 +299,7 @@ class ParseMessage:
             "htmlUrl": htmlLoginUrl
         }
 
-    
+
+if __name__ == "__main__":
+    api = ParseMessage(10).getMessage()
+    print(api)
