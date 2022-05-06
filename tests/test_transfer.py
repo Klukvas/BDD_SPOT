@@ -14,8 +14,14 @@ import settings
 def get_balance(auth):
     token = auth(
         settings.me_tests_email, settings.me_tests_password
-    )['response']['data']['token']
-    balances = Wallet().balances(token)['response']['data']['balances']
+    )['response']
+    assert 'data' in token.keys(), \
+        f"Expected that 'data' key will be in response. But returned: {token}"
+    token = token['data']['token']
+    balances = Wallet().balances(token)['response']
+    assert 'data' in balances.keys(), \
+        f"Expected that 'data' key will be in response. But returned: {token}"
+    balances = balances['data']['balances']
     assert type(balances) == list
     assert len(balances) > 0
     return [token, balances]
@@ -37,7 +43,10 @@ def send_transfer(get_balance, asset):
         asset=asset,
         amount=settings.balance_asssets[asset] / 2,
         specific_case=False
-    )['response']['data']
+    )['response']
+    assert 'data' in transferData.keys(),\
+        f"Expected that 'data' key will be in response. But returned: {transferData}"
+    transferData = transferData['data']
     assert type(
         transferData) == dict, f'Expected that response will be dict, but gets: {type(transferData)}\nTransferData: {transferData}.Asset:{asset}\tAmount: {settings.balance_asssets[asset] / 2}'
     assert type(transferData['operationId']) == str
@@ -58,7 +67,12 @@ def check_operation_history_transfer(send_transfer, get_balance):
     while True:
         sleep(5)
         counter += 1
-        op_history = WalletHistory().operations_history(get_balance[0])['response']['data']
+        op_history = WalletHistory().operations_history(
+            get_balance[0]
+        )['response']
+        assert 'data' in op_history.keys(), \
+            f"Expected that 'data' key will be in response. But returned: {op_history}"
+        op_history = op_history['data']
         assert type(op_history) == list
         sended_transfer = list(
             filter(
@@ -86,7 +100,12 @@ def check_operation_history_transfer(send_transfer, get_balance):
 
 @then('User`s balance is changed')
 def balance_change_after_transfer(get_balance, send_transfer):
-    new_balances = Wallet().balances(get_balance[0])['response']['data']['balances']
+    new_balances = Wallet().balances(
+        get_balance[0]
+    )['response']
+    assert 'data' in new_balances.keys(), \
+        f"Expected that key 'data' will be in response. But response is: {new_balances}"
+    new_balances = new_balances['data']['balances']
     assert type(new_balances) == list
     assert len(new_balances) > 0
     new_balances = list(
@@ -110,12 +129,17 @@ def receive_operation_history(auth, send_transfer):
     token = auth(
         settings.me_tests_receive_email,
         settings.me_tests_password
-    )['response']['data']['token']
+    )['response']
+    assert 'data' in token.keys(), \
+        f"Expected that key 'data' will be in response. But response is: {token}"
+    token = token['data']['token']
     counter = 0
     while True:
         counter += 1
         op_history = WalletHistory().operations_history(token)
         assert op_history['status'] == 200
+        assert 'data' in op_history['response'].keys(), \
+            f"Expected that key 'data' will be in response. But response is: {op_history}"
         op_history = op_history['response']['data']
         received_transfer = list(
             filter(
@@ -144,7 +168,12 @@ def receive_operation_history(auth, send_transfer):
 
 @then('Balance of receive user are correct')
 def check_balance_after_receive(receive_operation_history):
-    balances = Wallet().balances(receive_operation_history[1])['response']['data']['balances']
+    balances = Wallet().balances(
+        receive_operation_history[1]
+    )['response']
+    assert  'data' in balances.keys(), \
+        f"Expected that 'data' key will be in response. But returned: {balances}"
+    balances = balances['data']['balances']
     receive_balance = list(
         filter(
             lambda x: x['assetId'] == receive_operation_history[2],
@@ -167,12 +196,15 @@ def test_transfer_by_address():
 def create_withdrawal(get_balance, asset, address):
     uniqId = str(uuid.uuid4())
     transferData = Blockchain().withdrawal(
-        get_balance[0],
-        uniqId,
-        asset,
-        settings.balance_asssets[asset] / 2,
-        address
-    )['response']['data']
+        token=get_balance[0],
+        uniqId=uniqId,
+        asset=asset,
+        amount=settings.balance_asssets[asset] / 2,
+        address=address
+    )['response']
+    assert 'data' in transferData.keys(), \
+        f"Expected that key 'data' will be in response. But response is: {transferData}"
+    transferData = transferData['data']
     assert type(transferData) == dict, f'Expected type dict but returned:\n{transferData}'
     assert type(transferData['operationId']) == str
     return {
@@ -190,8 +222,12 @@ def operation_history_withdrawal(create_withdrawal, get_balance):
     while True:
         sleep(20)
         counter += 1
-        op_history = WalletHistory().operations_history(get_balance[0])['response']['data']
-        assert type(op_history) == list
+        op_history = WalletHistory().operations_history(
+            get_balance[0]
+        )['response']
+        assert 'data' in op_history.keys(), \
+            f"Expected that 'data' key will be in response. But returned: {op_history}"
+        op_history = op_history['data']
         sended_transfer = list(
             filter(
                 lambda x: str(create_withdrawal['requestId']) in x['operationId'].split('|')[0],
@@ -228,8 +264,12 @@ def operation_history_withdrawal(create_withdrawal, get_balance):
 
 @then('User`s balance is changed after withdrawal')
 def change_balance_after_withdrawal(get_balance, create_withdrawal):
-    new_balances = Wallet().balances(get_balance[0])['response']['data']['balances']
-    assert type(new_balances) == list
+    new_balances = Wallet().balances(
+        get_balance[0]
+    )['response']
+    assert 'data' in new_balances.keys(), \
+        f"Expected that 'data' key will be in response. But returned: {new_balances}"
+    new_balances = new_balances['data']['balances']
     assert len(new_balances) > 0
     new_balances = list(
         filter(
@@ -252,11 +292,19 @@ def deposit_operation_history(auth, create_withdrawal):
     token = auth(
         settings.me_tests_receive_email,
         settings.me_tests_password
-    )['response']['data']['token']
+    )['response']
+    assert 'data' in token.keys(), \
+        f"Expected that 'data' key will be in response. But returned: {token}"
+    token = token['data']['token']
     counter = 0
     while True:
         counter += 1
-        op_history = WalletHistory().operations_history(token)['response']['data']
+        op_history = WalletHistory().operations_history(
+            token
+        )['response']
+        assert 'data' in op_history.keys(), \
+            f"Expected that 'data' key will be in response. But returned: {op_history}"
+        op_history = op_history['data']
         received_deposit = list(
             filter(
                 lambda x: str(create_withdrawal['requestId']) == x['operationId'].split('|')[0],
@@ -282,7 +330,12 @@ def deposit_operation_history(auth, create_withdrawal):
 
 @then('Balance of deposited user are correct')
 def chek_balance_after_deposit(deposit_operation_history):
-    balances = Wallet().balances(deposit_operation_history[1])['response']['data']['balances']
+    balances = Wallet().balances(
+        deposit_operation_history[1]
+    )['response']
+    assert 'data' in new_balances.keys(), \
+        f"Expected that key 'data' will be in response. But response is: {new_balances}"
+    balances = balances['data']['balances']
     receive_balance = list(
         filter(
             lambda x: x['assetId'] == deposit_operation_history[2],

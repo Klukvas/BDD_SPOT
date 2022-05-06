@@ -144,7 +144,6 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                                     correct_amount
                                 ]
                             )
-                        print(f"assets_for_update: {assets_for_update}")
                     elif item['balance'] > settings.balance_asssets[item['assetId']]:
                         correct_amount = (item['balance'] - settings.balance_asssets[item['assetId']] ) * -1
                         if correct_amount * -1 > 0.0001:
@@ -161,7 +160,6 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                     item[1]
                 ) 
         for item in assets_for_update:
-            print(f"item[1]: {item[1]}\titem[0]: {item[0]}")
             bl_change_result = changeBalance(
                 client_Id,
                 item[1],
@@ -172,7 +170,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
 
 
 def pytest_bdd_after_scenario(request, feature, scenario):
-    sleep(10)
+    sleep(2)
 
 
 def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args) :

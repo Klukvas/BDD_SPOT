@@ -149,13 +149,16 @@ class ParseMessage:
         return self.mailsEnum[self.searchedType]
 
     def getMessage(self, templateSaver=False):
-        messageData = self.api.main(self.mailsEnum[self.searchedType])
+        messageData = self.api.main(
+            self.mailsEnum[self.searchedType]
+        )
+        print(messageData)
         if templateSaver:
             self.saveTemplate(messageData['htmlView'])
         try:
             soup = self.createSoup(messageData['htmlView'])
         except Exception as error:
-            raise SoupGeneratingError(
+            raise Exceptions.SoupGeneratingError(
                 f"Can not create soup of {self.searchedType}\nError: {error}"
             )
         try:
@@ -163,7 +166,7 @@ class ParseMessage:
                     self.searchedType
                 ](soup)
         except Exception as error:
-            raise CanNotFindTemplateData(
+            raise Exceptions.CanNotFindTemplateData(
                 f"Can not get data of template: {self.saveTemplate()} with error: {error}"
             )
         templateData['message_body'] = messageData['htmlView']
@@ -298,4 +301,5 @@ class ParseMessage:
 
 
 if __name__ == "__main__":
-    api = ParseMessage(3).getMessage(True)
+    api = ParseMessage(10).getMessage()
+    print(api)

@@ -33,11 +33,13 @@ def transfer_with_blocker(auth, change_password_blocker):
         change_password_blocker['email'],
         change_password_blocker['new_password']
     )['response']['data']['token']
+    uid = str(uuid.uuid4())
     transfer_data = Transfer().create_transfer(
-        token,
-        settings.me_tests_transfer_to_phone,
-        'USD',
-        10
+        token=token,
+        request_id=uid,
+        phone=settings.me_tests_transfer_to_phone,
+        asset='USD',
+        amount=10
     )
     assert transfer_data['response']['result'] == 'OperationBlocked'
 

@@ -4,7 +4,6 @@ Feature: Authentification
     # Enter feature description here
     auth service
 
-
     Scenario: Blocker after password change
         Given User change password
         Then User can not make a transfer

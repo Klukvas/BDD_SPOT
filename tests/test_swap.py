@@ -45,10 +45,13 @@ def get_quote(get_balance, isFromFixed, fromAsset, toAsset):
         isFromFixed
     )['response']
     assert "data" in quote.keys(), f"response is not contains key 'data'.\nResponse: {quote}"
+    quote = quote['data']
     assert type(
         quote) == dict, f'Expected that quote will be dict, but returned:\n{quote}.\nFrom asset: {fromAsset}; Toasset: {toAsset}; isFromFixed: {isFromFixed}'
-    assert quote['fromAsset'] == fromAsset
-    assert quote['toAsset'] == toAsset
+    assert quote['fromAsset'] == fromAsset, \
+        f"'fromAsset' in request is not eql to 'fromAsset' in response.\nResponse: {quote}"
+    assert quote['toAsset'] == toAsset, \
+        f"'toAsset' in request is not eql to 'toAsset' in response.\nResponse: {quote}"
     if isFromFixed:
         assert quote['fromAssetVolume'] == volume
     else:

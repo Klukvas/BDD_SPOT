@@ -187,8 +187,15 @@ def make_withdrawal(auth, asset, address):
     amount = settings.balance_asssets[asset] / 2
     uniq_id = str(uuid.uuid4())
     withdrawalData = Blockchain().withdrawal(
-        token, uniq_id, asset, amount, address
-    )['response']['data']
+        token,
+        uniq_id,
+        asset,
+        amount,
+        address
+    )['response']
+    assert 'data' in withdrawalData.keys(), \
+        f"Expected that 'data' key will be in response. But response is: {withdrawalData}"
+    withdrawalData = withdrawalData['data']
     assert type(
         withdrawalData
     ) == dict, \
