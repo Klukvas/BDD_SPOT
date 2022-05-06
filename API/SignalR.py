@@ -134,7 +134,7 @@ class SignalR:
                 'convert-price-settings': self.convert_price_settings,
                 'cards': self.cards,
                 'recurring-buys': self.recurring_buys,
-                'campaigns-banners': self.campaigns_banners}
+                'campaigns.py-banners': self.campaigns_banners}
 
     def close(self):
         self.exit = True
