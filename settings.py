@@ -3,10 +3,14 @@ import json
 
 
 def set_env_variables():
+    # path_to_env_file: str = os.path.join(
+    #     os.path.dirname(
+    #         os.getcwd()
+    #     ),
+    #     '.env'
+    # )
     path_to_env_file: str = os.path.join(
-        os.path.dirname(
-            os.getcwd()
-        ),
+        os.getcwd(),
         '.env'
     )
     with open(path_to_env_file, 'r') as f:

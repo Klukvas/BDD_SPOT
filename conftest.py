@@ -93,6 +93,10 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "circle_bank_accounts: mark1 test to run only on named environment"
     )
+
+    config.addinivalue_line(
+        "markers", "campaign: mark1 test to run only on named environment"
+    )
     config.addinivalue_line(
         "markers", "swap: mark1 test to run only on named environment"
     )
