@@ -19,8 +19,7 @@ def register():
     email = settings.template_tests_email. \
         split('@')[0]
     email += "+" + str(uuid.uuid4().int) + "@gmail.com"
-    token = Auth(email, 'testpassword1').register()
-    print(f"email: {email} registered")
+    token = Auth(email, 'testpassword1').register()['response']['data']
     assert type(token) == dict, f'Expected response type: dict\nReturned: {token}'
     assert len(token) == 2
     return {"token": token["token"], "email": email}
@@ -51,14 +50,14 @@ def get_email_data(create_temporary_template):
 @when('User can verify email by code from mail', target_fixture="check_op")
 def verify_email(register, get_email_data):
     verify = Verify().verify_email(register['token'], get_email_data['code'])
-    assert verify['data'] == 'OK'
+    assert verify['response']['result'] == 'OK'
 
 
 @then('User`s email is veryfied', target_fixture="check_op")
 def check_email_verified(register):
-    auth_data = Verify().client_data(register['token'])
+    auth_data = Verify().client_data(register['token'])['response']
     assert type(auth_data) == dict, f'Expected that email ll be verifyed but:{auth_data}'
-    assert auth_data['data']['emailVerified'] == True
+    assert auth_data['data']['emailVerified'] is True
 
 
 ###############################################################################################################################################
@@ -96,23 +95,27 @@ def make_transfer(asset, phone, auth):
     token = auth(
         settings.template_tests_email,
         settings.template_tests_password
-    )['token']
-    assert type(token) == str
+    )['response']['data']['token']
+
     amount = settings.balance_asssets[asset] / 2
+
+    uniq_id = str(uuid.uuid4())
+
     transferData = Transfer().create_transfer(
-        token, phone, asset, amount
+        token, uniq_id, phone, asset, amount
     )
-    assert type(
-        transferData) == dict, f'Expected that response will be dict, but gets: {type(transferData)}\nTransferData: {transferData}.Asset:{asset}\tAmount: {amount}\t {type(amount)}'
-    assert type(transferData['operationId']) == str
+
+    assert transferData['status'] == 200
+    assert transferData['response']['result'] == 'OK'
+    assert type(transferData['response']['data']['operationId']) == str
     return {
-        "transferData": transferData, "asset": asset, "amount": amount,
-        "phone": phone, "token": token
+        "transferData": transferData['response'], "asset": asset, "amount": amount,
+        "phone": phone, "token": token, "uniq_id": uniq_id
     }
 
 
 @when('User has new email with appove link', target_fixture='check_transfer_email')
-def check_transfer_email(make_transfer):
+def check_transfer_email(make_transfer, create_temporary_template):
     mail_object = ParseMessage(4)
     mail_parser = mail_object.getMessage()
     assert type(mail_parser) == dict, f"Expected type dict; returned: {type(mail_parser)}"
@@ -126,40 +129,49 @@ def check_transfer_email(make_transfer):
             replace('{{amount}}', str(make_transfer['amount'])). \
             replace('{{asset}}', make_transfer['asset']). \
             replace('{{ip}}', mail_parser['ip']). \
-            replace('{{phone_to}}', make_transfer['phone']). \
-            replace('{{link}}', mail_parser['htmlUrl']). \
+            replace('{{destination}}', make_transfer['phone']). \
+            replace('{{htmlUrl}}', mail_parser['htmlUrl']). \
             replace('{{receiveAmount}}', str(make_transfer['amount'])). \
             replace('{{feeAmount}}', '0'). \
-            replace('{{feeAsset}}', make_transfer['asset'])
+            replace('{{feeAsset}}', make_transfer['asset']). \
+            replace('{{code}}', mail_parser['code'])
 
-    assert template == mail_parser['message_body'], \
-        f'Text from template: !\n{template}\n!\n\nText mess: !\n{mail_parser["message_body"]}\n!'
+    data = create_temporary_template(mail_parser['message_body'], mail_object.get_template_name())
+    os.remove(f"{mail_object.get_template_name()}.html")
+    assert template == data, \
+        f'Text from template: !\n{template}\n!\n\nText mess: !\n{data}\n!'
     return {"confirm_link": mail_parser['url']}
 
 
-@then('User approve transfer by link')
+@then('User approve transfer by code')
 def approve_transfer(check_transfer_email, make_transfer):
     counter = 0
-    resp = requests.get(check_transfer_email['confirm_link'])
-    assert resp.status_code == 200
+    resp = Verify().verify_transfer(
+        make_transfer['token'],
+        make_transfer['transferData']['data']['operationId']
+    )
+    assert resp['status'] == 200
     while True:
-        balances = WalletHistory().operations_history(make_transfer['token'], make_transfer['asset'])
+        balances = WalletHistory().operations_history(
+            make_transfer['token'],
+            make_transfer['asset']
+        )['response']['data']
         counter += 1
         for item in balances:
-            if make_transfer['transferData']['requestId'] in item['operationId'] \
+            if make_transfer['uniq_id'] in item['operationId'] \
                     and item['status'] == 0 and item['balanceChange'] != 0:
                 assert item['operationType'] == 6
                 assert item['assetId'] == make_transfer['asset']
                 assert item['balanceChange'] == make_transfer[
                     'amount'] * -1, f'Expected: {make_transfer["amount"] * -1}\nReturned: {item["balanceChange"]}\nItem: {item}'
-                assert item['transferByPhoneInfo'] != None
+                assert item['transferByPhoneInfo'] is not None
                 assert item['transferByPhoneInfo']['toPhoneNumber'] == make_transfer['phone']
                 assert item['transferByPhoneInfo']['withdrawalAssetId'] == make_transfer['asset']
                 assert item['transferByPhoneInfo']['withdrawalAmount'] == make_transfer['amount']
                 return
         if counter > 6:
             raise AttributeError(
-                f'Can not find record operation history with status 1 and operationId like {make_transfer["transferData"]["requestId"]}')
+                f'Can not find record operation history with status 1 and operationId like {make_transfer["uniq_id"]}')
         sleep(5)
 
 
@@ -171,11 +183,19 @@ def make_withdrawal(auth, asset, address):
     token = auth(
         settings.template_tests_email,
         settings.template_tests_password
-    )['token']
+    )['response']['data']['token']
     amount = settings.balance_asssets[asset] / 2
+    uniq_id = str(uuid.uuid4())
     withdrawalData = Blockchain().withdrawal(
-        token, asset, amount, address
-    )
+        token,
+        uniq_id,
+        asset,
+        amount,
+        address
+    )['response']
+    assert 'data' in withdrawalData.keys(), \
+        f"Expected that 'data' key will be in response. But response is: {withdrawalData}"
+    withdrawalData = withdrawalData['data']
     assert type(
         withdrawalData
     ) == dict, \
@@ -187,7 +207,7 @@ def make_withdrawal(auth, asset, address):
     assert type(withdrawalData['operationId']) == str
     return {
         "withdrawalData": withdrawalData,
-        "token": token, "asset": asset, "amount": amount, "address": address
+        "token": token, "asset": asset, "amount": amount, "address": address, "request_id": uniq_id
     }
 
 
@@ -221,26 +241,34 @@ def check_withdrawal_email(create_temporary_template, feeAmount, feeAsset, make_
     os.remove(f"{mail_object.get_template_name()}.html")
     assert template == data, \
         f'Text from template: !\n{template}\n!\n\nText mess: !\n{data}\n!'
-    return {"link": mail_parser['url']}
+    return {"link": mail_parser['url'], "code": mail_parser['code']}
 
 
-@then('User approve withdrawal by link')
+@then('User approve withdrawal by code')
 def approve_withdrawal(check_withdrawal_email, make_withdrawal):
     counter = 0
-    resp = requests.get(check_withdrawal_email['link'])
-    assert resp.status_code == 200
+    resp = Verify().verify_withdrawal(
+        make_withdrawal['token'],
+        make_withdrawal['withdrawalData']['operationId'],
+        False
+    )
+    assert resp['status'] == 200
+    assert resp['response']['result'] == 'OK'
     while True:
-        balances = WalletHistory().operations_history(make_withdrawal['token'], make_withdrawal['asset'])
+        balances = WalletHistory().operations_history(
+            make_withdrawal['token'],
+            make_withdrawal['asset']
+        )['response']['data']
         counter += 1
         for item in balances:
-            if make_withdrawal['withdrawalData']['requestId'] in item['operationId'] and \
+            if make_withdrawal['request_id'] in item['operationId'] and \
                     item['status'] == 0 and \
                     item['balanceChange'] != 0:
                 assert item['operationType'] == 1
                 assert item['assetId'] == make_withdrawal['asset']
                 assert item['balanceChange'] == make_withdrawal[
                     'amount'] * -1, f'Expected: {make_withdrawal["amount"] * -1}\nReturned: {item["balanceChange"]}\nItem: {item}'
-                assert item['withdrawalInfo'] != None
+                assert item['withdrawalInfo'] is not None
                 assert item['withdrawalInfo']['toAddress'] == make_withdrawal['address']
                 assert item['withdrawalInfo']['withdrawalAssetId'] == make_withdrawal['asset']
                 assert item['withdrawalInfo']['withdrawalAmount'] == make_withdrawal['amount']
@@ -249,7 +277,7 @@ def approve_withdrawal(check_withdrawal_email, make_withdrawal):
                 return
         if counter > 6:
             raise AttributeError(
-                f'Can not find record operation history with status 1 and operationId like {make_withdrawal["withdrawalData"]["requestId"]}')
+                f'Can not find record operation history with status 1 and operationId like {make_withdrawal["request_id"]}')
         sleep(5)
 
 
@@ -259,9 +287,10 @@ def approve_withdrawal(check_withdrawal_email, make_withdrawal):
 def change_password(register):
     change_res = Auth(
         settings.template_tests_email,
-        settings.template_tests_password). \
-        forgot_password(register['email'])
-    assert change_res[0] == 'OK'
+        settings.template_tests_password
+    ). \
+        forgot_password(register['email'])['response']['result']
+    assert change_res == 'OK'
 
 
 @then('User get new email with code', target_fixture='parse_code')
@@ -287,9 +316,9 @@ def parse_code(create_temporary_template):
 @then('User change password using code from email')
 def change_password_with_code(parse_code, register):
     recovery_resp = Auth(register['email'], 'testpassword1'). \
-        password_recovery('testpassword2', parse_code['code'])
-    assert recovery_resp[
-               0] == 'OK', f"Expected that result will be 'OK' but returned: {recovery_resp[0]}; Code: {parse_code['code']}; Email: {register['email']}"
+        password_recovery('testpassword2', parse_code['code'])['response']['result']
+    assert recovery_resp == 'OK', \
+        f"Expected that result will be 'OK' but returned: {recovery_resp[0]}; Code: {parse_code['code']}; Email: {register['email']}"
 
 
 @then('User can not auth with old password')
@@ -300,7 +329,7 @@ def log_in_with_new_password(auth, register):
         specific_case=True
     )
     assert token['status'] == 401
-    assert token['response'] == '{"message":"InvalidUserNameOrPassword"}'
+    assert token['response']['message'] == "InvalidUserNameOrPassword"
 
 
 @then('User can auth with new password', target_fixture='log_in_with_new_password')
@@ -308,7 +337,7 @@ def log_in_with_new_password(auth, register):
     token = auth(
         register['email'],
         'testpassword2'
-    )['token']
+    )['response']['data']['token']
     assert type(token) == str
     return {"token": token}
 
@@ -318,7 +347,8 @@ def log_in_with_new_password(auth, register):
 
 @given('ReRegistration mail on inbox after existing user pass registration')
 def register_n_check_email(create_temporary_template):
-    token = Auth(settings.template_tests_email, 'testpassword1').register()
+    token = Auth(settings.template_tests_email, 'testpassword1').\
+        register()['response']['data']
     assert type(token) == dict, f'Expected response type: dict\nReturned: {token}'
     assert len(token) == 2
     mail_object = ParseMessage(3)
@@ -336,7 +366,7 @@ def register_n_check_email(create_temporary_template):
     data = create_temporary_template(mail_parser['message_body'], mail_object.get_template_name())
     os.remove(f"{mail_object.get_template_name()}.html")
 
-    assert template == data, f"Expected:\n1\n\nReturned: {2}"
+    assert template == data, f"Expected:\n\n\nReturned: {2}"
 
 # @scenario(f'../features/receive_email.feature', 'Success withdrawal or transfer && deposit')
 # def test_success_deposit_withdrawal():

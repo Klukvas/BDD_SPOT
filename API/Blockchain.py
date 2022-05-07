@@ -12,18 +12,16 @@ class Blockchain(MainObj):
         super().__init__()
         self.main_url = settings.url_blockchain
     
-    def withdrawal(self, token, asset, amount, address, *args):
+    def withdrawal(self, token, uniqId, asset, amount, address, specific_case=False):
         url = f"{self.main_url}withdrawal"
 
-        uniqId = uuid4()
-
-        payload = json.dumps({
+        payload = {
                 "requestId": f"{uniqId}",
                 "assetSymbol": f"{asset}",
                 "amount": amount,
                 "toAddress": f"{address}",
                 "lang": "En"
-            })
+            }
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -34,15 +32,6 @@ class Blockchain(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify=False,
-                headers=headers, data=payload)
-        try:
-            parse_resp = json.loads(r.text)
-            if args:
-                return parse_resp
-            else:
-                try:
-                    return {"operationId": parse_resp['data']['operationId'], "requestId": str(uniqId)}
-                except Exception as error:
-                    raise CantParseJSON(r.url, r.text, r.status_code, error)
-        except Exception as error:
-            raise CantParseJSON(r.url, r.text, r.status_code, error)
+                headers=headers, json=payload)
+
+        return self.parse_response(r, specific_case)

@@ -14,7 +14,7 @@ class Circle(MainObj):
         self.main_url = settings.url_circle
         self.debug_url = settings.url_debug
 
-    def get_encryption_key(self, token):
+    def get_encryption_key(self, token, specific_case=False):
         url = f"{self.main_url}get-encryption-key"
 
         headers = {
@@ -28,22 +28,15 @@ class Circle(MainObj):
                 verify=False,
                 headers=headers)
 
-        try:
-            parse_resp = json.loads(r.text)
-            try:
-                return {"data": parse_resp['data']}
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
 
-    def encrypt_data(self, token, enc_key):
+    def encrypt_data(self, token, enc_key, specific_case=False):
         url = f"{self.debug_url}circle-encrypt-data"
 
-        payload = json.dumps({
+        payload = {
                 "data": "{\"number\":\"4007400000000007\",\"cvv\": \"123\"}",
                 "encryptionKey": f"{enc_key}"
-            })
+            }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -53,21 +46,14 @@ class Circle(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify = False,
-                headers=headers, data=payload)
+                headers=headers, json=payload)
 
-        try:
-            parse_resp = json.loads(r.text)
-            try:
-                return {"data": parse_resp['data']}
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
     
-    def add_card(self, token, encryption_data, keyId):
+    def add_card(self, token, encryption_data, keyId, specific_case=False):
         url = f"{self.main_url}add-card"
         requestGuid = uuid4()
-        payload = json.dumps({
+        payload = {
                 "requestGuid": f"{requestGuid}",
                 "cardName": "baseTests",
                 "keyId": f"{keyId}",
@@ -80,7 +66,7 @@ class Circle(MainObj):
                 "billingPostalCode": "03146",
                 "expMonth": 12,
                 "expYear": 2024
-            })
+            }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -90,28 +76,20 @@ class Circle(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify = False,
-                headers=headers, data=payload)
+                headers=headers, json=payload)
 
-        try:
-            parse_resp =  json.loads(r.text)
-            try:
-                return {"data": parse_resp['data'] }
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
 
-    def create_payment(self, token, encryption_data, keyId, cardId, currency='USD', amount=10):
+    def create_payment(self, token, requestGuid, encryption_data, keyId, cardId, currency='USD', amount=10, specific_case=False):
         url = f"{self.main_url}create-payment"
-        requestGuid = uuid4()
-        payload = json.dumps({
-            "requestGuid": str(requestGuid),
+        payload = {
+            "requestGuid": requestGuid,
             "keyId": keyId,
             "cardId": cardId,
             "amount": amount,
             "currency": "USD",
             "encryptedData": encryption_data
-        })
+        }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -121,22 +99,15 @@ class Circle(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify = False,
-                headers=headers, data=payload)
+                headers=headers, json=payload)
 
-        try:
-            parse_resp = json.loads(r.text)
-            try:
-                return {"data": parse_resp['data']}
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
 
-    def delete_card(self, token, cardId):
+    def delete_card(self, token, cardId, specific_case=False):
         url = f"{self.main_url}delete-card"
-        payload = json.dumps({
+        payload = {
                 "cardId": f"{cardId}"
-            })
+            }
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -147,22 +118,15 @@ class Circle(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify = False,
-                headers=headers, data=payload)
+                headers=headers, json=payload)
 
-        try:
-            parse_resp =  json.loads(r.text)
-            try:
-                return {"data": parse_resp['data'] }
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
     
-    def get_card(self, token, cardId):
+    def get_card(self, token, cardId, specific_case=False):
         url = f"{self.main_url}get-card"
-        payload = json.dumps({
+        payload = {
                 "cardId": f"{cardId}"
-            })
+            }
 
         headers = {
             'Authorization': f'Bearer {token}',
@@ -173,18 +137,11 @@ class Circle(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify = False,
-                headers=headers, data=payload)
+                headers=headers, json=payload)
 
-        try:
-            parse_resp =  json.loads(r.text)
-            try:
-                return {"data": parse_resp['data'] }
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
 
-    def get_all_cards(self, token):
+    def get_all_cards(self, token, specific_case=False):
         url = f"{self.main_url}get-cards-all"
 
         headers = {
@@ -195,20 +152,14 @@ class Circle(MainObj):
         r = get(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
+                verify=False,
                 headers=headers)
 
-        try:
-            parse_resp =  json.loads(r.text)
-            try:
-                return {"data": parse_resp['data']}
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        except Exception as err:
-            raise CantParseJSON(r.url, r.text, r.status_code, err)
+        return self.parse_response(r, specific_case)
+
 
     def add_bank_account(self, token: str, bank_country: str, billing_country: str, account_number: str,
-                         iban: str, routing_number: str, guid: str) -> dict:
+                         iban: str, routing_number: str, guid: str, specific_case=False) -> dict:
         url = f"{self.main_url}add-bank-account"
 
         headers = {
@@ -262,19 +213,9 @@ class Circle(MainObj):
             verify=False,
             headers=headers, json=payload)
 
-        if isinstance(r, Response):
-            if r.status_code == 200:
-                try:
-                    resp = r.json()
-                except Exception as error:
-                    raise CantParseJSON(r.url, r.text, r.status_code, error)
-                return {'status': r.status_code, 'data': resp}
-            else:
-                raise RequestError(url, r.status_code)
-        else:
-            raise SomethingWentWrong(r)
+        return self.parse_response(r, specific_case)
 
-    def get_bank_account_all(self, token: str) -> dict:
+    def get_bank_account_all(self, token: str, specific_case=False) -> dict:
         url = f"{self.main_url}get-bank-account-all"
 
         headers = {
@@ -288,19 +229,9 @@ class Circle(MainObj):
                 verify=False,
                 headers=headers)
 
-        if isinstance(r, Response):
-            if r.status_code == 200:
-                try:
-                    resp = r.json()
-                except Exception as error:
-                    raise CantParseJSON(r.url, r.text, r.status_code, error)
-                return {'status': r.status_code, 'data': resp}
-            else:
-                raise RequestError(url, r.status_code)
-        else:
-            raise SomethingWentWrong(r)
+        return self.parse_response(r, specific_case)
 
-    def delete_bank_account(self, token: str, bank_account_id: str) -> dict:
+    def delete_bank_account(self, token: str, bank_account_id: str, specific_case=False) -> dict:
         url = f"{self.main_url}delete-bank-account"
 
         headers = {
@@ -322,19 +253,9 @@ class Circle(MainObj):
                  headers=headers,
                  json=payload)
 
-        if isinstance(r, Response):
-            if r.status_code == 200:
-                try:
-                    resp = r.json()
-                except Exception as error:
-                    raise CantParseJSON(r.url, r.text, r.status_code, error)
-                return {'status': r.status_code, 'data': resp}
-            else:
-                raise RequestError(url, r.status_code)
-        else:
-            raise SomethingWentWrong(r)
+        return self.parse_response(r, specific_case)
 
-    def get_bank_account(self, token: str, bank_account_id: str) -> dict:
+    def get_bank_account(self, token: str, bank_account_id: str, specific_case=False) -> dict:
         url = f"{self.main_url}get-bank-account"
 
         headers = {
@@ -356,14 +277,4 @@ class Circle(MainObj):
                  headers=headers,
                  json=payload)
 
-        if isinstance(r, Response):
-            if r.status_code == 200:
-                try:
-                    resp = r.json()
-                except Exception as error:
-                    raise CantParseJSON(r.url, r.text, r.status_code, error)
-                return {'status': r.status_code, 'data': resp}
-            else:
-                raise RequestError(url, r.status_code)
-        else:
-            raise SomethingWentWrong(r)
+        return self.parse_response(r, specific_case)

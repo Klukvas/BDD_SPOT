@@ -30,20 +30,30 @@ def check_is_datetime(date_string):
 
 @given(parsers.parse('scheduleType is {scheduleType}; isFromFixed is {isFromFixed}; volume is {volume}; fromAsset is {fromAsset}; toAsset is {toAsset}'), target_fixture='given_args')
 def get_given_arguments(scheduleType, isFromFixed, volume, fromAsset, toAsset, auth):
-    return {'recurringBuy': dict(scheduleType=int(scheduleType)), 'isFromFixed': bool(isFromFixed),
-            'volume': float(volume), 'fromAsset': fromAsset, 'toAsset': toAsset,
-            'auth_token': auth(
+    token = auth(
                 settings.autoinvest_email,
                 settings.autoinvest_password
-            )['token']}
+    )['response']
+    assert 'data' in token.keys(), \
+        f"Expected that 'data' key will be in response. But response is: {token}"
+    return {'recurringBuy': dict(scheduleType=int(scheduleType)), 'isFromFixed': bool(isFromFixed),
+            'volume': float(volume), 'fromAsset': fromAsset, 'toAsset': toAsset,
+            'auth_token':token['data']['token']}
 
 @when('user create instruction (method 1)', target_fixture='executed_quote_response')
 def create_instruction(given_args):
     swap_api = Swap()
-    quote_response = swap_api.get_quote(given_args['auth_token'], given_args['fromAsset'], given_args['toAsset'],
-                                      given_args['volume'], given_args['isFromFixed'],
-                                      given_args['recurringBuy'])
-
+    quote_response = swap_api.get_quote(
+        given_args['auth_token'],
+        given_args['fromAsset'],
+        given_args['toAsset'],
+        given_args['volume'],
+        given_args['isFromFixed'],
+        given_args['recurringBuy']
+    )['response']
+    assert 'data' in quote_response.keys(),\
+        f"Expected that 'data' key will be in response. But returned: {quote_response}"
+    quote_response = quote_response['data']
     assert type(quote_response['operationId']) == str, '/get-quote. operationId is not string'
     assert quote_response['fromAsset'] == given_args['fromAsset'], '/get-quote. response fromAsset != given fromAsset'
     assert quote_response['toAsset'] == given_args['toAsset'], '/get-quote. response toAsset != given toAsset'
@@ -63,8 +73,13 @@ def create_instruction(given_args):
     assert quote_response['recurringBuyInfo']['scheduleType'] == given_args['recurringBuy']['scheduleType'], '/get-quote. scheduleType from response != scheduleType from request'
     assert check_is_datetime(quote_response['recurringBuyInfo']['nextExecutionTime']), f'/get-quote. nextExecutionTime from response is not datetime. Its - {quote_response["recurringBuyInfo"]["nextExecutionTime"]}'
 
-    executed_quote_response = swap_api.execute_quote(given_args['auth_token'], quote_response)
-
+    executed_quote_response = swap_api.execute_quote(
+        given_args['auth_token'],
+        quote_response
+    )['response']
+    assert  'data' in executed_quote_response.keys(), \
+        f"Expected that 'data' key will be in response. But response is:{executed_quote_response}"
+    executed_quote_response = executed_quote_response['data']
     assert executed_quote_response['isExecuted'] is True, '/execute-quote. isExecuted is not True'
     assert executed_quote_response['operationId'] == quote_response['operationId'], '/execute-quote. operationId is not /get-quote operationId'
     assert executed_quote_response['fromAsset'] == given_args['fromAsset'], '/execute-quote. response fromAsset != given fromAsset'
@@ -84,9 +99,16 @@ def create_instruction(given_args):
 def create_instruction_2(given_args):
     swap_api = Swap()
     invest_api = Invest()
-    quote_response = swap_api.get_quote(given_args['auth_token'], given_args['fromAsset'], given_args['toAsset'],
-                                      given_args['volume'], given_args['isFromFixed'])
-
+    quote_response = swap_api.get_quote(
+        given_args['auth_token'],
+        given_args['fromAsset'],
+        given_args['toAsset'],
+        given_args['volume'],
+        given_args['isFromFixed']
+    )['response']
+    assert 'data' in quote_response.keys(),\
+        f"Expected that 'data' key will be in response. But returned: {quote_response}"
+    quote_response = quote_response['data']
     assert type(quote_response['operationId']) == str, '/get-quote. operationId is not string'
     assert quote_response['fromAsset'] == given_args['fromAsset'], '/get-quote. response fromAsset != given fromAsset'
     assert quote_response['toAsset'] == given_args['toAsset'], '/get-quote. response toAsset != given toAsset'
@@ -104,10 +126,14 @@ def create_instruction_2(given_args):
         assert quote_response['toAssetVolume'] == given_args['volume'], '/get-quote. response fromAssetVolume != given fromAssetVolume'
     assert isinstance(quote_response['recurringBuyInfo'], (type(None),)), '/get-quote recurringBuyInfo is not null'
 
-    autoinvest_response = invest_api.create(given_args['auth_token'], quote_response['operationId'],
-                                            given_args['recurringBuy']['scheduleType'])
-    data = autoinvest_response['data']['data']
-    print(data)
+    autoinvest_response = invest_api.create(
+        given_args['auth_token'],
+        quote_response['operationId'],
+        given_args['recurringBuy']['scheduleType']
+    )['response']
+    assert 'data' in autoinvest_response.keys(), \
+        f"Expected that 'data' key in response. But returned: {autoinvest_response}"
+    data = autoinvest_response['data']
     assert data['scheduleType'] == given_args['recurringBuy']['scheduleType']
     assert check_is_datetime(data['nextExecutionTime'])
     assert data['fromAsset'] == given_args['fromAsset']
@@ -117,8 +143,13 @@ def create_instruction_2(given_args):
     else:
         assert data['toAmount'] == given_args['volume']
 
-    executed_quote_response = swap_api.execute_quote(given_args['auth_token'], quote_response)
-
+    executed_quote_response = swap_api.execute_quote(
+        given_args['auth_token'],
+        quote_response
+    )['response']
+    assert 'data' in executed_quote_response.keys(), \
+        f"Expected that response contains 'data' key. But response is:{executed_quote_response}"
+    executed_quote_response = executed_quote_response['data']
     assert executed_quote_response['isExecuted'] is True, '/execute-quote. isExecuted is not True'
     assert executed_quote_response['operationId'] == quote_response['operationId'], '/execute-quote. operationId is not /get-quote operationId'
     assert executed_quote_response['fromAsset'] == given_args['fromAsset'], '/execute-quote. response fromAsset != given fromAsset'
@@ -137,8 +168,11 @@ def create_instruction_2(given_args):
 @when('instruction appears in DB', target_fixture='created_instruction_db_response')
 def is_instruction_appears(db_connection, executed_quote_response, given_args):
     db_connection['db_client'].session.commit()
-    response = db_connection['db_client'].session.query(db_connection['recurringbuy.instructions']).filter_by(
-        OriginalQuoteId=executed_quote_response['operationId']).first()
+    response = db_connection['db_client'].session.query(
+            db_connection['recurringbuy.instructions']
+        ).filter_by(
+                OriginalQuoteId=executed_quote_response['operationId']
+            ).first()
     assert response.ClientId == settings.autoinvest_client_id, "DB clientId != user's clientId"
     assert isinstance(response.CreationTime, datetime), "DB creationtime is not datetime"
     assert isinstance(response.ErrorText, type(None)), "DB errortext is not None"
@@ -212,8 +246,12 @@ def wait_till_order_appears(db_connection, created_instruction_db_response, give
 
 @then('new log has to be in the operation history')
 def check_operation_history(given_args):
-    data = WalletHistory().operations_history(given_args['auth_token'])
-    history_log = data[0]
+    data = WalletHistory().operations_history(
+        given_args['auth_token']
+    )['response']
+    assert 'data' in data.keys(), \
+        f"Expected key 'data' in response. But response is:{data}"
+    history_log = data['data'][0]
     # assert history_log['operationType'] == 13, '/operation-history. operationType is not 13'  # TODO: set 13 after fix
     assert history_log['swapInfo']['isSell'] is True, '/operation-history. isSell is not True'  # TODO: check why isSell sometimes False
     assert history_log['swapInfo']['sellAssetId'] == given_args['fromAsset'], '/operation-history. sellAssetId != given fromAsset'  # TODO: is that right ?
@@ -224,7 +262,12 @@ def check_operation_history(given_args):
 
 @then('new log has to be in the balance history')
 def check_balance_history(given_args):
-    data = WalletHistory().balance(given_args['auth_token'])
+    data = WalletHistory().balance(
+            given_args['auth_token']
+        )['response']
+    assert 'data' in data.keys(),\
+        f"Expected that 'data' key will bi in response. But response is{data}"
+    data = data['data']
     first_log, second_log = data[0], data[1]
     if first_log['assetSymbol'] == given_args['fromAsset']:
         assert first_log['amount'] == -given_args['volume'], '/balance-history. first-log amount != -given volume'
@@ -271,8 +314,11 @@ def switch_off(given_args, created_instruction_db_response):
 def check_instruction_change(db_connection, executed_quote_response, given_args, state):
     # without commit - query returns old values - https://stackoverflow.com/questions/16586114/sqlalchemy-returns-stale-rows
     db_connection['db_client'].session.commit()
-    response = db_connection['db_client'].session.query(db_connection['recurringbuy.instructions']).filter_by(
-        OriginalQuoteId=executed_quote_response['operationId']).first()
+    response = db_connection['db_client'].session.query(
+            db_connection['recurringbuy.instructions']
+        ).filter_by(
+            OriginalQuoteId=executed_quote_response['operationId']
+        ).first()
     assert response.ClientId == settings.autoinvest_client_id, "DB clientId != user's clientId"
     assert isinstance(response.CreationTime, datetime), "DB creationtime is not datetime"
     assert isinstance(response.ErrorText, type(None)), "DB errortext is not None"

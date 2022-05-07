@@ -11,7 +11,7 @@ class WalletHistory(MainObj):
         super().__init__()
         self.main_url = settings.url_wallet_history
 
-    def balance(self, token) -> list[dict] or int:
+    def balance(self, token, specific_case=False):
         url = f"{self.main_url}balance-history"
         headers = {
             'Authorization': f'Bearer {token}'
@@ -23,16 +23,9 @@ class WalletHistory(MainObj):
                 verify=False,
                 headers=headers)
 
-        if r.status_code == 200:
-            try:
-                parse_resp = json.loads(r.text)
-                return parse_resp['data']
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-        else:
-            raise RequestError(r.url, r.status_code)
+        return self.parse_response(r, specific_case)
 
-    def swap(self, token) -> list[dict] or int:
+    def swap(self, token, specific_case) -> list[dict] or int:
         url = f"{self.main_url}swap-history"
         payload={}
         headers = {
@@ -42,23 +35,12 @@ class WalletHistory(MainObj):
         r = get(url,
                 pkcs12_filename=self.cert_name,
                 pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, data=payload)
+                verify=False,
+                headers=headers, json=payload)
 
-        if r.status_code == 200:
-            try:
-                parse_resp = json.loads(r.text)
-                hist = parse_resp['data']
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-            if hist is None:
-                return []
-            else:
-                return hist
-        else:
-            raise RequestError(r.url, r.status_code)
+        return self.parse_response(r, specific_case)
 
-    def trade(self, token) -> list[dict] or int:
+    def trade(self, token, specific_case=False) -> list[dict] or int:
         url = f"{self.main_url}trade-history"
         payload={}
         headers = {
@@ -69,16 +51,9 @@ class WalletHistory(MainObj):
                 pkcs12_filename=self.cert_name,
                 pkcs12_password=self.cert_pass,
                 verify=False,
-                headers=headers, data=payload)
+                headers=headers, json=payload)
 
-        if r.status_code == 200:
-            parse_resp = json.loads(r.text)
-            try:
-                return parse_resp['data']
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-        else:
-            raise RequestError(r.url, r.status_code)
+        return self.parse_response(r, specific_case)
 
     def operations_history(self, token, asset=None, specific_case=False) -> dict or list[dict] or int:
         if asset:
@@ -94,13 +69,5 @@ class WalletHistory(MainObj):
                 pkcs12_password=self.cert_pass,
                 verify=False,
                 headers=headers)
-        if specific_case:
-            return {"response": r.text, "code": r.status_code}
-        if r.status_code == 200:
-            parse_resp = json.loads(r.text)
-            try:
-                return parse_resp['data']
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-        else:
-            raise RequestError(r.url, r.status_code)
+
+        return self.parse_response(r, specific_case)
