@@ -32,32 +32,10 @@ class Swap(MainObj):
                 verify=False,
                 headers=headers, json=payload)
 
-        if r.status_code == 200:
-            try:
-                parse_resp = json.loads(r.text)
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-            try:
-                if specific_case:
-                    return parse_resp['result']
-                return parse_resp['data']
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        elif r.status_code == 400 and specific_case:
-            try:
-                parse_resp = json.loads(r.text)
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-            try:
-                return {"response": parse_resp, "code": 400}
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        else:
-            raise RequestError(url, r.status_code)
+        return self.parse_response(r, specific_case)
 
-    def execute_quote(self, token, body) -> dict or int or list:
+    def execute_quote(self, token, body, specific_case=False) -> dict or int or list:
         url = f"{self.main_url}execute-quote"
-        payload = json.dumps(body)
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
@@ -67,16 +45,6 @@ class Swap(MainObj):
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
                 verify=False,
-                headers=headers, data=payload)
+                headers=headers, json=body)
 
-        if r.status_code == 200:
-            try:
-                parse_resp = json.loads(r.text)
-            except Exception as err:
-                raise CantParseJSON(r.url, r.text, r.status_code, err)
-            try:
-                return parse_resp['data']
-            except Exception as err:
-                raise CanNotFindKey(r.url, err)
-        else:
-            raise RequestError(url, r.status_code)
+        return self.parse_response(r, specific_case)

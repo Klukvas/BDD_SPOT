@@ -32,16 +32,16 @@ def transfer_with_blocker(auth, change_password_blocker):
     token = auth(
         change_password_blocker['email'],
         change_password_blocker['new_password']
-    )['token']
+    )['response']['data']['token']
+    uid = str(uuid.uuid4())
     transfer_data = Transfer().create_transfer(
-        token,
-        settings.me_tests_transfer_to_phone,
-        'USD',
-        10,
-        'negative_test'
+        token=token,
+        request_id=uid,
+        phone=settings.me_tests_transfer_to_phone,
+        asset='USD',
+        amount=10
     )
-
-    assert transfer_data['result'] == 'OperationBlocked'
+    assert transfer_data['response']['result'] == 'OperationBlocked'
 
 
 @then("User can not make a withdrawal")
@@ -49,17 +49,17 @@ def transfer_with_blocker(auth, change_password_blocker):
     token = auth(
         change_password_blocker['email'],
         change_password_blocker['new_password']
-    )['token']
+    )['response']['token']
 
     wd_data = Blockchain().withdrawal(
         token,
         'BCH',
         0.001,
         "bchtest:qqanfzd2k8tc5tvggwc0s6lwzllaqt9gzgpp6ylpex",
-        'negative_test'
+        specific_case=True
     )
 
-    assert wd_data['result'] == 'OperationBlocked'
+    assert wd_data['response']['result'] == 'OperationBlocked'
 
 
 @scenario(f'../features/auth.feature', 'Blocker after incorrect password')
@@ -84,7 +84,7 @@ def login_with_enc_password(auth, register):
 
 @then("User has blocker for login")
 def check_for_blocker(login_with_enc_password):
-    assert json.loads(login_with_enc_password['response'])['result'] == "OperationBlocked"
+    assert login_with_enc_password['response']['result'] == "OperationBlocked"
 
 
 @scenario(f'../features/auth.feature', 'Change password')
@@ -103,7 +103,7 @@ def change_password(register):
         password,
         new_password
     )
-    assert type(ch_pass_data) == dict, \
+    assert type(ch_pass_data['response']) == dict, \
         f"Expected: type == dict\nReturned: {type(ch_pass_data)}\tch_pass_data: {ch_pass_data}"
     return {"email": email, "new_password": new_password, "old_password": password}
 
@@ -117,7 +117,7 @@ def log_in_by_old_password(auth, password_changed):
     )
 
     assert auth_data['status'] == 401, f"Expected that status code will be 401 but returned: {auth_data[0]}"
-    assert auth_data['response'] == '{"message":"InvalidUserNameOrPassword"}', \
+    assert auth_data['response']['message'] == "InvalidUserNameOrPassword", \
         f"Expecte thatn auth resp will be: 'message': 'InvalidUserNameOrPassword' but returned: {auth_data[1]}"
 
 
@@ -126,7 +126,7 @@ def log_in_by_new_password(auth, password_changed):
     auth_data = auth(
         password_changed['email'],
         password_changed['new_password']
-    )['token']
+    )['response']['data']['token']
 
     assert type(auth_data) == str, \
         f"Expected that response will be str vut returned: {type(auth_data)}\tauth_data:{auth_data}"
@@ -142,15 +142,17 @@ def get_token(auth):
     token = auth(
         settings.template_tests_email,
         settings.template_tests_password
-    )['token']
+    )['response']['data']['token']
 
     return {"token": token}
 
 
 @given('User can interact with any endpoint')
 def check_token(get_token):
-    op_history = WalletHistory().operations_history(get_token['token'])
-    assert type(op_history) == list, f"Expected that resp type will be list but returned: {op_history}"
+    op_history = WalletHistory().operations_history(
+        get_token['token']
+    )
+    assert op_history['status'] == 200, f"Expected that resp type will be list but returned: {op_history}"
 
 
 @when('User make LogOut')
@@ -168,7 +170,7 @@ def check_logouted_token(get_token):
             asset=None,
             specific_case=True
     )
-    assert op_history['code'] == 401,\
+    assert op_history['status'] == 401,\
         f"Expected that resp will be eql to 401 but returned: {op_history}"
 
 
@@ -184,18 +186,22 @@ def get_token(auth):
         settings.template_tests_password,
     )
 
-    return {"tokens": tokens}
+    return {"tokens": tokens['response']['data']}
 
 
 @given('User can interact with endpoints')
 def check_token(get_token):
-    op_history = WalletHistory().operations_history(get_token['tokens']['token'])
-    assert type(op_history) == list, f"Expected that resp type will be list but returned: {op_history}"
+    op_history = WalletHistory().operations_history(
+        get_token['tokens']['token']
+    )
+    assert op_history['status'] == 200, f"Expected that resp status will be 200 but returned: {op_history['status']}"
 
 
 @when('User make Refresh of token', target_fixture="refresh")
 def refresh(get_token):
-    new_token = Auth(None, None).refresh(get_token['tokens']['refreshToken'])
+    new_token = Auth(None, None).refresh(
+        get_token['tokens']['refreshToken']
+    )
 
     assert all(
         [k in ['refreshToken', 'token'] for k in list(new_token['response']['data'].keys())]
@@ -206,8 +212,11 @@ def refresh(get_token):
 
 @then('User can interact with endpoint with new token')
 def check_logouted_token(refresh):
-    op_history = WalletHistory().operations_history(refresh['new_tokens']['response']['data']['token'])
-    assert type(op_history) == list, f"Expected that resp type will be int but returned: {op_history}"
+    op_history = WalletHistory().operations_history(
+        refresh['new_tokens']['response']['data']['token']
+    )
+    assert op_history['status'] == 200,\
+        f"Expected that resp type will be int but returned: {op_history}"
 
 
 @scenario(f'../features/auth.feature', 'Negative registration')
@@ -217,10 +226,10 @@ def test_negative_registration():
 
 @given(parsers.parse('User try to registration with {email} and {password}. User get {response} with {status_code}'))
 def registration_with_broke_data(email, password, response, status_code):
-    negative_response = Auth(email, password).register('negative cases')
-    assert type(negative_response) == dict, \
-        f"Expected: type == str\nReturned: {type(negative_response)}\t tokens: {negative_response}"
-    assert negative_response['response'] == response, f"Expected: {response}\nReturned: {negative_response['response']}"
+    negative_response = Auth(email, password).register(
+        specific_case=True
+    )
+    assert negative_response['response']['message'].strip() == response.strip(), f"Expected: {response}\nReturned: {negative_response['response']['message']}"
     assert negative_response['status'] == int(status_code),\
         f"Expected: {status_code}\nReturned: {negative_response['status']}"
 
@@ -234,10 +243,10 @@ def test_negative_authentification():
     "User try to authentification with {email} and {password}. User get {response} with {status_code}")
 )
 def authentification_negative(email, password, response, status_code):
-    negative_response = Auth(email, password).authenticate('negative cases')
-    assert type(negative_response) == dict,\
-        f"Expected: type == str\nReturned: {type(negative_response)}\t tokens: {negative_response}"
-    assert negative_response['response'] == response, f"Expected: {response}\nReturned: {negative_response['response']}"
+    negative_response = Auth(email, password).authenticate(
+        specific_case=True
+    )
+    assert negative_response['response']['message'].strip() == response.strip(), f"Expected: {response}\nReturned: {negative_response['response']}"
     assert negative_response['status'] == int(status_code),\
         f"Expected: {status_code}\nReturned: {negative_response['status']}"
 
@@ -254,15 +263,17 @@ def handle_password_negative(auth, password_old, password_new, response, status_
     token = auth(
         settings.auth_tests_email_for_change_password,
         settings.auth_tests_password_for_change_password
-    )['token']
+    )['response']['data']['token']
 
     if password_old == 'default':
         password_old = settings.auth_tests_password_for_change_password
     change_password_resp = Auth(
         settings.auth_tests_email_for_change_password, 
         settings.auth_tests_password_for_change_password
-    ).change_password(token, password_old, password_new, "negative cases")
-    assert str(change_password_resp['code']) == status_code,\
-        f"Expected status code eql to {status_code} but returned: {change_password_resp}"
-    assert change_password_resp['resp'] == response,\
-        f"Expected status code eql to {status_code} but returned: {change_password_resp}"
+    ).change_password(
+        token, password_old, password_new, specific_case=True
+    )
+    assert str(change_password_resp['status']) == str(status_code),\
+        f"Expected status code eql to {status_code} but returned: {change_password_resp['status']}"
+    assert change_password_resp['response']['message'].strip() == response.strip(),\
+        f"Expected status code eql to {status_code} but returned: {change_password_resp['response']['message']}"
