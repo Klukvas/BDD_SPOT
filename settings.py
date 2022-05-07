@@ -22,6 +22,14 @@ cert_pass = os.environ.get('cert_pass', "NOT_SET")
 if cert_pass == "NOT_SET" or cert_name == "NOT_SET":
     set_env_variables()
 
+working_directory = os.path.dirname(os.path.abspath(__file__))
+
+openvpn_path = os.environ.get('openvpn_path', "NOT_SET")
+openvpn_profile_name = os.environ.get('openvpn_profile_name', "NOT_SET")
+
+if openvpn_path == "NOT_SET" or openvpn_profile_name == "NOT_SET":
+    set_env_variables()
+
 try:
     with open('settings.json') as f:
         data = json.load(f)

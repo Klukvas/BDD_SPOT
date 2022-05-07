@@ -1,0 +1,1 @@
+"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command disconnect spot-uat-new_vsevolod.lazuka_spot-uat-new.ovpn
