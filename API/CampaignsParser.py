@@ -1,5 +1,6 @@
 from GRPC.Сampaigns import campaigns
 from datetime import datetime
+import json
 
 
 class CampaignWorker:
@@ -10,14 +11,22 @@ class CampaignWorker:
         self.condition_steps = {}
 
     def find_campaign_by_id(self, cmp_id: str):
-        self.campaign = list(filter(
-            lambda campaign: campaign['Id'] == cmp_id,
-            campaigns.get_all_campaigns()['Campaigns']
-        ))
+        try:
+            all_campaigns = json.loads(
+                campaigns.get_all_campaigns()
+            )['Campaigns']
+        except Exception as err:
+            raise Exception(f"Something went wrong with getting all campaigns. Error: {err}")
+        self.campaign = list(
+            filter(
+                lambda campaign: campaign['Id'] == cmp_id,
+                all_campaigns
+            )
+        )
         return self.campaign
 
     def get_criteria_steps(self):
-        for criteria in self.campaign['CriteriaList']:
+        for criteria in self.campaign[0]['CriteriaList']:
             if 'CriteriaType' not in criteria.keys():
                 criteria['CriteriaType'] = 'RegistrationType'
             if criteria['CriteriaType'] == 'KycType':
@@ -40,8 +49,9 @@ class CampaignWorker:
                             Returned: {criteria['Parameters']['DateParam']}
                             Error: {err}
                         """)
-                    if reg_date < datetime.today().date():
-                        raise Exception(f"Date in campaign: {reg_date} is greater than date today")
+                    today_date = datetime.today().date()
+                    if not today_date > reg_date:
+                        raise Exception(f"Date in campaign: {reg_date} is greater than date today({today_date})")
             elif criteria['CriteriaType'] == 'ReferralType':
                 if criteria['Parameters']['HasReferrer']:
                     self.criteria_steps['HasReferrer'] = True

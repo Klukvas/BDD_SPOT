@@ -2,9 +2,15 @@ import traceback
 import grpc
 from GRPC.Kyc import IKycStatusService_pb2 as kyc_pb2, \
     IKycStatusService_pb2_grpc as kyc_grpc
+import enum
 
 
-def set_kys_allowed(client_id: str) -> None or str:
+class KycStatusEnum(enum.IntEnum):
+
+    Allowd = 2
+
+
+def set_kys_allowed(client_id: str, DepositStatus, TradeStatus, WithdrawalStatus) -> None or str:
     try:
         channel = grpc.insecure_channel("kyc.spot-services.svc.cluster.local:80")
         try:

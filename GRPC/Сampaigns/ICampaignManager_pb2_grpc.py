@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import ICampaignManager_pb2 as ICampaignManager__pb2
+from GRPC.Сampaigns import ICampaignManager_pb2 as ICampaignManager__pb2
 from GRPC.UsefulImport import empty_pb2 as empty__pb2
 
 

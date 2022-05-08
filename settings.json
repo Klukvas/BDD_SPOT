@@ -1,7 +1,7 @@
 {
     "env":{
         "UAT": {
-            "is_actual": false,
+            "is_actual": true,
             "start_settings": {
                 "regression": false,
                 "new_scenario": false,
@@ -48,6 +48,7 @@
                 },
                 "me_tests": {
                     "email": "baseuser1@mailinator.com",
+                    "referral_code": "test_referral_code",
                     "password": "testpassword1",
                     "client_id": "d5caeca8b1a944189dccb899ec1f8fc2",
                     "from_phone_number": "+380933342340",
@@ -80,7 +81,7 @@
 
         },
         "PROD": {
-            "is_actual": true,
+            "is_actual": false,
             "start_settings": {
                 "regression": false,
                 "new_scenario": false,

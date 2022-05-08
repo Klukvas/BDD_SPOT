@@ -2,18 +2,33 @@ import os
 import json
 
 
-def set_env_variables():
-    # path_to_env_file: str = os.path.join(
-    #     os.path.dirname(
-    #         os.getcwd()
-    #     ),
-    #     '.env'
-    # )
-    path_to_env_file: str = os.path.join(
-        os.getcwd(),
-        '.env'
+def get_path(file_name: str) -> str:
+    path = os.getcwd()
+    pathExists = os.path.exists(
+        os.path.join(
+            path,
+            file_name
+        )
     )
-    with open(path_to_env_file, 'r') as f:
+    if not pathExists:
+        while not pathExists:
+            path = os.path.dirname(path)
+            pathExists = os.path.exists(
+                os.path.join(
+                    path,
+                    file_name
+                )
+            )
+
+    return os.path.join(
+                    path,
+                    file_name
+                )
+
+
+def set_env_variables():
+    env_file_path = get_path('.env')
+    with open(env_file_path, 'r') as f:
         for item in f.readlines():
             if "=" in item:
                 variable_name, variable_data = item.split('=')
@@ -38,13 +53,8 @@ try:
     with open('settings.json') as f:
         data = json.load(f)
 except FileNotFoundError:
-    path_to_env_file = os.path.join(
-        os.path.dirname(
-            os.getcwd()
-        ),
-        'settings.json'
-    )
-    with open(path_to_env_file, 'r') as f:
+    path_to_settings = get_path('settings.json')
+    with open(path_to_settings, 'r') as f:
         data = json.load(f)
 
 envs = data['env'].keys()
@@ -76,6 +86,7 @@ autoinvest_client_id = data['autoinvest_test']['client_id']
 autoinvest_wallet_id = data['autoinvest_test']['wallet_id']
 
 me_tests_email = data['me_tests']['email']
+me_tests_referral_code = data['me_tests']['referral_code']
 me_tests_password = data['me_tests']['password']
 me_tests_client_id = data['me_tests']['client_id']
 me_tests_from_phone_number = data['me_tests']['from_phone_number']
@@ -89,7 +100,7 @@ signalr_url = data['signalr_url']
 signalr_email = data['signalr_test']['email']
 signalr_password = data['signalr_test']['password']
 
-#Имейл на который прихоят письма
+# Имейл на который прихоят письма
 template_tests_email = data['template_tests']['email']
 template_tests_client_id = data['template_tests']['client_id']
 template_tests_password = data['template_tests']['password']
@@ -114,7 +125,7 @@ url_transfer = data['urls']['transfer']
 url_blockchain = data['urls']['blockchain']
 url_circle = data['urls']['circle']
 url_debug = data['urls']['debug']
-url_simplex = data['urls']['simplex'] 
+url_simplex = data['urls']['simplex']
 # используються для создания квоты свопа с fixed False
 balance_asssets = {
     'LTC': 1.3,
@@ -161,4 +172,3 @@ chart_data = {
         "expected_count": 92
     }
 }
-
