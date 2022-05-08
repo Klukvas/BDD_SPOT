@@ -1,6 +1,14 @@
 from GRPC.Сampaigns import campaigns
 from datetime import datetime
 import json
+from enum import IntEnum
+
+
+class ConditionWeightEnum(IntEnum):
+    KYCCondition = 1
+    DepositCondition = 2
+    TradeCondition = 3
+    ConditionsCondition = 99
 
 
 class CampaignWorker:
@@ -9,6 +17,7 @@ class CampaignWorker:
         self.campaign = None
         self.criteria_steps = {}
         self.condition_steps = {}
+        self.rewards = {}
 
     def find_campaign_by_id(self, cmp_id: str):
         try:
@@ -57,31 +66,39 @@ class CampaignWorker:
                     self.criteria_steps['HasReferrer'] = True
         return self.criteria_steps
 
-    def get_rewards(self, rewards: list, condition_type: str):
+    def get_rewards(self, rewards: list) -> dict:
         for item in rewards:
-            if item['Type'] == 'ReferrerPaymentAbsolute':
-                if 'Rewards' in self.condition_steps[condition_type].keys():
-                    pass
-                else:
-                    self.condition_steps[condition_type]['Rewards'] = item['Parameters']
+            if 'Type' not in item.keys():
+                item['Type'] = 'FeeShareAssignment'
+            self.rewards[item['Type']] = item['Parameters']
+        return self.rewards
+
+    @staticmethod
+    def sort_dict_by_field(dict_to_sort: dict, key_field_sort: str) -> dict:
+        list_d = list(dict_to_sort.items())
+        list_d.sort(key=lambda i: i[1][key_field_sort])
+        sorted_dict = {k[0]: k[1] for k in list_d}
+        return sorted_dict
 
     def get_condition_steps(self):
-        for condition in self.campaign['Conditions']:
-            if condition['Type'] == 'KYCCondition':
-                self.condition_steps['KYCCondition'] = {}
-                for param_name, param_val in condition['Parameters'].items():
-                    if param_val:
-                        if 'Steps' in self.condition_steps['KYCCondition'].keys():
-                            self.condition_steps['KYCCondition']['Steps'].append(param_name)
-                        else:
-                            self.condition_steps['KYCCondition']['Steps'] = [param_name]
+        for condition in self.campaign[0]['Conditions']:
+            if 'Type' not in condition.keys():
+                condition['Type'] = 'KYCCondition'
+            self.condition_steps[condition['Type']] = {'weight': ConditionWeightEnum[condition['Type']].value}
+            self.condition_steps[condition['Type']]['Steps'] = condition['Parameters']
+            if 'Rewards' in condition.keys():
+                self.condition_steps[condition['Type']]['Rewards'] = self.get_rewards(condition['Rewards'])
+            else:
+                self.condition_steps[condition['Type']]['Rewards'] = {}
+        self.condition_steps = CampaignWorker.sort_dict_by_field(self.condition_steps, 'weight')
+        return self.condition_steps
 
     def main(self):
-        self.get_criteria_steps()
-        return self.criteria_steps
+        self.find_campaign_by_id('7d132d2ac7c34b7ca787db703c9b8ee2')
+        a = self.get_condition_steps()
+        return a
 
 
 if __name__ == "__main__":
-    cmp = {}
-    c = CampaignParser(cmp).main()
+    c = CampaignWorker().main()
     print(c)
