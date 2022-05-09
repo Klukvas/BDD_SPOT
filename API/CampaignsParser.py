@@ -26,21 +26,25 @@ class CampaignWorker:
             )['Campaigns']
         except Exception as err:
             raise Exception(f"Something went wrong with getting all campaigns. Error: {err}")
-        self.campaign = list(
+        campaign_data = list(
             filter(
                 lambda campaign: campaign['Id'] == cmp_id,
                 all_campaigns
             )
         )
+        assert len(campaign_data) == 1, \
+            f"Found {len(campaign_data)} campaigns with id: {cmp_id}. Expected: 1"
+        self.campaign = campaign_data[0]
         return self.campaign
 
     def get_criteria_steps(self):
-        for criteria in self.campaign[0]['CriteriaList']:
+        for criteria in self.campaign['CriteriaList']:
             if 'CriteriaType' not in criteria.keys():
                 criteria['CriteriaType'] = 'RegistrationType'
             if criteria['CriteriaType'] == 'KycType':
                 for param_name, param_val in criteria['Parameters'].items():
-                    if param_val:
+                    print(f"param_name: {param_name} | param_val: {param_val} | {type(param_val)}")
+                    if param_val == 'True':
                         if 'KYC' in self.criteria_steps.keys():
                             self.criteria_steps['KYC'].append(param_name)
                         else:
@@ -62,7 +66,7 @@ class CampaignWorker:
                     if not today_date > reg_date:
                         raise Exception(f"Date in campaign: {reg_date} is greater than date today({today_date})")
             elif criteria['CriteriaType'] == 'ReferralType':
-                if criteria['Parameters']['HasReferrer']:
+                if criteria['Parameters']['HasReferrer'] == 'True':
                     self.criteria_steps['HasReferrer'] = True
         return self.criteria_steps
 
@@ -81,11 +85,13 @@ class CampaignWorker:
         return sorted_dict
 
     def get_condition_steps(self):
-        for condition in self.campaign[0]['Conditions']:
+        for condition in self.campaign['Conditions']:
             if 'Type' not in condition.keys():
                 condition['Type'] = 'KYCCondition'
             self.condition_steps[condition['Type']] = {'weight': ConditionWeightEnum[condition['Type']].value}
             self.condition_steps[condition['Type']]['Steps'] = condition['Parameters']
+            self.condition_steps[condition['Type']]["Id"] = condition['ConditionId']
+            self.condition_steps[condition['Type']]["Passed"] = False
             if 'Rewards' in condition.keys():
                 self.condition_steps[condition['Type']]['Rewards'] = self.get_rewards(condition['Rewards'])
             else:
@@ -95,7 +101,8 @@ class CampaignWorker:
 
     def main(self):
         self.find_campaign_by_id('7d132d2ac7c34b7ca787db703c9b8ee2')
-        a = self.get_condition_steps()
+        # a = self.get_condition_steps()
+        a = self.get_criteria_steps()
         return a
 
 

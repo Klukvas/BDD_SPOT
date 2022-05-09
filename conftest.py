@@ -1,29 +1,69 @@
 from API.Auth import Auth
 from API.Wallet import Wallet
 from API.Verify import Verify
+from API.GmailApi import GmailApi
+from API.OpenVPN import OpenVPN
+from API.WalletHistory import WalletHistory
+
 import pytest
 import settings
 from GRPC.ChangeBalance.change_balance import changeBalance
 from time import sleep
 from Database.db import get_db_client
-from API.GmailApi import GmailApi
-from API.OpenVPN import OpenVPN
+from datetime import datetime
+from Logger import Logger
+
+log = Logger().custom_logger()
+
+
+@pytest.fixture()
+def find_record_in_op():
+    def inner(token: str, search_by: dict, asset: str = '', time_compare: int = 6000, research_count=10, sleep_for=10):
+        # search_by: {"operationId": '123', "operationType": 4, "status": 0}
+        # time_compare: difference btw date in history and today - in seconds
+        wh_obj = WalletHistory()
+        filtered_data = []
+        for _ in range(research_count):
+            if asset:
+                response = wh_obj.operations_history(token, asset)['response']
+            else:
+                response = wh_obj.operations_history(token)['response']
+            assert 'data' in response.keys(), \
+                f"Expected that 'data' key will be in response. But response is: {response}"
+            today = datetime.today()
+            filtered_data = [
+                record for record in response['data'] if all(
+                    record[filter_name] == filter_value and
+                    (datetime.strptime(record['timeStamp'], "%Y-%m-%dT%H:%M:%S.%f") - today).seconds < time_compare
+                    for filter_name, filter_value in search_by.items()
+                )
+            ]
+            if filtered_data:
+                log.info(f"Filtered data by params: {search_by} was found")
+                break
+            sleep(sleep_for)
+        return filtered_data
+
+    return inner
+
 
 @pytest.fixture(scope='session')
 def db_connection():
     if settings.db_connection_string:
         return get_db_client()
     else:
-        assert False, 'db_connection_string is not set'
+        raise ConnectionError('db_connection_string is not set')
+
 
 @pytest.fixture(scope='session')
 def openvpn_client():
     return OpenVPN()
 
+
 @pytest.fixture()
 def register():
     def inner(email, password, *args):
-        print(f"Register by: {email} with password: {password}")
+        log.info(f"Register by: {email} with password: {password}")
         response = Auth(email, password).register()['response']['data']
         Verify().verify_email(response['token'], '000000')
         return response
@@ -34,7 +74,7 @@ def register():
 def auth():
     def get_tokens(email, password, specific_case=False):
         auth_data = Auth(email, password).authenticate(specific_case)
-        print(f"Log in by: {email}")
+        log.info(f"Log in by: {email}")
         return auth_data
     return get_tokens
 
@@ -48,6 +88,7 @@ def create_temporary_template():
             f.seek(0)
             data = f.read()
         return data
+
     return inner
 
 
@@ -107,22 +148,28 @@ def pytest_configure(config):
         "markers", "candels: mark1 test to run only on named environment"
     )
 
+
 def pytest_bdd_before_scenario(request, feature, scenario):
-    print(f'\n\nStarted new scenario:{scenario.name}\nFeature: {feature.name}\n')
-    if scenario.name in ['Make a swap', 'Make a deposit by simplex', 'Make a transfer by phone', 'Make a internalWithdrawal',
-        'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
+    log.info(f'Started new scenario:{scenario.name}\nFeature: {feature.name}')
+    if scenario.name in ['Make a swap', 'Make a deposit by simplex', 'Make a transfer by phone',
+                         'Make a internalWithdrawal',
+                         'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal',
+                         'Success withdrawal or transfer && deposit']:
         assets_for_update = []
-        if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal', 'Success withdrawal or transfer && deposit']:
+        if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal',
+                             'Success withdrawal or transfer && deposit']:
             token = Auth(
                 settings.template_tests_email,
                 settings.template_tests_password
             ).authenticate()['response']['data']['token']
             client_Id = settings.template_tests_client_id
+            log.info(f"Check balance for user: {settings.template_tests_email}")
         else:
             token = Auth(
                 settings.me_tests_email,
                 settings.me_tests_password
             ).authenticate()['response']['data']['token']
+            log.info(f"Check balance for user: {settings.me_tests_email}")
             client_Id = settings.me_tests_client_id
 
         balances = Wallet().balances(token)['response']['data']['balances']
@@ -130,10 +177,10 @@ def pytest_bdd_before_scenario(request, feature, scenario):
             asset
             for asset in settings.balance_asssets.keys()
             if asset not in [
-                    asset['assetId'] 
-                    for asset in balances 
-                    if asset['assetId'] in settings.balance_asssets.keys()
-                ]
+                asset['assetId']
+                for asset in balances
+                if asset['assetId'] in settings.balance_asssets.keys()
+            ]
         ]
         if len(assets_not_in_balance):
             for item in assets_not_in_balance:
@@ -147,7 +194,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
             for item in balances:
                 if item['assetId'] in settings.balance_asssets.keys():
                     if item['balance'] < settings.balance_asssets[item['assetId']]:
-                        correct_amount = settings.balance_asssets[item['assetId']] - item['balance'] 
+                        correct_amount = settings.balance_asssets[item['assetId']] - item['balance']
                         if correct_amount > 0.0001:
                             assets_for_update.append(
                                 [
@@ -156,7 +203,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                                 ]
                             )
                     elif item['balance'] > settings.balance_asssets[item['assetId']]:
-                        correct_amount = (item['balance'] - settings.balance_asssets[item['assetId']] ) * -1
+                        correct_amount = (item['balance'] - settings.balance_asssets[item['assetId']]) * -1
                         if correct_amount * -1 > 0.0001:
                             assets_for_update.append(
                                 [
@@ -169,7 +216,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
                 assets_for_update.append(
                     item[0],
                     item[1]
-                ) 
+                )
         for item in assets_for_update:
             bl_change_result = changeBalance(
                 client_Id,
@@ -184,9 +231,9 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     sleep(2)
 
 
-def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args) :
-    print(f'Step: {step} of scenario: {scenario.name} PASSED')
+def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args):
+    log.info(f'Step: {step} of scenario: {scenario.name} PASSED')
 
 
 def pytest_bdd_step_error(request, feature, scenario, step, step_func, step_func_args, exception):
-    print(f'Step: {step} of scenario: {scenario.name} FAILED\nException: {exception}')
+    log.error(f'Step: {step} of scenario: {scenario.name} FAILED\nException: {exception}')
