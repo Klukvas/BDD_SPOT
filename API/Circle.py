@@ -14,6 +14,33 @@ class Circle(MainObj):
         self.main_url = settings.url_circle
         self.debug_url = settings.url_debug
 
+    def create_fast_deposit(self, token, uid, currency, amount) -> None:
+        enc_key = self.get_encryption_key(token)['response']
+        assert 'data' in enc_key.keys(), \
+            f"Expected that 'data' key will be in response. But response is: {enc_key}"
+        enc_data = self.encrypt_data(token, enc_key['data']['encryptionKey'])
+        assert 'data' in enc_data.keys(), \
+            f"Expected that 'data' key will be in response. But response is: {enc_data}"
+        added_card = self.add_card(
+            token,
+            enc_data['data'],
+            enc_key['data']['keyId']
+        )['response']
+        assert 'data' in added_card.keys(), \
+            f"Expected that 'data' key will be in response. But response is: {added_card}"
+        deposit_result = self.create_payment(
+            token=token,
+            requestGuid=uid,
+            encryption_data=enc_data['data'],
+            keyId=enc_key['data']['keyId'],
+            cardId=added_card['data']['id'],
+            currency=currency,
+            amount=amount
+        )['response']
+        assert 'data' in deposit_result.keys(), \
+            f"Expected that 'data' key will be in response. But response is: {deposit_result}"
+        return
+
     def get_encryption_key(self, token, specific_case=False):
         url = f"{self.main_url}get-encryption-key"
 
@@ -22,8 +49,8 @@ class Circle(MainObj):
             'Content-Type': 'application/json'
         }
 
-        r = get(url, 
-                pkcs12_filename=self.cert_name, 
+        r = get(url,
+                pkcs12_filename=self.cert_name,
                 pkcs12_password=self.cert_pass,
                 verify=False,
                 headers=headers)
@@ -34,53 +61,54 @@ class Circle(MainObj):
         url = f"{self.debug_url}circle-encrypt-data"
 
         payload = {
-                "data": "{\"number\":\"4007400000000007\",\"cvv\": \"123\"}",
-                "encryptionKey": f"{enc_key}"
-            }
+            "data": "{\"number\":\"4007400000000007\",\"cvv\": \"123\"}",
+            "encryptionKey": f"{enc_key}"
+        }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
 
-        r = post(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, json=payload)
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers, json=payload)
 
         return self.parse_response(r, specific_case)
-    
+
     def add_card(self, token, encryption_data, keyId, specific_case=False):
         url = f"{self.main_url}add-card"
         requestGuid = uuid4()
         payload = {
-                "requestGuid": f"{requestGuid}",
-                "cardName": "baseTests",
-                "keyId": f"{keyId}",
-                "encryptedData": f"{encryption_data}",
-                "billingName": "Andrey Testovich 12",
-                "billingCity": "Kyiv",
-                "billingCountry": "UA",
-                "billingLine1": "Khakov 56",
-                "billingDistrict": "Kyiv",
-                "billingPostalCode": "03146",
-                "expMonth": 12,
-                "expYear": 2024
-            }
+            "requestGuid": f"{requestGuid}",
+            "cardName": "baseTests",
+            "keyId": f"{keyId}",
+            "encryptedData": f"{encryption_data}",
+            "billingName": "Andrey Testovich 12",
+            "billingCity": "Kyiv",
+            "billingCountry": "UA",
+            "billingLine1": "Khakov 56",
+            "billingDistrict": "Kyiv",
+            "billingPostalCode": "03146",
+            "expMonth": 12,
+            "expYear": 2024
+        }
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
 
-        r = post(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, json=payload)
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers, json=payload)
 
         return self.parse_response(r, specific_case)
 
-    def create_payment(self, token, requestGuid, encryption_data, keyId, cardId, currency='USD', amount=10, specific_case=False):
+    def create_payment(self, token, requestGuid, encryption_data, keyId,
+                       cardId, currency='USD', amount=10, specific_case=False):
         url = f"{self.main_url}create-payment"
         payload = {
             "requestGuid": requestGuid,
@@ -95,49 +123,49 @@ class Circle(MainObj):
             'Content-Type': 'application/json'
         }
 
-        r = post(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, json=payload)
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers, json=payload)
 
         return self.parse_response(r, specific_case)
 
     def delete_card(self, token, cardId, specific_case=False):
         url = f"{self.main_url}delete-card"
         payload = {
-                "cardId": f"{cardId}"
-            }
+            "cardId": f"{cardId}"
+        }
 
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
 
-        r = post(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, json=payload)
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers, json=payload)
 
         return self.parse_response(r, specific_case)
-    
+
     def get_card(self, token, cardId, specific_case=False):
         url = f"{self.main_url}get-card"
         payload = {
-                "cardId": f"{cardId}"
-            }
+            "cardId": f"{cardId}"
+        }
 
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
 
-        r = post(url, 
-                pkcs12_filename=self.cert_name, 
-                pkcs12_password=self.cert_pass,
-                verify = False,
-                headers=headers, json=payload)
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers, json=payload)
 
         return self.parse_response(r, specific_case)
 
@@ -149,14 +177,13 @@ class Circle(MainObj):
             'Content-Type': 'application/json'
         }
 
-        r = get(url, 
-                pkcs12_filename=self.cert_name, 
+        r = get(url,
+                pkcs12_filename=self.cert_name,
                 pkcs12_password=self.cert_pass,
                 verify=False,
                 headers=headers)
 
         return self.parse_response(r, specific_case)
-
 
     def add_bank_account(self, token: str, bank_country: str, billing_country: str, account_number: str,
                          iban: str, routing_number: str, guid: str, specific_case=False) -> dict:
@@ -208,10 +235,10 @@ class Circle(MainObj):
         }
 
         r = post(url,
-            pkcs12_filename=self.cert_name,
-            pkcs12_password=self.cert_pass,
-            verify=False,
-            headers=headers, json=payload)
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers, json=payload)
 
         return self.parse_response(r, specific_case)
 

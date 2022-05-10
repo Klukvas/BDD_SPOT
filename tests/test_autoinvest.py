@@ -2,10 +2,8 @@ import time
 from API.Swap import Swap
 from API.WalletHistory import WalletHistory
 from API.Invest import Invest
-from API.Exceptions import *
 from pytest_bdd import scenarios, given, when, then, parsers
 import settings
-import inspect
 from dateutil.relativedelta import relativedelta
 from dateutil import parser
 from datetime import datetime, timezone

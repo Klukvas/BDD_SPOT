@@ -1,0 +1,85 @@
+syntax = "proto3";
+package Service.KYC.Grpc;
+
+message ChangeOperationStatusRequest {
+   string ClientId = 1;
+   string Agent = 2;
+   string Comment = 3;
+}
+enum DocumentType {
+   Unknown = 0;
+   GovernmentId = 1;
+   Passport = 2;
+   DriverLicense = 3;
+   ResidentPermit = 4;
+   SelfieImage = 5;
+   AddressDocument = 6;
+   FinancialDocument = 7;
+}
+enum KycLevel {
+   KycLevel_ZERO = 0; // proto3 requires a zero value as the first item (it can be named anything)
+   Level1 = 1;
+   Level2 = 2;
+   Level3 = 3;
+}
+enum KycOperationStatus {
+   KycRequired = 0;
+   KycInProgress = 1;
+   Allowed = 2;
+   AllowedWithKycAlert = 3;
+   Blocked = 4;
+}
+message KycStatusRequest {
+   string BrokerId = 1;
+   string ClientId = 2;
+}
+message KycStatusResponse {
+   string BrokerId = 1;
+   string ClientId = 2;
+   KycLevel Level = 4;
+   repeated DocumentType RequiredDocuments = 5 [packed = false];
+   repeated VerificationType RequiredVerifications = 6 [packed = false];
+   KycOperationStatus DepositStatus = 7;
+   KycOperationStatus TradeStatus = 8;
+   KycOperationStatus WithdrawalStatus = 9;
+   bool VerificationInProgress = 10;
+   bool Pep = 11;
+   string Country = 12;
+   string BlockingReason = 13;
+}
+message OperationResponse {
+   bool IsSuccess = 1;
+   string Error = 2;
+}
+message SetKycLevelRequest {
+   string ClientId = 1;
+   KycLevel KycLevel = 2;
+   string Agent = 3;
+   string Comment = 4;
+}
+message SetOperationStatusRequest {
+   string ClientId = 1;
+   string Agent = 2;
+   string Comment = 3;
+   KycOperationStatus DepositStatus = 4;
+   KycOperationStatus TradeStatus = 5;
+   KycOperationStatus WithdrawalStatus = 6;
+}
+enum VerificationType {
+   VerificationType_ZERO = 0; // proto3 requires a zero value as the first item (it can be named anything)
+   ProofOfIdentity = 1;
+   ProofOfAddress = 2;
+   ProofOfFunds = 3;
+   ProofOfPhone = 4;
+}
+service KycStatusService {
+   rpc BlockDeposits (ChangeOperationStatusRequest) returns (OperationResponse);
+   rpc BlockTrades (ChangeOperationStatusRequest) returns (OperationResponse);
+   rpc BlockWithdrawals (ChangeOperationStatusRequest) returns (OperationResponse);
+   rpc GetKycStatus (KycStatusRequest) returns (KycStatusResponse);
+   rpc SetKycLevel (SetKycLevelRequest) returns (OperationResponse);
+   rpc SetKycStatuses (SetOperationStatusRequest) returns (OperationResponse);
+   rpc UnblockDeposits (ChangeOperationStatusRequest) returns (OperationResponse);
+   rpc UnblockTrades (ChangeOperationStatusRequest) returns (OperationResponse);
+   rpc UnblockWithdrawals (ChangeOperationStatusRequest) returns (OperationResponse);
+}

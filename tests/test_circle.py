@@ -1,7 +1,6 @@
 from API.WalletHistory import WalletHistory
 from API.Circle import Circle
 from API.Wallet import Wallet
-from API.Exceptions import *
 from pytest_bdd import scenarios, given, when, then, parsers
 from time import sleep
 import settings

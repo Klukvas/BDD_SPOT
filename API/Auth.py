@@ -1,7 +1,7 @@
 import json
 
 from requests import Response
-from requests_pkcs12 import post
+from requests_pkcs12 import post, get
 import settings
 from API.Main import MainObj
 from API.Exceptions import *
@@ -53,9 +53,12 @@ class Auth(MainObj):
             }
         return payload
 
-    def register(self, specific_case=False) -> list[str] or int or dict:
+    def register(self, specific_case=False, **kwargs) -> list[str] or int or dict:
         url = f"{self.main_url}Register"
         payload = self.negative_cases_handler()
+        if kwargs:
+            if 'referralCode' in kwargs.keys():
+                payload['referralCode'] = kwargs['referralCode']
         r = post(url,
                  pkcs12_filename=self.cert_name,
                  pkcs12_password=self.cert_pass,
@@ -154,5 +157,21 @@ class Auth(MainObj):
                  pkcs12_password=self.cert_pass,
                  verify=False,
                  headers=self.headers, json=payload)
+
+        return self.parse_response(r, specific_case)
+
+    def who(self, token: str, specific_case=False):
+        url = f"{settings.url_debug}who"
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = get(url,
+                pkcs12_filename=self.cert_name,
+                pkcs12_password=self.cert_pass,
+                verify=False,
+                headers=headers)
 
         return self.parse_response(r, specific_case)

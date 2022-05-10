@@ -11,9 +11,6 @@ from bs4 import BeautifulSoup
 import os
 
 
-from API.Exceptions import *
-
-
 SCOPES = ['https://mail.google.com/']
 
 
