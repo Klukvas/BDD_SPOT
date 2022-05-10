@@ -151,13 +151,9 @@ def pytest_configure(config):
 
 def pytest_bdd_before_scenario(request, feature, scenario):
     log.info(f'Started new scenario:{scenario.name}\nFeature: {feature.name}')
-    if scenario.name in ['Make a swap', 'Make a deposit by simplex', 'Make a transfer by phone',
-                         'Make a internalWithdrawal',
-                         'Make a transfer by address', 'Transfer(waiting for user)', 'Internal withdrawal',
-                         'Success withdrawal or transfer && deposit']:
+    if scenario.name in settings.scenarios_with_balance_change_all:
         assets_for_update = []
-        if scenario.name in ['Transfer(waiting for user)', 'Internal withdrawal',
-                             'Success withdrawal or transfer && deposit']:
+        if scenario.name in settings.scenarios_with_balance_change_for_templates_tests:
             token = Auth(
                 settings.template_tests_email,
                 settings.template_tests_password
