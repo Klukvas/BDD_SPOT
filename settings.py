@@ -2,33 +2,14 @@ import os
 import json
 
 
-def get_path(file_name: str) -> str:
-    path = os.getcwd()
-    pathExists = os.path.exists(
-        os.path.join(
-            path,
-            file_name
-        )
-    )
-    if not pathExists:
-        while not pathExists:
-            path = os.path.dirname(path)
-            pathExists = os.path.exists(
-                os.path.join(
-                    path,
-                    file_name
-                )
-            )
-
-    return os.path.join(
-                    path,
-                    file_name
-                )
-
-
 def set_env_variables():
-    env_file_path = get_path('.env')
-    with open(env_file_path, 'r') as f:
+    path_to_env_file: str = os.path.join(
+        os.path.dirname(
+            os.getcwd()
+        ),
+        '.env'
+    )
+    with open(path_to_env_file, 'r') as f:
         for item in f.readlines():
             if "=" in item:
                 variable_name, variable_data = item.split('=')
@@ -53,8 +34,13 @@ try:
     with open('settings.json') as f:
         data = json.load(f)
 except FileNotFoundError:
-    path_to_settings = get_path('settings.json')
-    with open(path_to_settings, 'r') as f:
+    path_to_env_file = os.path.join(
+        os.path.dirname(
+            os.getcwd()
+        ),
+        'settings.json'
+    )
+    with open(path_to_env_file, 'r') as f:
         data = json.load(f)
 
 envs = data['env'].keys()
@@ -86,7 +72,6 @@ autoinvest_client_id = data['autoinvest_test']['client_id']
 autoinvest_wallet_id = data['autoinvest_test']['wallet_id']
 
 me_tests_email = data['me_tests']['email']
-me_tests_referral_code = data['me_tests']['referral_code']
 me_tests_password = data['me_tests']['password']
 me_tests_client_id = data['me_tests']['client_id']
 me_tests_from_phone_number = data['me_tests']['from_phone_number']
@@ -100,7 +85,7 @@ signalr_url = data['signalr_url']
 signalr_email = data['signalr_test']['email']
 signalr_password = data['signalr_test']['password']
 
-# Имейл на который прихоят письма
+#Имейл на который прихоят письма
 template_tests_email = data['template_tests']['email']
 template_tests_client_id = data['template_tests']['client_id']
 template_tests_password = data['template_tests']['password']
@@ -111,9 +96,6 @@ template_tests_to_phone_transfer = data['template_tests']['to_phone_transfer']
 auth_tests_email_for_change_password = data['auth_tests']['email_for_change_password']
 auth_tests_password_for_change_password = data['auth_tests']['password_for_change_password']
 auth_tests_repeat_count = data['auth_tests']['repeat_count']
-
-scenarios_with_balance_change_all = data['scenarios_with_balance_change']['all']
-scenarios_with_balance_change_for_templates_tests = data['scenarios_with_balance_change']['for_templates_tests']
 
 url_candles = data['urls']['candles']
 url_verify = data['urls']['verify']
@@ -128,7 +110,7 @@ url_transfer = data['urls']['transfer']
 url_blockchain = data['urls']['blockchain']
 url_circle = data['urls']['circle']
 url_debug = data['urls']['debug']
-url_simplex = data['urls']['simplex']
+url_simplex = data['urls']['simplex'] 
 # используються для создания квоты свопа с fixed False
 balance_asssets = {
     'LTC': 1.3,
@@ -175,3 +157,4 @@ chart_data = {
         "expected_count": 92
     }
 }
+
