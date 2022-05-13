@@ -1,3 +1,5 @@
+import uuid
+
 from API.WalletHistory import WalletHistory
 from API.Circle import Circle
 from API.Wallet import Wallet
@@ -11,8 +13,8 @@ scenarios('../features/circle.feature')
 @given('User get encryption key', target_fixture="get_enc_key")
 def get_enc_key(auth):
     token = auth(
-        settings.me_tests_email,
-        settings.me_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
     enc_key = Circle().get_encryption_key(token)['response']
     assert type(enc_key) == dict, f"Expected: type == dict\nReturned: {type(enc_key)}"
@@ -59,12 +61,14 @@ def add_bank_account(auth, bank_country, billing_country, account_number, routin
 @then('User create deposit via card', target_fixture="create_deposit")
 def create_deposit(add_card, get_enc_key, enc_data):
     sleep(5)
+    uid = str(uuid.uuid4())
     deposit = Circle().create_payment(
         get_enc_key[0],
+        uid,
         enc_data['data'],
         get_enc_key[1]['keyId'],
         add_card['id'],
-        settings.me_tests_circle_test_currency
+        settings.base_user_data_circle_test_currency
     )['response']
     assert type(deposit) == dict, f'Expected type dict. Retrurned: {deposit}'
     assert deposit['result'] == 'OK', f"/create-payment response is not ok. It's {deposit['result']}"

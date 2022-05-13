@@ -16,7 +16,7 @@ scenarios(f'../features/receive_email.feature')
 
 @given('User registration', target_fixture="register")
 def register():
-    email = settings.template_tests_email. \
+    email = settings.base_user_data_email. \
         split('@')[0]
     email += "+" + str(uuid.uuid4().int) + "@gmail.com"
     token = Auth(email, 'testpassword1').register()['response']['data']
@@ -65,8 +65,8 @@ def check_email_verified(register):
 @given('User has new Success login email after login')
 def log_in(auth, create_temporary_template):
     auth(
-        settings.template_tests_email,
-        settings.template_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )
     mail_object = ParseMessage(2)
     mail_parser = mail_object.getMessage()
@@ -93,8 +93,8 @@ def log_in(auth, create_temporary_template):
 @given(parsers.parse('User send transfer with asset: {asset}, to phone {phone}'), target_fixture='make_transfer')
 def make_transfer(asset, phone, auth):
     token = auth(
-        settings.template_tests_email,
-        settings.template_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
 
     amount = settings.balance_asssets[asset] / 2
@@ -181,8 +181,8 @@ def approve_transfer(check_transfer_email, make_transfer):
        target_fixture='make_withdrawal')
 def make_withdrawal(auth, asset, address):
     token = auth(
-        settings.template_tests_email,
-        settings.template_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
     amount = settings.balance_asssets[asset] / 2
     uniq_id = str(uuid.uuid4())
@@ -273,7 +273,7 @@ def approve_withdrawal(check_withdrawal_email, make_withdrawal):
                 assert item['withdrawalInfo']['withdrawalAssetId'] == make_withdrawal['asset']
                 assert item['withdrawalInfo']['withdrawalAmount'] == make_withdrawal['amount']
                 assert item['withdrawalInfo']['isInternal'] == True
-                assert str(item['withdrawalInfo']['feeAmount']) == settings.template_tests_fee_amoutn
+                assert str(item['withdrawalInfo']['feeAmount']) == settings.base_user_data_fee_amount
                 return
         if counter > 6:
             raise AttributeError(
@@ -286,8 +286,8 @@ def approve_withdrawal(check_withdrawal_email, make_withdrawal):
 @when('User send request to forgot password endpoint')
 def change_password(register):
     change_res = Auth(
-        settings.template_tests_email,
-        settings.template_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     ). \
         forgot_password(register['email'])['response']['result']
     assert change_res == 'OK'
@@ -325,7 +325,7 @@ def change_password_with_code(parse_code, register):
 def log_in_with_new_password(auth, register):
     token = auth(
         register['email'],
-        settings.template_tests_password,
+        settings.base_user_data_password,
         specific_case=True
     )
     assert token['status'] == 401
@@ -347,7 +347,7 @@ def log_in_with_new_password(auth, register):
 
 @given('ReRegistration mail on inbox after existing user pass registration')
 def register_n_check_email(create_temporary_template):
-    token = Auth(settings.template_tests_email, 'testpassword1').\
+    token = Auth(settings.base_user_data_email, 'testpassword1').\
         register()['response']['data']
     assert type(token) == dict, f'Expected response type: dict\nReturned: {token}'
     assert len(token) == 2
@@ -374,7 +374,7 @@ def register_n_check_email(create_temporary_template):
 
 # @given(parsers.parse("User send withdrawal/transfer with asset: {asset}, to address/phone {address_phone}"), target_fixture="create_operation")
 # def create_operation(auth, asset, address_phone):
-#     token = auth(settings.template_tests_email, settings.template_tests_password )
+#     token = auth(settings.base_user_data_email, settings.base_user_data_password )
 #     amount = settings.balance_asssets[asset] / 2
 #     if address_phone.startswith('+'):
 #         operation = Transfer().create_transfer(token, address_phone, asset, amount)
@@ -444,7 +444,7 @@ def register_n_check_email(create_temporary_template):
 #             break
 #         elif counter > 5:
 #             raise ValueError('Can not find operations with status 0 for 15 seconds') 
-#     success_withdrawal = MailParser(6, settings.template_tests_email, approve_opetarion['event_date'], withdrawal_asset = create_operation['asset'] ).parse_mail()
+#     success_withdrawal = MailParser(6, settings.base_user_data_email, approve_opetarion['event_date'], withdrawal_asset = create_operation['asset'] ).parse_mail()
 #     assert type(success_withdrawal) == dict
 #     path = os.path.join(
 #         os.getcwd(),

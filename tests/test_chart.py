@@ -11,8 +11,8 @@ def test_chart_data():
 @given(parsers.parse('User send request for chart with next data: {instrument}, {period}'))
 def get_enc_key(instrument, period, auth):
     token = auth(
-        settings.me_tests_email,
-        settings.me_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
     
     fromDate = int(

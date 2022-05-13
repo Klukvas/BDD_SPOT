@@ -43,7 +43,6 @@ class CampaignWorker:
                 criteria['CriteriaType'] = 'RegistrationType'
             if criteria['CriteriaType'] == 'KycType':
                 for param_name, param_val in criteria['Parameters'].items():
-                    print(f"param_name: {param_name} | param_val: {param_val} | {type(param_val)}")
                     if param_val == 'True':
                         if 'KYC' in self.criteria_steps.keys():
                             self.criteria_steps['KYC'].append(param_name)
@@ -108,4 +107,3 @@ class CampaignWorker:
 
 if __name__ == "__main__":
     c = CampaignWorker().main()
-    print(c)

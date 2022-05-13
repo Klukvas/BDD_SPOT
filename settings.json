@@ -15,14 +15,18 @@
                 "signalr": false
             },
             "test_data": {
-                "signalr_url": "wss://wallet-api-uat.simple-spot.biz/signalr",
                 "db_connection_string": "postgresql://jetwallet@jetwallet-uat:1$hhhg138ye8#ddud8h@jetwallet-uat.postgres.database.azure.com:5432/uat",
-                "template_tests":{
+                "base_user_data": {
                     "email": "spotacc1425@gmail.com",
                     "client_id": "6489b030bb074c3ebf75c12239a9ca68",
                     "password": "testpassword1",
                     "to_phone_transfer": "+111111010101",
-                    "fee_amount": "0"
+                    "fee_amount": "0",
+                    "referral_code": "referral_code_from_autotests",
+                    "from_phone_number": "+38099008899",
+                    "transfer_to_phone": "+380933333333",
+                    "receive_email": "andrey.p@smplt.net",
+                    "circle_test_currency": "USD"
                 },
                 "circle_test": {
                     "email": "okn193322@mailinator.com",
@@ -36,46 +40,15 @@
                     "empty_bank_accounts_password": "testpassword1",
                     "empty_bank_accounts_client_id": "a3d31bd7f90e4e228bfb4ece3b6378ff"
                 },
-                "signalr_test": {
-                    "email": "withdrawal.test@mailinator.com",
-                    "password": "testpassword1"
-                },
-                "autoinvest_test": {
-                    "email": "withdrawal.test@mailinator.com",
-                    "password": "testpassword1",
-                    "client_id": "9ddecae3dba14861a934551b0bfa9e33",
-                    "wallet_id": "SP-9ddecae3dba14861a934551b0bfa9e33"
-                },
-                "me_tests": {
-                    "email": "baseuser1@mailinator.com",
-                    "referral_code": "test_referral_code",
-                    "password": "testpassword1",
-                    "client_id": "d5caeca8b1a944189dccb899ec1f8fc2",
-                    "from_phone_number": "+380933342340",
-                    "transfer_to_phone": "+380933333333",
-                    "receive_email": "andrey.p@smplt.net",
-                    "circle_test_currency": "USD"
-                },
-                "auth_tests": {
-                    "repeat_count": 5,
-                    "email_for_change_password": "email_change_password@mailinator.com",
-                    "password_for_change_password": "testpassword1"
-                },
-                "scenarios_with_balance_change": {
-                    "all": [
+                "scenarios_with_balance_change": [
                         "Make a swap", "Make a deposit by simplex",
                         "Make a transfer by phone", "Transfer(waiting for user)",
                         "Make a internalWithdrawal", "Internal withdrawal",
                         "Make a transfer by address",
                         "Success withdrawal or transfer && deposit"
-                    ],
-                    "for_templates_tests": [
-                        "Transfer(waiting for user)",
-                        "Internal withdrawal",
-                        "Success withdrawal or transfer && deposit"
-                    ]
-                },
+                ],
                 "urls": {
+                    "signalr": "wss://wallet-api-uat.simple-spot.biz/signalr",
                     "verify": "https://validation-api-uat.simple-spot.biz/api/v1/",
                     "auth": "https://wallet-api-uat.simple-spot.biz/auth/v1/Trader/",
                     "wallet_history": "https://wallet-api-uat.simple-spot.biz/api/v1/history/wallet-history/",
@@ -109,14 +82,19 @@
                 "signalr": false
             },
             "test_data": {
-                "db_connection_string": null,
-                "signalr_url": "",
-                "template_tests":{
-                    "email": "baseuser@mailforspam.com",
-                    "client_id": "",
+
+                "db_connection_string": "postgresql://jetwallet@jetwallet-uat:1$hhhg138ye8#ddud8h@jetwallet-uat.postgres.database.azure.com:5432/uat",
+                "base_user_data": {
+                    "email": "spotacc1425@gmail.com",
+                    "client_id": "6489b030bb074c3ebf75c12239a9ca68",
                     "password": "testpassword1",
-                    "to_phone_transfer": "",
-                    "fee_amount": ""
+                    "to_phone_transfer": "+111111010101",
+                    "fee_amount": "0",
+                    "referral_code": "referral_code_from_autotests",
+                    "from_phone_number": "+38099008899",
+                    "transfer_to_phone": "+380933333333",
+                    "receive_email": "andrey.p@smplt.net",
+                    "circle_test_currency": "USD"
                 },
                 "circle_test": {
                     "email": "",
@@ -130,31 +108,20 @@
                     "empty_bank_accounts_password": "",
                     "empty_bank_accounts_client_id": ""
                 },
-                "signalr_test": {
-                    "email": "",
-                    "password": ""
-                },
-                "autoinvest_test": {
-                    "email": "",
-                    "password": "",
-                    "client_id": "",
-                    "wallet_id": ""
-                },
-                "me_tests": {
-                    "email": "",
-                    "password": "",
-                    "client_id": "",
-                    "from_phone_number": "",
-                    "transfer_to_phone": "",
-                    "receive_email": "",
-                    "circle_test_currency": ""
-                },
                 "auth_tests": {
                     "repeat_count": 5,
                     "email_for_change_password": "email_change_password@mailinator.com",
                     "password_for_change_password": "testpassword1"
                 },
+                "scenarios_with_balance_change": [
+                        "Make a swap", "Make a deposit by simplex",
+                        "Make a transfer by phone", "Transfer(waiting for user)",
+                        "Make a internalWithdrawal", "Internal withdrawal",
+                        "Make a transfer by address",
+                        "Success withdrawal or transfer && deposit"
+                ],
                 "urls": {
+                    "signalr": "wss://wallet-api.simple-spot.biz/signalr",
                     "verify": "https://validation-api.simple-spot.biz/api/v1/",
                     "auth": "https://wallet-api.simple-spot.biz/auth/v1/Trader/",
                     "wallet_history": "https://wallet-api.simple-spot.biz/api/v1/history/wallet-history/",

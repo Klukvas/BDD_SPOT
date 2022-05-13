@@ -12,9 +12,11 @@ def test_signalr_responses():
 @when('We initialize a signalR', target_fixture='signalr_class')
 def get_signalr(auth):
     token = auth(
-        settings.signalr_email,
-        settings.signalr_password
-    )['token']
+        settings.base_user_data_email,
+        settings.base_user_data_password
+    )['response']
+    assert 'data' in token, f"'data' key not in response"
+    token = token['data']['token']
     return SignalR(token)
 
 

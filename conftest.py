@@ -30,11 +30,13 @@ def find_record_in_op():
                 response = wh_obj.operations_history(token)['response']
             assert 'data' in response.keys(), \
                 f"Expected that 'data' key will be in response. But response is: {response}"
-            today = datetime.today()
+            today = datetime.utcnow()
             filtered_data = [
                 record for record in response['data'] if all(
-                    record[filter_name] == filter_value and
-                    (datetime.strptime(record['timeStamp'], "%Y-%m-%dT%H:%M:%S.%f") - today).seconds < time_compare
+                    [
+                        record[filter_name] == filter_value,
+                        (today - datetime.strptime(record['timeStamp'], "%Y-%m-%dT%H:%M:%S.%f")).seconds < time_compare
+                    ]
                     for filter_name, filter_value in search_by.items()
                 )
             ]
@@ -67,6 +69,7 @@ def register():
         response = Auth(email, password).register()['response']['data']
         Verify().verify_email(response['token'], '000000')
         return response
+
     return inner
 
 
@@ -76,6 +79,7 @@ def auth():
         auth_data = Auth(email, password).authenticate(specific_case)
         log.info(f"Log in by: {email}")
         return auth_data
+
     return get_tokens
 
 
@@ -92,12 +96,75 @@ def create_temporary_template():
     return inner
 
 
-@pytest.fixture(scope='session', autouse=True)
 def clear_emailbox():
+    log.info(f"Start clearning email box")
     gmail_api = GmailApi()
     gmail_api.generateCreds()
     gmail_api.generateService()
     gmail_api._deleteParsedMessage()
+
+
+def change_balance_by_scenario():
+    assets_for_update = []
+    token = Auth(
+        settings.base_user_data_email,
+        settings.base_user_data_password
+    ).authenticate()['response']['data']['token']
+    client_Id = settings.base_user_data_client_id
+    log.info(f"Check balance for user: {settings.base_user_data_email}")
+    balances = Wallet().balances(token)['response']['data']['balances']
+    assets_not_in_balance = [
+        asset
+        for asset in settings.balance_asssets.keys()
+        if asset not in [
+            asset['assetId']
+            for asset in balances
+            if asset['assetId'] in settings.balance_asssets.keys()
+        ]
+    ]
+    if len(assets_not_in_balance):
+        for item in assets_not_in_balance:
+            assets_for_update.append(
+                [
+                    item,
+                    settings.balance_asssets[item]
+                ]
+            )
+    if len(balances):
+        for item in balances:
+            if item['assetId'] in settings.balance_asssets.keys():
+                if item['balance'] < settings.balance_asssets[item['assetId']]:
+                    correct_amount = settings.balance_asssets[item['assetId']] - item['balance']
+                    if correct_amount > 0.0001:
+                        assets_for_update.append(
+                            [
+                                item['assetId'],
+                                correct_amount
+                            ]
+                        )
+                elif item['balance'] > settings.balance_asssets[item['assetId']]:
+                    correct_amount = (item['balance'] - settings.balance_asssets[item['assetId']]) * -1
+                    if correct_amount * -1 > 0.0001:
+                        assets_for_update.append(
+                            [
+                                item['assetId'],
+                                correct_amount
+                            ]
+                        )
+    else:
+        for item in settings.balance_asssets.items():
+            assets_for_update.append(
+                item[0],
+                item[1]
+            )
+    for item in assets_for_update:
+        bl_change_result = changeBalance(
+            client_Id,
+            item[1],
+            f'SP-{client_Id}',
+            item[0]
+        )
+        assert bl_change_result, 'Ошибка при пополнении баланса'
 
 
 def pytest_configure(config):
@@ -151,76 +218,10 @@ def pytest_configure(config):
 
 def pytest_bdd_before_scenario(request, feature, scenario):
     log.info(f'Started new scenario:{scenario.name}\nFeature: {feature.name}')
-    if scenario.name in settings.scenarios_with_balance_change_all:
-        assets_for_update = []
-        if scenario.name in settings.scenarios_with_balance_change_for_templates_tests:
-            token = Auth(
-                settings.template_tests_email,
-                settings.template_tests_password
-            ).authenticate()['response']['data']['token']
-            client_Id = settings.template_tests_client_id
-            log.info(f"Check balance for user: {settings.template_tests_email}")
-        else:
-            token = Auth(
-                settings.me_tests_email,
-                settings.me_tests_password
-            ).authenticate()['response']['data']['token']
-            log.info(f"Check balance for user: {settings.me_tests_email}")
-            client_Id = settings.me_tests_client_id
-
-        balances = Wallet().balances(token)['response']['data']['balances']
-        assets_not_in_balance = [
-            asset
-            for asset in settings.balance_asssets.keys()
-            if asset not in [
-                asset['assetId']
-                for asset in balances
-                if asset['assetId'] in settings.balance_asssets.keys()
-            ]
-        ]
-        if len(assets_not_in_balance):
-            for item in assets_not_in_balance:
-                assets_for_update.append(
-                    [
-                        item,
-                        settings.balance_asssets[item]
-                    ]
-                )
-        if len(balances):
-            for item in balances:
-                if item['assetId'] in settings.balance_asssets.keys():
-                    if item['balance'] < settings.balance_asssets[item['assetId']]:
-                        correct_amount = settings.balance_asssets[item['assetId']] - item['balance']
-                        if correct_amount > 0.0001:
-                            assets_for_update.append(
-                                [
-                                    item['assetId'],
-                                    correct_amount
-                                ]
-                            )
-                    elif item['balance'] > settings.balance_asssets[item['assetId']]:
-                        correct_amount = (item['balance'] - settings.balance_asssets[item['assetId']]) * -1
-                        if correct_amount * -1 > 0.0001:
-                            assets_for_update.append(
-                                [
-                                    item['assetId'],
-                                    correct_amount
-                                ]
-                            )
-        else:
-            for item in settings.balance_asssets.items():
-                assets_for_update.append(
-                    item[0],
-                    item[1]
-                )
-        for item in assets_for_update:
-            bl_change_result = changeBalance(
-                client_Id,
-                item[1],
-                f'SP-{client_Id}',
-                item[0]
-            )
-            assert bl_change_result is not None, 'Ошибка при пополнении баланса'
+    if feature.name == 'Emails receive':
+        clear_emailbox()
+    if scenario.name in settings.scenarios_with_balance_change:
+        change_balance_by_scenario()
 
 
 def pytest_bdd_after_scenario(request, feature, scenario):

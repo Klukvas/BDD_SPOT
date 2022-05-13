@@ -15,5 +15,5 @@ Feature: Campaigns
         Then User gets some reward
     Examples:
         | cmp_id                           |
-        | 2637afecbaa344dda8b1b1491b752f88 |
+        | 7d132d2ac7c34b7ca787db703c9b8ee2 |
 

@@ -10,7 +10,7 @@ from API.Circle import Circle
 from GRPC.Сampaigns import campaigns
 import json
 from GRPC.ChangeBalance import change_balance
-
+from time import sleep
 
 @scenario(f'../features/campaigns.feature', 'Check campaign')
 def test_campaigns():
@@ -31,28 +31,27 @@ def check_campaign(cmp_id):
 @when('User passed all criteria in campaign', target_fixture='criteria_passed')
 def pass_criteria(get_campaign, register):
     all_criteria = get_campaign['campaign_worker'].get_criteria_steps()
-    print(all_criteria)
     email = 'test_campaign' + str(uuid.uuid4()) + '@mailinator.com'
     if 'HasReferrer' in all_criteria.keys():
-        token = Auth(email, settings.me_tests_password).register(
+        token = Auth(email, settings.base_user_data_password).register(
             email=email,
-            password=settings.me_tests_password,
-            referralCode=settings.me_tests_referral_code
+            password=settings.base_user_data_password,
+            referralCode=settings.base_user_data_referral_code
         )['response']['data']['token']
         Verify().verify_email(token, "000000")
     else:
         token = register(
             email=email,
-            password=settings.me_tests_password
+            password=settings.base_user_data_password
         )['token']
-    client_id = Auth(email, settings.me_tests_password).who(token)
+    client_id = Auth(email, settings.base_user_data_password).who(token)
     assert 'clientId' in client_id['response'].keys()
     client_id = client_id['response']['clientId']
     if 'KYC' in all_criteria.keys():
         deposit_status = 2 if 'KycDepositPassed' in all_criteria['KYC'] else 0
         trade_status = 2 if 'KycTradePassed' in all_criteria['KYC'] else 0
         withdrawal_status = 2 if 'KycWithdrawalPassed' in all_criteria['KYC'] else 0
-        result = kyc.set_kys_allowed(
+        result = kyc.set_kys_status(
             client_id,
             DepositStatus=deposit_status,
             TradeStatus=trade_status,
@@ -71,25 +70,32 @@ def pass_criteria(get_campaign, register):
 
 @then("User has campaign in the context")
 def check_user_context(criteria_passed):
-    campaign_context = json.loads(
-        campaigns.get_client_context(
-            criteria_passed['client_id']
+    count = 0
+    while True:
+        campaign_context = json.loads(
+            campaigns.get_client_context(
+                criteria_passed['client_id']
+            )
         )
-    )
-    try:
-        all_cmp_ids = [
-            campaign['CampaignId']
-            for campaign in campaign_context['Contexts']
-        ]
-    except KeyError:
-        all_cmp_ids = []
-    except Exception as err:
-        raise Exception(f"""
-            Some error with getting ids of context campaigns. 
-            Response from context grpc: {campaign_context}.
-            Error: {err}
-        """)
-    assert criteria_passed['campaign_id'] in all_cmp_ids
+        try:
+            all_cmp_ids = [
+                campaign['CampaignId']
+                for campaign in campaign_context['Contexts']
+            ]
+        except KeyError:
+            all_cmp_ids = []
+        except Exception as err:
+            raise Exception(f"""
+                Some error with getting ids of context campaigns. 
+                Response from context grpc: {campaign_context}.
+                Error: {err}
+            """)
+        if criteria_passed['campaign_id'] not in all_cmp_ids and count < 15:
+            sleep(15)
+        elif criteria_passed['campaign_id'] not in all_cmp_ids and count >= 15:
+            assert criteria_passed['campaign_id'] in all_cmp_ids
+        else:
+            return
 
 
 @when("User passed conditions", target_fixture='pass_condition')
@@ -101,7 +107,7 @@ def pass_condition(criteria_passed, auth):
             deposit_status: int = 2 if condition[1]['Steps']['CheckDepositKyc'] else 0
             trade_status: int = 2 if condition[1]['Steps']['CheckTradeKyc'] else 0
             withdrawal_status: int = 2 if condition[1]['Steps']['CheckWithdrawalKyc'] else 0
-            result = kyc.set_kys_allowed(
+            result = kyc.set_kys_status(
                 criteria_passed['client_id'],
                 DepositStatus=deposit_status,
                 TradeStatus=trade_status,
@@ -114,7 +120,7 @@ def pass_condition(criteria_passed, auth):
             if condition[1]['Steps']['DepositAsset'] == 'USD':
                 token = auth(
                     criteria_passed['registered_email'],
-                    settings.me_tests_password
+                    settings.base_user_data_password
                 )['response']
                 assert 'data' in token.keys(), \
                     f"Expected that 'data' key will be in response. But response is: {token}"
@@ -143,7 +149,7 @@ def pass_condition(criteria_passed, auth):
             assert cb_result
             token = auth(
                 criteria_passed['registered_email'],
-                settings.me_tests_password
+                settings.base_user_data_password
             )['response']
             assert 'data' in token.keys(), \
                 f"Expected that 'data' key will be in response. But response is: {token}"
@@ -248,8 +254,8 @@ def check_rewards(pass_condition, criteria_passed, auth, find_record_in_op):
             for reward_name, reward_value in condition_value['Rewards'].items():
                 if reward_name == 'ReferrerPaymentAbsolute':
                     token = auth(
-                        settings.me_tests_email,
-                        settings.me_tests_password
+                        settings.base_user_data_email,
+                        settings.base_user_data_password
                     )['response']
                     assert 'data' in token.keys(), \
                         f"Expected that 'data' key will be in response. But response is: {token}"
@@ -261,7 +267,7 @@ def check_rewards(pass_condition, criteria_passed, auth, find_record_in_op):
                     )
                     assert reward_to_referrer, \
                         f"""
-                            Can not find 'ReferrerPaymentAbsolute' reward for user: {settings.me_tests_email}
+                            Can not find 'ReferrerPaymentAbsolute' reward for user: {settings.base_user_data_email}
                             Campaign id: {criteria_passed['campaign_id']}
                             Refferal: {criteria_passed['client_id']}
                             Expected record in operation history: 
@@ -271,7 +277,7 @@ def check_rewards(pass_condition, criteria_passed, auth, find_record_in_op):
                 elif reward_name == 'ClientPaymentAbsolute':
                     token = auth(
                         criteria_passed['registered_email'],
-                        settings.me_tests_password
+                        settings.base_user_data_password
                     )['response']
                     assert 'data' in token.keys(), \
                         f"Expected that 'data' key will be in response. But response is: {token}"
@@ -279,7 +285,9 @@ def check_rewards(pass_condition, criteria_passed, auth, find_record_in_op):
                         token=token['data']['token'],
                         search_by={"balanceChange": reward_value['amount'], "operationType": 11},
                         asset=reward_value['asset'],
-                        time_compare=65,
+                        time_compare=100,
+                        research_count=15,
+                        sleep_for=20
                     )
                     assert reward_to_client, \
                         f"""

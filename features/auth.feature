@@ -9,9 +9,12 @@ Feature: Authentification
         Then User can not make a transfer
         And  User can not make a withdrawal
 
-    Scenario: Blocker after incorrect password
-        Given User input incorrect password for few times
+    Scenario Outline: Blocker after incorrect password
+        Given User input incorrect password for <repeat_count> times
         Then User has blocker for login
+        Examples:
+            | repeat_count |
+            | 5            |
 
     Scenario: Refresh token
         Given User logIn to his account

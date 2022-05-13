@@ -61,7 +61,7 @@ class Circle(MainObj):
         url = f"{self.debug_url}circle-encrypt-data"
 
         payload = {
-            "data": "{\"number\":\"4007400000000007\",\"cvv\": \"123\"}",
+            "data": "{\"number\":\"5173375000000006\",\"cvv\": \"123\"}",
             "encryptionKey": f"{enc_key}"
         }
         headers = {

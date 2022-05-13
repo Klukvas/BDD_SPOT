@@ -31,8 +31,8 @@ def check_is_datetime(date_string):
 @given(parsers.parse('scheduleType is {scheduleType}; isFromFixed is {isFromFixed}; volume is {volume}; fromAsset is {fromAsset}; toAsset is {toAsset}'), target_fixture='given_args')
 def get_given_arguments(scheduleType, isFromFixed, volume, fromAsset, toAsset, auth):
     token = auth(
-                settings.autoinvest_email,
-                settings.autoinvest_password
+                settings.base_user_data_email,
+                settings.base_user_data_password
     )['response']
     assert 'data' in token.keys(), \
         f"Expected that 'data' key will be in response. But response is: {token}"
@@ -173,7 +173,7 @@ def is_instruction_appears(db_connection, executed_quote_response, given_args):
         ).filter_by(
                 OriginalQuoteId=executed_quote_response['operationId']
             ).first()
-    assert response.ClientId == settings.autoinvest_client_id, "DB clientId != user's clientId"
+    assert response.ClientId == settings.base_user_data_client_id, "DB clientId != user's clientId"
     assert isinstance(response.CreationTime, datetime), "DB creationtime is not datetime"
     assert isinstance(response.ErrorText, type(None)), "DB errortext is not None"
     assert response.FromAmount == executed_quote_response['fromAssetVolume'], "DB fromAmount != /execute-quote fromAmount"
@@ -188,7 +188,7 @@ def is_instruction_appears(db_connection, executed_quote_response, given_args):
     assert response.ShouldSendFailEmail is False, "DB ShouldSendFailEmail is not False"
     assert response.Status == 0, "DB Status is not 0"
     assert response.ToAsset == given_args['toAsset'], "DB ToAsset != given ToAsset"
-    assert response.WalletId == settings.autoinvest_wallet_id, "DB WalletId != given WalletId"
+    assert response.WalletId == f"SP-{settings.base_user_data_client_id}", "DB WalletId != given WalletId"
     return response
 
 @then('change execution time at DB')
@@ -222,9 +222,9 @@ def wait_till_order_appears(db_connection, created_instruction_db_response, give
         retries += 1
     if retries == 10:
         assert False, f'Cant find order at DB by InvestInstructionId: {created_instruction_db_response.Id}'
-    assert response.ClientId == settings.autoinvest_client_id, "DB clientId != user's clientId"
+    assert response.ClientId == settings.base_user_data_client_id, "DB clientId != user's clientId"
     assert response.BrokerId == 'jetwallet', "DB BrokerId is not jetwallet"
-    assert response.WalletId == settings.autoinvest_wallet_id, "DB WalletId != given WalletId"
+    assert response.WalletId == f"SP-{settings.base_user_data_client_id}", "DB WalletId != given WalletId"
     if given_args['isFromFixed']:
         assert response.FromAmount == given_args['volume'], "DB fromAmount != given fromAmount"
         assert isinstance(response.ToAmount, (int, float)), "DB ToAmount is not int or float"
@@ -283,15 +283,19 @@ def check_balance_history(given_args):
 @then('switch off instruction')
 def switch_off(given_args, created_instruction_db_response):
     invest_api = Invest()
-    switch_response = invest_api.switch(given_args['auth_token'], created_instruction_db_response.Id, False)
-    data = switch_response['data']['data']
+    switch_response = invest_api.switch(
+        given_args['auth_token'],
+        created_instruction_db_response.Id,
+        False
+    )['response']
+    assert 'data' in switch_response.keys(), f"'data' key not in response. Response: {switch_response}"
+    data = switch_response['data']
     assert data['isSuccess'] is True, '/switch. isSuccess is not True'
     assert isinstance(data['errorMessage'], (type(None))), f'/switch. errorMessage is not null. It is - {data["errorMessage"]}'
     assert data['instruction']['id'] == created_instruction_db_response.Id, f'/switch. errorMessage is not null. It is - {data["errorMessage"]}'
-    assert data['instruction']['clientId'] == settings.autoinvest_client_id, '/switch client_id != given client_id'
+    assert data['instruction']['clientId'] == settings.base_user_data_client_id, '/switch client_id != given client_id'
     assert data['instruction']['brokerId'] == 'jetwallet', '/switch brokerId != jetwallet'
-    assert data['instruction']['walletId'] == settings.autoinvest_wallet_id, '/switch walletid != given walletid'
-    assert data['instruction']['walletId'] == settings.autoinvest_wallet_id, '/switch walletid != given walletid'
+    assert data['instruction']['walletId'] == f"SP-{settings.base_user_data_client_id}", '/switch walletid != given walletid'
     if given_args['isFromFixed']:
         assert data['instruction']['fromAmount'] == given_args['volume'], '/switch fromAmount != given volume'
     else:
@@ -319,7 +323,7 @@ def check_instruction_change(db_connection, executed_quote_response, given_args,
         ).filter_by(
             OriginalQuoteId=executed_quote_response['operationId']
         ).first()
-    assert response.ClientId == settings.autoinvest_client_id, "DB clientId != user's clientId"
+    assert response.ClientId == settings.base_user_data_client_id, "DB clientId != user's clientId"
     assert isinstance(response.CreationTime, datetime), "DB creationtime is not datetime"
     assert isinstance(response.ErrorText, type(None)), "DB errortext is not None"
     assert response.FromAmount == executed_quote_response[
@@ -339,7 +343,7 @@ def check_instruction_change(db_connection, executed_quote_response, given_args,
     elif state == 'delete':
         assert response.Status == 2, "DB status is not 2"
     assert response.ToAsset == given_args['toAsset'], "DB ToAsset != given ToAsset"
-    assert response.WalletId == settings.autoinvest_wallet_id, "DB WalletId != given WalletId"
+    assert response.WalletId == f"SP-{settings.base_user_data_client_id}", "DB WalletId != given WalletId"
 
 @then(parsers.parse('wait {needed_time} minutes and check that instruction did not execute'))
 def check_instruction_doesnt_execute(db_connection, created_instruction_db_response, needed_time):
@@ -352,17 +356,20 @@ def check_instruction_doesnt_execute(db_connection, created_instruction_db_respo
 @then('delete instruction')
 def delete_instruction(given_args, created_instruction_db_response):
     invest_api = Invest()
-    switch_response = invest_api.delete(given_args['auth_token'], created_instruction_db_response.Id)
-    data = switch_response['data']['data']
+    switch_response = invest_api.delete(
+        given_args['auth_token'],
+        created_instruction_db_response.Id
+    )['response']
+    assert 'data' in switch_response.keys(), f"'data' key not in response. Response: {switch_response}"
+    data = switch_response['data']
     assert data['isSuccess'] is True, '/switch. isSuccess is not True'
     assert isinstance(data['errorMessage'],
                       (type(None))), f'/switch. errorMessage is not null. It is - {data["errorMessage"]}'
     assert data['instruction'][
                'id'] == created_instruction_db_response.Id, f'/switch. errorMessage is not null. It is - {data["errorMessage"]}'
-    assert data['instruction']['clientId'] == settings.autoinvest_client_id, '/switch client_id != given client_id'
+    assert data['instruction']['clientId'] == settings.base_user_data_client_id, '/switch client_id != given client_id'
     assert data['instruction']['brokerId'] == 'jetwallet', '/switch brokerId != jetwallet'
-    assert data['instruction']['walletId'] == settings.autoinvest_wallet_id, '/switch walletid != given walletid'
-    assert data['instruction']['walletId'] == settings.autoinvest_wallet_id, '/switch walletid != given walletid'
+    assert data['instruction']['walletId'] == f"SP-{settings.base_user_data_client_id}", '/switch walletid != given walletid'
     if given_args['isFromFixed']:
         assert data['instruction']['fromAmount'] == given_args['volume'], '/switch fromAmount != given volume'
     else:
