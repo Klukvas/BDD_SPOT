@@ -83,3 +83,45 @@ class Verify(MainObj):
                 verify=False,
                 headers=headers, json=payload)
         return self.parse_response(r, specific_case)
+
+    def set_phone_request(self, token, phoneBody, phoneIso='UA', phoneCode='+380', specific_case=False):
+        url = f"{self.main_url}phone-setup/request"
+        payload = {
+              "language": "Ru",
+              "phoneCode": phoneCode,
+              "phoneBody": phoneBody,
+              "phoneIso": phoneIso
+            }
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers, json=payload)
+        return self.parse_response(r, specific_case)
+
+    def verify_phone(self, token, phoneBody, phoneIso='UA', phoneCode='+380', code='0000', specific_case=False):
+        url = f"{self.main_url}phone-setup/verify"
+        payload = {
+                "code": code,
+                "phoneCode": phoneCode,
+                "phoneBody": phoneBody,
+                "phoneIso": phoneIso
+            }
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        r = post(url,
+                 pkcs12_filename=self.cert_name,
+                 pkcs12_password=self.cert_pass,
+                 verify=False,
+                 headers=headers, json=payload)
+        return self.parse_response(r, specific_case)

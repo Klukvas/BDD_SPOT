@@ -18,7 +18,10 @@ class Circle(MainObj):
         enc_key = self.get_encryption_key(token)['response']
         assert 'data' in enc_key.keys(), \
             f"Expected that 'data' key will be in response. But response is: {enc_key}"
-        enc_data = self.encrypt_data(token, enc_key['data']['encryptionKey'])
+        enc_data = self.encrypt_data(
+            token,
+            enc_key['data']['encryptionKey']
+        )['response']
         assert 'data' in enc_data.keys(), \
             f"Expected that 'data' key will be in response. But response is: {enc_data}"
         added_card = self.add_card(
