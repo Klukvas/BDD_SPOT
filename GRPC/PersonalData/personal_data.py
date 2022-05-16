@@ -31,15 +31,15 @@ def change_personal_data(client_id, Country):
             City="Hello",
             PostalCode="Hello",
             Phone="Hello",
-            AuditLog = {
+            AuditLog={
                 "TraderId": "3193daae-2b21-476a-a242-ba7ca7b739ea",
                 "Ip": "Hello",
                 "ServiceName": "Hello",
                 "ProcessId": "2723eb46-601c-4421-9274-839e57606130",
-                "Context":"Hello"
+                "Context": "Hello"
             },
-            Address= "Hello",
-            USCitizen= True
+            Address="Hello",
+            USCitizen=True
 
         )
     except Exception as err:

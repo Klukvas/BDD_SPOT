@@ -1,0 +1,49 @@
+ERROR: 16/05  14:12:49: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: 'Conditions': 39865: MainProcess
+ERROR: 16/05  14:16:20: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: 'NoneType' object has no attribute 'keys': 39987: MainProcess
+ERROR: 16/05  14:17:18: Step: Then "User gets some reward" of scenario: Check campaign FAILED
+Exception: 'NoneType' object has no attribute 'keys': 40018: MainProcess
+ERROR: 16/05  14:18:31: Step: Then "User gets some reward" of scenario: Check campaign FAILED
+Exception: 'NoneType' object has no attribute 'keys': 40051: MainProcess
+ERROR: 16/05  14:29:13: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Negative status code from https://wallet-api-uat.simple-spot.biz/api/v1/circle/get-encryption-key. Status code is 401: 40313: MainProcess
+ERROR: 16/05  14:35:55: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'status': 200, 'response': {'data': 'LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tClZlcnNpb246IEJDUEcgQyMgdjEuOS4wLjAKCmhRRU1BN0tXZG5HTU1JWEFBUWYvUlc3ckp2SUg5ZU82eCtkQjNzVzFPcnZuZTAxUHBDYVZzaHhkVUI3UG1LRjMKN3FFUlVZdzJxdW1tbThDTmlMMWcrSmx0VjdXWkcrS1EzLy82d2pRc1dodGlObHpKaGRRSlMzTFlML2RSaUJacwpNd1Z5clo2a3g5OWlTeXdoK1l3VG93MzFFQTFUeUp6VlFpVndmQk55NWkvNFV3ajMwUVRrZEw5bzIvSHpzbkw5CldIV0VNNXI2b0pWL2xsTTBJaFdQcy94UGlUVzFuUElNMVFzSVBINk1iSk1QTXlNSldjdFV1Mk5HRmhJRll5RUoKbExBL0hGd0ZTWGFLc3ZDTHBOZytyakNvZWdwSjU4Z3Mvc2g5QkNKSFVTS3hOdUR2andSb0l4eUdoT1BhZXZ3egpsUUU0SW9acmtNQlJQUlFvVno4TWRoU0JZbDVtbkRDOGl0Nk9kdVdXSzlKZEFXK0k2ZldhVmNJQ2FIa2U1REZICko2Q1ZoMWl6MXRJNzNRWitLc2RYekYxcDZVeGkwU1NRSnNXU3NMVkFEOGZwSUY3T2Z2R0RJbzlmWWdINjhaZzgKL1VBa0pzWDkzOFFEUDMvaGhxNmpYMmE1aTRuQUppbjExaG5BZmljMAo9NTA5UQotLS0tLUVORCBQR1AgTUVTU0FHRS0tLS0tCg==', 'result': 'OK'}}: 40464: MainProcess
+ERROR: 16/05  14:41:39: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PhoneIsNotConfirmed'}: 40587: MainProcess
+ERROR: 16/05  14:53:43: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: unhashable type: 'dict': 40980: MainProcess
+ERROR: 16/05  14:59:57: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: Negative status code from https://validation-api-uat.simple-spot.biz/api/v1/phone-setup/request. Status code is 400: 41123: MainProcess
+ERROR: 16/05  15:01:02: Step: Given "User gets campaign with id: 7d132d2ac7c34b7ca787db703c9b8ee2" of scenario: Check campaign FAILED
+Exception: Something went wrong with getting all campaigns. Error: can not send request
+<_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known"
+	debug_error_string = "{"created":"@1652702462.901640000","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3218,"referenced_errors":[{"created":"@1652702462.901639000","description":"DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known","file":"src/core/lib/transport/error_utils.cc","file_line":165,"grpc_status":14}]}"
+>: 41315: MainProcess
+ERROR: 16/05  15:01:35: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: Negative status code from https://validation-api-uat.simple-spot.biz/api/v1/phone-setup/request. Status code is 400: 41375: MainProcess
+ERROR: 16/05  15:02:26: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: verify_phone() missing 1 required positional argument: 'phoneBody': 41473: MainProcess
+ERROR: 16/05  15:03:26: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: unhashable type: 'dict': 41537: MainProcess
+ERROR: 16/05  15:04:13: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'AssetDoNotSupported'}: 41573: MainProcess
+ERROR: 16/05  15:36:50: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: Can not make request for update personal data.
+Error:{'status': 200, 'response': {'brokerId': 'jetwallet', 'brandId': 'simple', 'clientId': '7f1cf8811699 has type dict, but expected one of: bytes, unicode: 43061: MainProcess
+ERROR: 16/05  15:38:28: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 43104: MainProcess
+ERROR: 16/05  15:40:14: Step: Given "User gets campaign with id: 7d132d2ac7c34b7ca787db703c9b8ee2" of scenario: Check campaign FAILED
+Exception: Something went wrong with getting all campaigns. Error: can not send request
+<_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known"
+	debug_error_string = "{"created":"@1652704814.563486000","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3218,"referenced_errors":[{"created":"@1652704814.563485000","description":"DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known","file":"src/core/lib/transport/error_utils.cc","file_line":165,"grpc_status":14}]}"
+>: 43207: MainProcess
+ERROR: 16/05  15:40:55: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 43266: MainProcess
+ERROR: 16/05  15:43:34: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 43393: MainProcess
