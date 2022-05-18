@@ -47,3 +47,16 @@ ERROR: 16/05  15:40:55: Step: When "User passed conditions" of scenario: Check c
 Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 43266: MainProcess
 ERROR: 16/05  15:43:34: Step: When "User passed conditions" of scenario: Check campaign FAILED
 Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 43393: MainProcess
+ERROR: 16/05  16:46:00: Step: Given "User gets campaign with id: 7d132d2ac7c34b7ca787db703c9b8ee2" of scenario: Check campaign FAILED
+Exception: Something went wrong with getting all campaigns. Error: can not send request
+<_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known"
+	debug_error_string = "{"created":"@1652708760.670282000","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3218,"referenced_errors":[{"created":"@1652708760.670280000","description":"DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known","file":"src/core/lib/transport/error_utils.cc","file_line":165,"grpc_status":14}]}"
+>: 44401: MainProcess
+ERROR: 16/05  16:46:47: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 44431: MainProcess
+ERROR: 16/05  18:05:12: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 46135: MainProcess
+ERROR: 16/05  18:16:38: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 46349: MainProcess

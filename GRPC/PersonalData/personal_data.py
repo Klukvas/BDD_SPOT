@@ -6,7 +6,7 @@ import grpc
 from google.protobuf.json_format import MessageToJson
 
 
-def change_personal_data(client_id, Country):
+def change_personal_data(client_id, Country, Phone='DEFAULT'):
     try:
         channel = grpc.insecure_channel("personaldata.spot-services.svc.cluster.local:80")
     except Exception as err:
@@ -22,19 +22,19 @@ def change_personal_data(client_id, Country):
             LastName="Hello",
             Sex=0,
             DateOfBirth={
-                "value":1200,
-                "scale":0,
-                "kind":0
+                "value": 1200,
+                "scale": 0,
+                "kind": 0
             },
             CountryOfResidence=Country,
             CountryOfCitizenship=Country,
             City="Hello",
             PostalCode="Hello",
-            Phone="Hello",
+            Phone=Phone,
             AuditLog={
-                "TraderId": "3193daae-2b21-476a-a242-ba7ca7b739ea",
-                "Ip": "Hello",
-                "ServiceName": "Hello",
+                "TraderId": client_id,
+                "Ip": "128.0.0",
+                "ServiceName": "AutoTests",
                 "ProcessId": "2723eb46-601c-4421-9274-839e57606130",
                 "Context": "Hello"
             },
@@ -45,7 +45,6 @@ def change_personal_data(client_id, Country):
     except Exception as err:
         raise Exception(f"Can not make request for update personal data.\nError:{err}")
 
-
     try:
         response = client.Update(request)
         try:
@@ -55,7 +54,6 @@ def change_personal_data(client_id, Country):
             raise Exception(f"Can not get result of setting kyc status with error: {err}")
     except Exception as err:
         raise Exception(f"Can not process request for set kyc status.\nError: {err}")
-
 
 
 if __name__ == "__main__":
