@@ -42,7 +42,6 @@ class GmailApi:
                     )
                 ), 'token.json'
             )
-            print(path)
             self._creds = Credentials.from_authorized_user_file(path, SCOPES)
 
     
@@ -51,9 +50,8 @@ class GmailApi:
         self._service = build('gmail', 'v1', credentials=self._creds)
 
     def getMessageId(self, subject):
-        messageFound = False
         counter = 0
-        while not messageFound:
+        while True:
             result = self._service.users().messages().list(
                 userId='me',
                 q=f'from:Simple subject:({subject})',
@@ -98,21 +96,17 @@ class GmailApi:
         try:
             self.generateCreds()
         except Exception as err:
-            print(f"Error of generating creds\n Error: {err}")
-            return
+            raise Exception(f"Error of generating creds\n Error: {err}")
         try:
             self.generateService()
         except Exception as err:
-            print(f"Error of generating Service\n Error: {err}")
-            return
+            raise Exception(f"Error of generating Service\n Error: {err}")
         try:
             messageId = self.getMessageId(subject)
         except Exception as err:
-            print("Error of getting message id.\n Error: {err}")
-            return
+            raise Exception(f"Error of getting message id.\n Error: {err}")
         msgData = self.getMessageById(messageId)
         parsedMessage = self.parseMessage(msgData)
-        # self._deleteParsedMessage()
         return parsedMessage
 
 
@@ -120,10 +114,6 @@ class ParseMessage:
 
     def __init__(self, searchedType) -> None:
         self.api = GmailApi()
-        """
-        1+ 2+ 3+ 4+ 5+ 6+ 8+ 9+ 
-        7-
-        """
         self.mailsEnum = {
             1: 'Password recovery',
             2: 'Success Login from IP',
@@ -157,7 +147,8 @@ class ParseMessage:
         messageData = self.api.main(
             self.mailsEnum[self.searchedType]
         )
-        print(messageData)
+        assert messageData, \
+            f"Can not find message with theme: {self.mailsEnum[self.searchedType]}\nmessageData: {messageData}"
         if templateSaver:
             self.saveTemplate(messageData['htmlView'])
         try:
@@ -306,6 +297,6 @@ class ParseMessage:
 
 
 if __name__ == "__main__":
-    api = ParseMessage(10).getMessage()
+    api = ParseMessage(2).getMessage()
     print(api)
 

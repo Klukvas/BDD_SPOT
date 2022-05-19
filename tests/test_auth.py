@@ -37,7 +37,7 @@ def transfer_with_blocker(auth, change_password_blocker):
     transfer_data = Transfer().create_transfer(
         token=token,
         request_id=uid,
-        phone=settings.me_tests_transfer_to_phone,
+        phone=settings.base_user_data_transfer_to_phone,
         asset='USD',
         amount=10
     )
@@ -67,12 +67,12 @@ def test_inc_password_blocker():
     pass
 
 
-@given("User input incorrect password for few times", target_fixture='login_with_enc_password')
-def login_with_enc_password(auth, register):
+@given(parsers.parse("User input incorrect password for {repeat_count} times"), target_fixture='login_with_enc_password')
+def login_with_enc_password(auth, register, repeat_count):
     auth_data = None
     email = "test_user_" + str(uuid.uuid4()) + '@mailinator.com'
     register(email, 'testpassword1')
-    for _ in range(0, settings.auth_tests_repeat_count):
+    for _ in range(repeat_count):
         auth_data = auth(
             email,
             "testpassword2",
@@ -140,8 +140,8 @@ def test_logout():
 @given('User logIn to account', target_fixture="get_token")
 def get_token(auth):
     token = auth(
-        settings.template_tests_email,
-        settings.template_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
 
     return {"token": token}
@@ -182,8 +182,8 @@ def test_refreshtoken():
 @given('User logIn to his account', target_fixture="get_token")
 def get_token(auth):
     tokens = auth(
-        settings.template_tests_email,
-        settings.template_tests_password,
+        settings.base_user_data_email,
+        settings.base_user_data_password,
     )
 
     return {"tokens": tokens['response']['data']}
@@ -259,20 +259,24 @@ def test_negative_change_password():
 @given(parsers.parse(
     "User try to change password from {password_old} to {password_new}. User get {response} with {status_code}")
 )
-def handle_password_negative(auth, password_old, password_new, response, status_code):
-    token = auth(
-        settings.auth_tests_email_for_change_password,
-        settings.auth_tests_password_for_change_password
-    )['response']['data']['token']
-
+def handle_password_negative(register, password_old, password_new, response, status_code):
+    email = "test_" + str(uuid.uuid4()) + "@mailinator.com"
+    password = "testpassword1"
+    token = register(
+        email,
+        password
+    )['token']
     if password_old == 'default':
-        password_old = settings.auth_tests_password_for_change_password
+        password_old = password
     change_password_resp = Auth(
-        settings.auth_tests_email_for_change_password, 
-        settings.auth_tests_password_for_change_password
-    ).change_password(
-        token, password_old, password_new, specific_case=True
-    )
+            email,
+            password
+        ).change_password(
+            token,
+            password_old,
+            password_new,
+            specific_case=True
+        )
     assert str(change_password_resp['status']) == str(status_code),\
         f"Expected status code eql to {status_code} but returned: {change_password_resp['status']}"
     assert change_password_resp['response']['message'].strip() == response.strip(),\

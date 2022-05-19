@@ -2,13 +2,26 @@ import os
 import json
 
 
-def set_env_variables():
-    path_to_env_file: str = os.path.join(
-        os.path.dirname(
-            os.getcwd()
-        ),
-        '.env'
+def get_path(file_name):
+    path = os.path.join(
+        os.getcwd(),
+        file_name
     )
+    if os.path.exists(path):
+        return path
+    else:
+        while not os.path.exists(path):
+            path = os.path.join(
+                os.path.dirname(
+                    path
+                ),
+                file_name
+            )
+        return path
+
+
+def set_env_variables():
+    path_to_env_file: str = get_path('.env')
     with open(path_to_env_file, 'r') as f:
         for item in f.readlines():
             if "=" in item:
@@ -30,18 +43,9 @@ openvpn_profile_name = os.environ.get('openvpn_profile_name', "NOT_SET")
 if openvpn_path == "NOT_SET" or openvpn_profile_name == "NOT_SET":
     set_env_variables()
 
-try:
-    with open('settings.json') as f:
-        data = json.load(f)
-except FileNotFoundError:
-    path_to_env_file = os.path.join(
-        os.path.dirname(
-            os.getcwd()
-        ),
-        'settings.json'
-    )
-    with open(path_to_env_file, 'r') as f:
-        data = json.load(f)
+path_to_settings_file = get_path('settings.json')
+with open(path_to_settings_file, 'r') as f:
+    data = json.load(f)
 
 envs = data['env'].keys()
 test_data_seted = False
@@ -53,7 +57,7 @@ for env in envs:
         break
 
 if not test_data_seted:
-    raise 'Can not set settings. All "is_actual" fields are eql to false'
+    raise RuntimeError('Can not set settings. All "is_actual" fields are eql to false')
 
 circle_email = data['circle_test']['email']
 circle_password = data['circle_test']['password']
@@ -66,40 +70,27 @@ circle_empty_bank_accounts_email = data['circle_test']['empty_bank_accounts_emai
 circle_empty_bank_accounts_password = data['circle_test']['empty_bank_accounts_password']
 circle_empty_bank_accounts_client_id = data['circle_test']['empty_bank_accounts_client_id']
 
-autoinvest_email = data['autoinvest_test']['email']
-autoinvest_password = data['autoinvest_test']['password']
-autoinvest_client_id = data['autoinvest_test']['client_id']
-autoinvest_wallet_id = data['autoinvest_test']['wallet_id']
-
-me_tests_email = data['me_tests']['email']
-me_tests_password = data['me_tests']['password']
-me_tests_client_id = data['me_tests']['client_id']
-me_tests_from_phone_number = data['me_tests']['from_phone_number']
-me_tests_transfer_to_phone = data['me_tests']['transfer_to_phone']
-me_tests_receive_email = data['me_tests']['receive_email']
-me_tests_circle_test_currency = data['me_tests']['circle_test_currency']
-
 db_connection_string = data['db_connection_string']
 
-signalr_url = data['signalr_url']
-signalr_email = data['signalr_test']['email']
-signalr_password = data['signalr_test']['password']
+base_user_data_email = data['base_user_data']['email']
+base_user_data_client_id = data['base_user_data']['client_id']
+base_user_data_password = data['base_user_data']['password']
+base_user_data_to_phone_transfer = data['base_user_data']['to_phone_transfer']
+base_user_data_fee_amount = data['base_user_data']['fee_amount']
+base_user_data_referral_code = data['base_user_data']['referral_code']
+base_user_data_from_phone_number = data['base_user_data']['from_phone_number']
+base_user_data_transfer_to_phone = data['base_user_data']['transfer_to_phone']
+base_user_data_receive_email = data['base_user_data']['receive_email']
+base_user_data_circle_test_currency = data['base_user_data']['circle_test_currency']
 
-#Имейл на который прихоят письма
-template_tests_email = data['template_tests']['email']
-template_tests_client_id = data['template_tests']['client_id']
-template_tests_password = data['template_tests']['password']
-template_tests_fee_amoutn = data['template_tests']['fee_amount']
-
-template_tests_to_phone_transfer = data['template_tests']['to_phone_transfer']
 
 auth_tests_email_for_change_password = data['auth_tests']['email_for_change_password']
 auth_tests_password_for_change_password = data['auth_tests']['password_for_change_password']
 auth_tests_repeat_count = data['auth_tests']['repeat_count']
 
-scenarios_with_balance_change_all = data['scenarios_with_balance_change']['all']
-scenarios_with_balance_change_for_templates_tests = data['scenarios_with_balance_change']['for_templates_tests']
+scenarios_with_balance_change = data['scenarios_with_balance_change']
 
+url_signalr = data['urls']['signalr']
 url_candles = data['urls']['candles']
 url_verify = data['urls']['verify']
 url_auth = data['urls']['auth']

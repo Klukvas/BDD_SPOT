@@ -29,10 +29,10 @@ class CustomFormatter(logging.Formatter):
 class Logger:
 
     def custom_logger(self):
-        log = logging.getLogger('CarParserLogger')
+        log = logging.getLogger('BDD_SPOT')
         if not log.handlers:
             log.setLevel(logging.DEBUG)
-            file = logging.FileHandler(filename='CarParserLogger.log', mode='a')
+            file = logging.FileHandler(filename='BDD_SPOT.log', mode='a')
             console = logging.StreamHandler()
 
             file.setLevel(logging.WARNING)

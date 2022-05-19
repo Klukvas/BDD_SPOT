@@ -34,7 +34,7 @@ class SignalR:
         self.token = token
         self.exit = False
         self.hub_connection = HubConnectionBuilder() \
-            .with_url(settings.signalr_url, options={"verify_ssl": False, "skip_negotiation": True}) \
+            .with_url(settings.url_signalr, options={"verify_ssl": False, "skip_negotiation": True}) \
             .with_hub_protocol(JsonHubProtocol()).build()
 
         self.hub_connection.on_open(self.send_init)

@@ -17,8 +17,8 @@ def test_make_swap():
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
     token = auth(
-        settings.me_tests_email,
-        settings.me_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
     balances = Wallet().balances(token)['response']['data']['balances']
     assert type(balances) == list
@@ -164,8 +164,8 @@ def test_make_swap_more_than_balance():
 @given('User try to get quote with amount more than has on balance. User get an lowBalance error')
 def quote_more_than_balance(auth):
     token = auth(
-        settings.me_tests_email,
-        settings.me_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
     from_asset = choice(list(settings.balance_asssets.keys()))
     quote = Swap().get_quote(
@@ -189,8 +189,8 @@ def test_make_swap_nonexisting_asset_from():
 @given('User try to get quote with nonexisting asset from. User get an Asset do not found error')
 def quote_nonexisting_asset_from(auth):
     token = auth(
-        settings.me_tests_email,
-        settings.me_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
     quote = Swap().get_quote(
         token=token,
@@ -214,8 +214,8 @@ def test_make_swap_nonexisting_asset_to():
 @given('User try to get quote with nonexisting asset to. User get an Asset do not found error')
 def quote_nonexisting_asset_from(auth):
     token = auth(
-        settings.me_tests_email,
-        settings.me_tests_password
+        settings.base_user_data_email,
+        settings.base_user_data_password
     )['response']['data']['token']
     quote = Swap().get_quote(
         token=token,
@@ -273,8 +273,8 @@ def get_assets_with_min_max_volume(asset):
 def get_quote_with_min_max_volume(min_max, fixed, auth, get_assets_with_min_max_volume):
     try:
         token = auth(
-            settings.me_tests_email,
-            settings.me_tests_password
+            settings.base_user_data_email,
+            settings.base_user_data_password
         )['response']['data']['token']
         swapApi = Swap()
         if min_max == 'min':

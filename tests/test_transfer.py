@@ -13,7 +13,7 @@ import settings
 @given('Some crypto on balance', target_fixture="get_balance")
 def get_balance(auth):
     token = auth(
-        settings.me_tests_email, settings.me_tests_password
+        settings.base_user_data_email, settings.base_user_data_password
     )['response']
     assert 'data' in token.keys(), \
         f"Expected that 'data' key will be in response. But returned: {token}"
@@ -39,7 +39,7 @@ def send_transfer(get_balance, asset):
     transferData = transferApi.create_transfer(
         token=get_balance[0],
         request_id=uniqId,
-        phone=settings.me_tests_transfer_to_phone,
+        phone=settings.base_user_data_transfer_to_phone,
         asset=asset,
         amount=settings.balance_asssets[asset] / 2,
         specific_case=False
@@ -95,7 +95,7 @@ def check_operation_history_transfer(send_transfer, get_balance):
            sended_transfer[0]['transferByPhoneInfo']['withdrawalAmount'] * -1
     assert sended_transfer[0]['status'] == 0
     assert type(sended_transfer[0]['transferByPhoneInfo']) == dict
-    assert sended_transfer[0]['transferByPhoneInfo']['toPhoneNumber'] == settings.me_tests_transfer_to_phone
+    assert sended_transfer[0]['transferByPhoneInfo']['toPhoneNumber'] == settings.base_user_data_transfer_to_phone
 
 
 @then('User`s balance is changed')
@@ -127,8 +127,8 @@ def balance_change_after_transfer(get_balance, send_transfer):
 @then('Receive user has new record in operation history', target_fixture="receive_operation_history")
 def receive_operation_history(auth, send_transfer):
     token = auth(
-        settings.me_tests_receive_email,
-        settings.me_tests_password
+        settings.base_user_data_receive_email,
+        settings.base_user_data_password
     )['response']
     assert 'data' in token.keys(), \
         f"Expected that key 'data' will be in response. But response is: {token}"
@@ -158,8 +158,8 @@ def receive_operation_history(auth, send_transfer):
     assert received_transfer[0]['assetId'] == send_transfer['asset']
     assert received_transfer[0]['balanceChange'] == settings.balance_asssets[send_transfer['asset']] / 2 == \
            received_transfer[0]['receiveByPhoneInfo']['depositAmount']
-    assert received_transfer[0]['receiveByPhoneInfo'][
-               'fromPhoneNumber'] == settings.me_tests_from_phone_number, f'Ar:\nEr: {received_transfer}'
+    assert received_transfer[0]['receiveByPhoneInfo']['fromPhoneNumber'] == settings.base_user_data_from_phone_number, \
+        f'Ar:{settings.base_user_data_from_phone_number}\nEr: {received_transfer}'
     assert received_transfer[0]['newBalance'] > received_transfer[0]['newBalance'] - received_transfer[0][
         'balanceChange']
 
@@ -290,8 +290,8 @@ def change_balance_after_withdrawal(get_balance, create_withdrawal):
 @then('Receive user has new record(deposit) in operation history', target_fixture="deposit_operation_history")
 def deposit_operation_history(auth, create_withdrawal):
     token = auth(
-        settings.me_tests_receive_email,
-        settings.me_tests_password
+        settings.base_user_data_receive_email,
+        settings.base_user_data_password
     )['response']
     assert 'data' in token.keys(), \
         f"Expected that 'data' key will be in response. But returned: {token}"
@@ -333,8 +333,8 @@ def chek_balance_after_deposit(deposit_operation_history):
     balances = Wallet().balances(
         deposit_operation_history[1]
     )['response']
-    assert 'data' in new_balances.keys(), \
-        f"Expected that key 'data' will be in response. But response is: {new_balances}"
+    assert 'data' in balances.keys(), \
+        f"Expected that key 'data' will be in response. But response is: {balances}"
     balances = balances['data']['balances']
     receive_balance = list(
         filter(

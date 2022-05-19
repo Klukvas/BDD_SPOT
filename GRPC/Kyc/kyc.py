@@ -10,20 +10,17 @@ class KycStatusEnum(enum.IntEnum):
     Allowd = 2
 
 
-def set_kys_allowed(client_id: str, DepositStatus, TradeStatus, WithdrawalStatus) -> None or str:
+def set_kys_status(client_id: str, DepositStatus: int, TradeStatus: int, WithdrawalStatus: int) -> None or str:
     try:
         channel = grpc.insecure_channel("kyc.spot-services.svc.cluster.local:80")
-        try:
-            client = kyc_grpc.KycStatusServiceStub(channel)
-        except Exception as err:
-            raise Exception(f"Can not make client for set kyc status.\nError: {err}")
+        client = kyc_grpc.KycStatusServiceStub(channel)
         request = kyc_pb2.SetOperationStatusRequest(
             ClientId=client_id,
             Agent="AutoTest",
             Comment="Auto_Test_Comm",
-            DepositStatus=2,
-            TradeStatus=2,
-            WithdrawalStatus=2
+            DepositStatus=DepositStatus,
+            TradeStatus=TradeStatus,
+            WithdrawalStatus=WithdrawalStatus
         )
     except Exception as err:
         raise Exception(f"Can not make request for set kyc status.\nError:{err}")
