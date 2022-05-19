@@ -1,9 +1,8 @@
 class RequestError(Exception):
-    def __init__(self, url, status_code, *args):
+    def __init__(self, url, status_code, message=None):
         self.url = url
         self.status_code = status_code
-        if args:
-            self.message = args[0]
+        self.message = message
 
     def __str__(self):
         msg = f'Negative status code from {self.url}. Status code is {self.status_code}'
@@ -23,8 +22,10 @@ class CantParseJSON(Exception):
         self.url = url
         self.response_text = response_text
         self.status_code = status_code
-        if args:
+        if len(args):
             self.message = args[0]
+        else:
+            self.message = None
 
     def __str__(self):
         msg = f"Can not parse json\n" \
@@ -53,10 +54,9 @@ class CanNotFindTemplateData(Exception):
 
 
 class CanNotFindKey(Exception):
-    def __init__(self, url, *args):
+    def __init__(self, url, message=None):
         self.url = url
-        if args:
-            self.message = args[0]
+        self.message = message
 
     def __str__(self):
         msg = f'Response from {self.url} is not contains all needed keys.'

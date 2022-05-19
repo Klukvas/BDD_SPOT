@@ -20,11 +20,10 @@ class Candle(MainObj):
         r = get(url, 
                 pkcs12_filename=self.cert_name, 
                 pkcs12_password=self.cert_pass,
-                verify = False,
+                verify=False,
                 headers=headers)
 
         try:
-            parse_resp = json.loads(r.text)
-            return {"data": parse_resp, "url": url}
+            return {"data": r.json(), "url": url}
         except Exception as error:
             raise CantParseJSON(r.url, r.text, r.status_code, error)

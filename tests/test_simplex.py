@@ -13,8 +13,8 @@ def create_payment(from_asset, to_asset, amount, auth):
     token = auth(
         settings.me_tests_email,
         settings.me_tests_password
-    )['token']
-    result = Simplex().create_payment(token, from_asset, to_asset, amount)
+    )['response']['data']['token']
+    result = Simplex().create_payment(token, from_asset, to_asset, amount)['response']
     assert type(result) == dict,  f"Expected: result will be dict type but returned: {result}"
     assert result['result'] == "OK", f"Expected: result will be 'OK' but returned: {result}"
 
@@ -31,8 +31,8 @@ def create_payment_with_non_exists_asset_from(to_asset, amount, auth):
     token = auth(
         settings.me_tests_email,
         settings.me_tests_password
-    )['token']
-    result = Simplex().create_payment(token, 'from_asset', to_asset, amount)
+    )['response']['data']['token']
+    result = Simplex().create_payment(token, 'from_asset', to_asset, amount)['response']
     assert type(result) == dict,  f"Expected: result will be dict type but returned: {result}"
     assert result['result'] == "AssetDoNotFound", f"Expected: result will be 'AssetDoNotFound' but returned: {result}"
 
@@ -46,8 +46,8 @@ def create_payment_with_non_exists_asset_to(from_asset, amount, auth):
     token = auth(
         settings.me_tests_email,
         settings.me_tests_password
-    )['token']
-    result = Simplex().create_payment(token, from_asset, 'to_asset', amount)
+    )['response']['data']['token']
+    result = Simplex().create_payment(token, from_asset, 'to_asset', amount)['response']
     assert type(result) == dict,  f"Expected: result will be dict type but returned: {result}"
     assert result['result'] == "AssetDoNotFound", f"Expected: result will be 'AssetDoNotFound' but returned: {result}"
 
@@ -61,8 +61,8 @@ def create_payment_with_amount_more_than_maximum(to_asset, from_asset, amount, a
     token = auth(
         settings.me_tests_email,
         settings.me_tests_password
-    )['token']
-    result = Simplex().create_payment(token, from_asset, to_asset, amount)
+    )['response']['data']['token']
+    result = Simplex().create_payment(token, from_asset, to_asset, amount)['response']
     assert type(result) == dict,  f"Expected: result will be dict type but returned: {result}"
     assert result['result'] == "AmountToLarge", f"Expected: result will be 'AmountToLarge' but returned: {result}"
 
@@ -76,7 +76,7 @@ def create_payment_with_amount_less_than_minimum(to_asset, from_asset, amount, a
     token = auth(
         settings.me_tests_email,
         settings.me_tests_password
-    )['token']
-    result = Simplex().create_payment(token, from_asset, to_asset, amount)
+    )['response']['data']['token']
+    result = Simplex().create_payment(token, from_asset, to_asset, amount)['response']
     assert type(result) == dict,  f"Expected: result will be dict type but returned: {result}"
     assert result['result'] == "AmountIsSmall", f"Expected: result will be 'AmountIsSmall' but returned: {result}"

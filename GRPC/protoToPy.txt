@@ -11,3 +11,6 @@ pipenv run python3 -m grpc_tools.protoc -IGRPC/UsefulImport --python_out=. --grp
 +++
 cd /Users/andrey.p/Desktop/BDD_SPOT/GRPC/MinMaxVolume
 pipenv run python3 -m grpc_tools.protoc --python_out=.  --grpc_python_out=. -IprotoFiles  protoFiles/IAssetsDictionaryService.proto
+
+cd /Users/andrey.p/Desktop/BDD_SPOT/GRPC/Campaigns
+pipenv run python3 -m grpc_tools.protoc --python_out=.  --grpc_python_out=. -IprotoFiles  protoFiles/ICampaignManager.proto

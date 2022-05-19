@@ -1,5 +1,5 @@
 # Created by andrey.p at 30.11.2021
-
+@emails
 Feature: Emails receive
   # Enter feature description here
   Scenario: Email confirmation
@@ -13,15 +13,15 @@ Feature: Emails receive
   Scenario Outline: Transfer(waiting for user)
     Given User send transfer with asset: <asset>, to phone <phone>
     When User has new email with appove link
-    Then User approve transfer by link
+    Then User approve transfer by code
     Examples:
       | asset | phone         |
       | LTC   | +111111123123 |
-  @emails
+
   Scenario Outline: Internal withdrawal
     Given User send withdrawal request wiht asset: <asset>, to address: <address>
     When User has new email with appove withdwal link with <feeAmount> and <feeAsset>
-    Then User approve withdrawal by link
+    Then User approve withdrawal by code
     Examples:
         | asset |  address                             | feeAsset | feeAmount |
         | LTC   |  tltc1qz3qgnmt9fyd77rv4f0jh3aer0yu6mlgje7jx0a  | LTC      | 0         |

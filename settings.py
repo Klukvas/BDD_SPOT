@@ -22,6 +22,14 @@ cert_pass = os.environ.get('cert_pass', "NOT_SET")
 if cert_pass == "NOT_SET" or cert_name == "NOT_SET":
     set_env_variables()
 
+working_directory = os.path.dirname(os.path.abspath(__file__))
+
+openvpn_path = os.environ.get('openvpn_path', "NOT_SET")
+openvpn_profile_name = os.environ.get('openvpn_profile_name', "NOT_SET")
+
+if openvpn_path == "NOT_SET" or openvpn_profile_name == "NOT_SET":
+    set_env_variables()
+
 try:
     with open('settings.json') as f:
         data = json.load(f)
@@ -73,6 +81,10 @@ me_tests_circle_test_currency = data['me_tests']['circle_test_currency']
 
 db_connection_string = data['db_connection_string']
 
+signalr_url = data['signalr_url']
+signalr_email = data['signalr_test']['email']
+signalr_password = data['signalr_test']['password']
+
 #Имейл на который прихоят письма
 template_tests_email = data['template_tests']['email']
 template_tests_client_id = data['template_tests']['client_id']
@@ -84,6 +96,9 @@ template_tests_to_phone_transfer = data['template_tests']['to_phone_transfer']
 auth_tests_email_for_change_password = data['auth_tests']['email_for_change_password']
 auth_tests_password_for_change_password = data['auth_tests']['password_for_change_password']
 auth_tests_repeat_count = data['auth_tests']['repeat_count']
+
+scenarios_with_balance_change_all = data['scenarios_with_balance_change']['all']
+scenarios_with_balance_change_for_templates_tests = data['scenarios_with_balance_change']['for_templates_tests']
 
 url_candles = data['urls']['candles']
 url_verify = data['urls']['verify']

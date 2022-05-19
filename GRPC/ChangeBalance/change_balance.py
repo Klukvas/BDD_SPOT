@@ -2,23 +2,10 @@
 import traceback
 import grpc
 from random import randint
-# from new_change_balance.Change_Balance__pb2_grpc import SpotChangeBalanceServiceStub as ChangeBalanceStub
-# from new_change_balance.Change_Balance__pb2 import ManualChangeBalanceGrpcRequest
-# from new_change_balance.Helper_pb2_grpc import GrpcHelperServiceStub
-# from new_change_balance.Helper_pb2 import Data_String
-
 from GRPC.ChangeBalance import ChangeBalance_pb2 as ch_bal_pb2, \
     ChangeBalance_pb2_grpc as ch_bal_grpc
-from GRPC.Helper import Helper_pb2 as help_pb, \
-    Helper_pb2_grpc as help_grpc
-# from ChangeBalance.new import (
-#     Helper_pb2_grpc as help_grpc,
-#     ChangeBalance_pb2 as ch_bal_pb2,
-#     ChangeBalance_pb2_grpc as ch_bal_grpc,
-#     Helper_pb2 as help_pb
-# )
-
 from GRPC.Helper import helper
+
 
 def changeBalance(clientId, amount, walletId, asset, BrokerId='jetwallet') -> None or str:
     decimal_amount = helper.string_to_decimal(amount)
