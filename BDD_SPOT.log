@@ -1,0 +1,383 @@
+ERROR: 16/05  14:12:49: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: 'Conditions': 39865: MainProcess
+ERROR: 16/05  14:16:20: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: 'NoneType' object has no attribute 'keys': 39987: MainProcess
+ERROR: 16/05  14:17:18: Step: Then "User gets some reward" of scenario: Check campaign FAILED
+Exception: 'NoneType' object has no attribute 'keys': 40018: MainProcess
+ERROR: 16/05  14:18:31: Step: Then "User gets some reward" of scenario: Check campaign FAILED
+Exception: 'NoneType' object has no attribute 'keys': 40051: MainProcess
+ERROR: 16/05  14:29:13: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Negative status code from https://wallet-api-uat.simple-spot.biz/api/v1/circle/get-encryption-key. Status code is 401: 40313: MainProcess
+ERROR: 16/05  14:35:55: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'status': 200, 'response': {'data': 'LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tClZlcnNpb246IEJDUEcgQyMgdjEuOS4wLjAKCmhRRU1BN0tXZG5HTU1JWEFBUWYvUlc3ckp2SUg5ZU82eCtkQjNzVzFPcnZuZTAxUHBDYVZzaHhkVUI3UG1LRjMKN3FFUlVZdzJxdW1tbThDTmlMMWcrSmx0VjdXWkcrS1EzLy82d2pRc1dodGlObHpKaGRRSlMzTFlML2RSaUJacwpNd1Z5clo2a3g5OWlTeXdoK1l3VG93MzFFQTFUeUp6VlFpVndmQk55NWkvNFV3ajMwUVRrZEw5bzIvSHpzbkw5CldIV0VNNXI2b0pWL2xsTTBJaFdQcy94UGlUVzFuUElNMVFzSVBINk1iSk1QTXlNSldjdFV1Mk5HRmhJRll5RUoKbExBL0hGd0ZTWGFLc3ZDTHBOZytyakNvZWdwSjU4Z3Mvc2g5QkNKSFVTS3hOdUR2andSb0l4eUdoT1BhZXZ3egpsUUU0SW9acmtNQlJQUlFvVno4TWRoU0JZbDVtbkRDOGl0Nk9kdVdXSzlKZEFXK0k2ZldhVmNJQ2FIa2U1REZICko2Q1ZoMWl6MXRJNzNRWitLc2RYekYxcDZVeGkwU1NRSnNXU3NMVkFEOGZwSUY3T2Z2R0RJbzlmWWdINjhaZzgKL1VBa0pzWDkzOFFEUDMvaGhxNmpYMmE1aTRuQUppbjExaG5BZmljMAo9NTA5UQotLS0tLUVORCBQR1AgTUVTU0FHRS0tLS0tCg==', 'result': 'OK'}}: 40464: MainProcess
+ERROR: 16/05  14:41:39: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PhoneIsNotConfirmed'}: 40587: MainProcess
+ERROR: 16/05  14:53:43: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: unhashable type: 'dict': 40980: MainProcess
+ERROR: 16/05  14:59:57: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: Negative status code from https://validation-api-uat.simple-spot.biz/api/v1/phone-setup/request. Status code is 400: 41123: MainProcess
+ERROR: 16/05  15:01:02: Step: Given "User gets campaign with id: 7d132d2ac7c34b7ca787db703c9b8ee2" of scenario: Check campaign FAILED
+Exception: Something went wrong with getting all campaigns. Error: can not send request
+<_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known"
+	debug_error_string = "{"created":"@1652702462.901640000","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3218,"referenced_errors":[{"created":"@1652702462.901639000","description":"DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known","file":"src/core/lib/transport/error_utils.cc","file_line":165,"grpc_status":14}]}"
+>: 41315: MainProcess
+ERROR: 16/05  15:01:35: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: Negative status code from https://validation-api-uat.simple-spot.biz/api/v1/phone-setup/request. Status code is 400: 41375: MainProcess
+ERROR: 16/05  15:02:26: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: verify_phone() missing 1 required positional argument: 'phoneBody': 41473: MainProcess
+ERROR: 16/05  15:03:26: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: unhashable type: 'dict': 41537: MainProcess
+ERROR: 16/05  15:04:13: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'AssetDoNotSupported'}: 41573: MainProcess
+ERROR: 16/05  15:36:50: Step: When "User passed all criteria in campaign" of scenario: Check campaign FAILED
+Exception: Can not make request for update personal data.
+Error:{'status': 200, 'response': {'brokerId': 'jetwallet', 'brandId': 'simple', 'clientId': '7f1cf8811699 has type dict, but expected one of: bytes, unicode: 43061: MainProcess
+ERROR: 16/05  15:38:28: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 43104: MainProcess
+ERROR: 16/05  15:40:14: Step: Given "User gets campaign with id: 7d132d2ac7c34b7ca787db703c9b8ee2" of scenario: Check campaign FAILED
+Exception: Something went wrong with getting all campaigns. Error: can not send request
+<_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known"
+	debug_error_string = "{"created":"@1652704814.563486000","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3218,"referenced_errors":[{"created":"@1652704814.563485000","description":"DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known","file":"src/core/lib/transport/error_utils.cc","file_line":165,"grpc_status":14}]}"
+>: 43207: MainProcess
+ERROR: 16/05  15:40:55: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 43266: MainProcess
+ERROR: 16/05  15:43:34: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 43393: MainProcess
+ERROR: 16/05  16:46:00: Step: Given "User gets campaign with id: 7d132d2ac7c34b7ca787db703c9b8ee2" of scenario: Check campaign FAILED
+Exception: Something went wrong with getting all campaigns. Error: can not send request
+<_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known"
+	debug_error_string = "{"created":"@1652708760.670282000","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3218,"referenced_errors":[{"created":"@1652708760.670280000","description":"DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known","file":"src/core/lib/transport/error_utils.cc","file_line":165,"grpc_status":14}]}"
+>: 44401: MainProcess
+ERROR: 16/05  16:46:47: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 44431: MainProcess
+ERROR: 16/05  18:05:12: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 46135: MainProcess
+ERROR: 16/05  18:16:38: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 46349: MainProcess
+ERROR: 18/05  12:22:57: Step: Then "User can not make a transfer" of scenario: Blocker after password change FAILED
+Exception: Negative status code from https://wallet-api.simple-spot.biz/api/v1/transfer/by-phone. Status code is 403: 65237: MainProcess
+ERROR: 18/05  12:23:03: Step: Given "User input incorrect password for 5 times" of scenario: Blocker after incorrect password FAILED
+Exception: 'str' object cannot be interpreted as an integer: 65237: MainProcess
+ERROR: 18/05  13:24:07: Step: Then "User can not make a transfer" of scenario: Blocker after password change FAILED
+Exception: Negative status code from https://wallet-api-uat.simple-spot.biz/api/v1/transfer/by-phone. Status code is 500: 66660: MainProcess
+ERROR: 18/05  13:24:12: Step: Given "User input incorrect password for 5 times" of scenario: Blocker after incorrect password FAILED
+Exception: 'str' object cannot be interpreted as an integer: 66660: MainProcess
+ERROR: 18/05  13:24:21: Step: When "User can not logIn by old password" of scenario: Change password FAILED
+Exception: 0: 66660: MainProcess
+ERROR: 18/05  13:26:25: Step: When "user create instruction (method 1)" of scenario: create instruction (method №1) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f0073cc0>()
+ +    where <built-in method keys of dict object at 0x7fc8f0073cc0> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:28: Step: When "user create instruction (method 1)" of scenario: create instruction (method №1) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f03bf200>()
+ +    where <built-in method keys of dict object at 0x7fc8f03bf200> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:31: Step: When "user create instruction (method 1)" of scenario: create instruction (method №1) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f009d780>()
+ +    where <built-in method keys of dict object at 0x7fc8f009d780> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:35: Step: When "user create instruction (method 1)" of scenario: create instruction (method №1) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f029b440>()
+ +    where <built-in method keys of dict object at 0x7fc8f029b440> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:38: Step: When "user create instruction (method 1)" of scenario: create instruction (method №1) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f03d1280>()
+ +    where <built-in method keys of dict object at 0x7fc8f03d1280> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:42: Step: When "user create instruction (method 1)" of scenario: create instruction (method №1) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f00e8300>()
+ +    where <built-in method keys of dict object at 0x7fc8f00e8300> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:45: Step: When "user create instruction (method 1)" of scenario: create instruction (method №1) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f0243ec0>()
+ +    where <built-in method keys of dict object at 0x7fc8f0243ec0> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:48: Step: When "user create instruction (method 1)" of scenario: create instruction (method №1) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f0271580>()
+ +    where <built-in method keys of dict object at 0x7fc8f0271580> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:52: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f0115fc0>()
+ +    where <built-in method keys of dict object at 0x7fc8f0115fc0> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:55: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f02769c0>()
+ +    where <built-in method keys of dict object at 0x7fc8f02769c0> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:26:58: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f00f95c0>()
+ +    where <built-in method keys of dict object at 0x7fc8f00f95c0> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:27:01: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f02a5c40>()
+ +    where <built-in method keys of dict object at 0x7fc8f02a5c40> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:27:05: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f032d8c0>()
+ +    where <built-in method keys of dict object at 0x7fc8f032d8c0> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:27:08: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f014b840>()
+ +    where <built-in method keys of dict object at 0x7fc8f014b840> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:27:11: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f027e880>()
+ +    where <built-in method keys of dict object at 0x7fc8f027e880> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:27:14: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f0145ac0>()
+ +    where <built-in method keys of dict object at 0x7fc8f0145ac0> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:27:17: Step: When "user create instruction (method 1)" of scenario: create-switch-execute FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f013fc00>()
+ +    where <built-in method keys of dict object at 0x7fc8f013fc00> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:27:21: Step: When "user create instruction (method 1)" of scenario: create-delete-execute FAILED
+Exception: Expected that 'data' key will be in response. But returned: {'result': 'LowBalance'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc8f00f9dc0>()
+ +    where <built-in method keys of dict object at 0x7fc8f00f9dc0> = {'result': 'LowBalance'}.keys: 66660: MainProcess
+ERROR: 18/05  13:27:55: Step: When "User passed conditions" of scenario: Check campaign FAILED
+Exception: Expected that 'data' key will be in response. But response is: {'result': 'PaymentFailed'}: 66660: MainProcess
+ERROR: 18/05  13:28:08: Step: Given "User send request for chart with next data: ETHUSD, YEAR" of scenario: Receive chart data FAILED
+Exception: Expected count: 92 - 15. Returned: 23
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/2?Instruction=ETHUSD&BidOrAsk=0&FromDate=1621333688220&ToDate=1652783288220&MergeCandlesCount=4
+assert 23 >= (92 - 15)
+ +  where 23 = len([{'c': 3262.9, 'd': 1641945600000, 'h': 3412.7, 'l': 3241.5, ...}, {'c': 2568.2, 'd': 1642464000000, 'h': 3273.6, 'l': 3034, ...}, {'c': 2460.6, 'd': 1642809600000, 'h': 2626, 'l': 2508.8, ...}, {'c': 2603.2, 'd': 1643155200000, 'h': 2723, 'l': 2520.9, ...}, {'c': 2680.6, 'd': 1643500800000, 'h': 2814.9, 'l': 2640.3, ...}, {'c': 2893.44, 'd': 1643846400000, 'h': 3197.21, 'l': 2725, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:28:17: Step: Given "User send request for chart with next data: XLMUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 21
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=XLMUSD&BidOrAsk=0&FromDate=1650277697615&ToDate=1652783297615&MergeCandlesCount=8
+assert 21 >= (90 - 15)
+ +  where 21 = len([{'c': 0.1432, 'd': 1652191200000, 'h': 0.1528, 'l': 0.1483, ...}, {'c': 0.1458, 'd': 1652220000000, 'h': 0.1501, 'l': 0.1475, ...}, {'c': 0.1391, 'd': 1652248800000, 'h': 0.151, 'l': 0.142, ...}, {'c': 0.1232, 'd': 1652277600000, 'h': 0.1396, 'l': 0.124, ...}, {'c': 0.1079, 'd': 1652306400000, 'h': 0.1301, 'l': 0.111, ...}, {'c': 0.116, 'd': 1652335200000, 'h': 0.1195, 'l': 0.1142, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:28:30: Step: Given "User send request for chart with next data: LTCUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 48
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=LTCUSD&BidOrAsk=0&FromDate=1650277709801&ToDate=1652783309801&MergeCandlesCount=8
+assert 48 >= (90 - 15)
+ +  where 48 = len([{'c': 109.8, 'd': 1650279600000, 'h': 110.6, 'l': 106.5, ...}, {'c': 111.7, 'd': 1650308400000, 'h': 112.2, 'l': 110.4, ...}, {'c': 111, 'd': 1650337200000, 'h': 112.3, 'l': 111.2, ...}, {'c': 112.8, 'd': 1650366000000, 'h': 113.6, 'l': 111.9, ...}, {'c': 112.7, 'd': 1650394800000, 'h': 114.1, 'l': 112.8, ...}, {'c': 113.3, 'd': 1650423600000, 'h': 113.7, 'l': 112.6, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:28:33: Step: Given "User send request for chart with next data: LTCUSD, YEAR" of scenario: Receive chart data FAILED
+Exception: Expected count: 92 - 15. Returned: 21
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/2?Instruction=LTCUSD&BidOrAsk=0&FromDate=1621333712911&ToDate=1652783312911&MergeCandlesCount=4
+assert 21 >= (92 - 15)
+ +  where 21 = len([{'c': 151.06, 'd': 1641945600000, 'h': 151.64, 'l': 132.295, ...}, {'c': 114.49, 'd': 1642464000000, 'h': 148.45, 'l': 131.075, ...}, {'c': 107.82, 'd': 1642809600000, 'h': 117, 'l': 109.905, ...}, {'c': 110.755, 'd': 1643155200000, 'h': 116.49, 'l': 109.785, ...}, {'c': 108.31, 'd': 1643500800000, 'h': 116.86, 'l': 111.265, ...}, {'c': 116.3, 'd': 1643846400000, 'h': 132.6, 'l': 109.375, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:28:42: Step: Given "User send request for chart with next data: BTCUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 39
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=BTCUSD&BidOrAsk=0&FromDate=1650277722712&ToDate=1652783322712&MergeCandlesCount=8
+assert 39 >= (90 - 15)
+ +  where 39 = len([{'c': 39624.1, 'd': 1651687200000, 'h': 40020, 'l': 39699.99, ...}, {'c': 39477.33, 'd': 1651716000000, 'h': 39835.72, 'l': 39554.08, ...}, {'c': 36812.97, 'd': 1651744800000, 'h': 39613.27, 'l': 37155.26, ...}, {'c': 36298.75, 'd': 1651773600000, 'h': 36842.87, 'l': 36382.23, ...}, {'c': 36394.54, 'd': 1651802400000, 'h': 36541.79, 'l': 36415.57, ...}, {'c': 35885.22, 'd': 1651831200000, 'h': 36418.74, 'l': 36052.92, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:28:55: Step: Given "User send request for chart with next data: SOLUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 21
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=SOLUSD&BidOrAsk=0&FromDate=1650277734926&ToDate=1652783334926&MergeCandlesCount=8
+assert 21 >= (90 - 15)
+ +  where 21 = len([{'c': 65.57, 'd': 1651687200000, 'h': 87.06, 'l': 67.67, ...}, {'c': 65.38, 'd': 1652216400000, 'h': 68.29, 'l': 65.94, ...}, {'c': 49.35, 'd': 1652245200000, 'h': 68.4, 'l': 63.85, ...}, {'c': 44.02, 'd': 1652274000000, 'h': 59.99, 'l': 49.23, ...}, {'c': 43.88, 'd': 1652302800000, 'h': 54.01, 'l': 46.42, ...}, {'c': 44.63, 'd': 1652331600000, 'h': 47.12, 'l': 43.89, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:28:58: Step: Given "User send request for chart with next data: SOLUSD, YEAR" of scenario: Receive chart data FAILED
+Exception: Expected count: 92 - 15. Returned: 72
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/2?Instruction=SOLUSD&BidOrAsk=0&FromDate=1621333737998&ToDate=1652783337998&MergeCandlesCount=4
+assert 72 >= (92 - 15)
+ +  where 72 = len([{'c': 31.24, 'd': 1621382400000, 'h': 57.65, 'l': 42.02, ...}, {'c': 35.45, 'd': 1621728000000, 'h': 37.31, 'l': 32.29, ...}, {'c': 28.63, 'd': 1622073600000, 'h': 35.63, 'l': 29.8, ...}, {'c': 39.62, 'd': 1622419200000, 'h': 41.38, 'l': 33.02, ...}, {'c': 38.29, 'd': 1622764800000, 'h': 44.16, 'l': 39.71, ...}, {'c': 36.17, 'd': 1623110400000, 'h': 44, 'l': 41.39, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:29:07: Step: Given "User send request for chart with next data: BCHUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 21
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=BCHUSD&BidOrAsk=0&FromDate=1650277747214&ToDate=1652783347214&MergeCandlesCount=8
+assert 21 >= (90 - 15)
+ +  where 21 = len([{'c': 221.7, 'd': 1652191200000, 'h': 238.3, 'l': 229.5, ...}, {'c': 229, 'd': 1652220000000, 'h': 233.8, 'l': 228.9, ...}, {'c': 221.4, 'd': 1652248800000, 'h': 249.8, 'l': 223.9, ...}, {'c': 194.1, 'd': 1652277600000, 'h': 226.7, 'l': 194.3, ...}, {'c': 166, 'd': 1652306400000, 'h': 199.7, 'l': 176.7, ...}, {'c': 190.5, 'd': 1652335200000, 'h': 200.8, 'l': 173.2, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:29:10: Step: Given "User send request for chart with next data: BCHUSD, YEAR" of scenario: Receive chart data FAILED
+Exception: Expected count: 92 - 15. Returned: 71
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/2?Instruction=BCHUSD&BidOrAsk=0&FromDate=1621333750286&ToDate=1652783350286&MergeCandlesCount=4
+assert 71 >= (92 - 15)
+ +  where 71 = len([{'c': 630.35, 'd': 1621382400000, 'h': 1113.35, 'l': 722.54, ...}, {'c': 764.65, 'd': 1621728000000, 'h': 793.81, 'l': 660.36, ...}, {'c': 661.91, 'd': 1622073600000, 'h': 807.73, 'l': 689, ...}, {'c': 719.18, 'd': 1622419200000, 'h': 735.47, 'l': 711.47, ...}, {'c': 596.76, 'd': 1622764800000, 'h': 720.17, 'l': 670.08, ...}, {'c': 576.84, 'd': 1623110400000, 'h': 639.7, 'l': 605.12, ...}, ...]): 66660: MainProcess
+ERROR: 18/05  13:29:20: Step: Then "User create deposit via card" of scenario: Make a deposit by card FAILED
+Exception: /create-payment response is not ok. It's PaymentFailed
+assert 'PaymentFailed' == 'OK'
+  - OK
+  + PaymentFailed: 66660: MainProcess
+ERROR: 18/05  13:30:55: Step: Given "User has new email with code" of scenario: Email confirmation FAILED
+Exception: saveTemplate() missing 1 required positional argument: 'html': 66660: MainProcess
+ERROR: 18/05  13:31:20: Step: Given "User has new Success login email after login" of scenario: Success login FAILED
+Exception: saveTemplate() missing 1 required positional argument: 'html': 66660: MainProcess
+ERROR: 18/05  13:31:48: Step: When "User has new email with appove link" of scenario: Transfer(waiting for user) FAILED
+Exception: saveTemplate() missing 1 required positional argument: 'html': 66660: MainProcess
+ERROR: 18/05  13:35:37: Step: When "User has new email with appove withdwal link with 0 and LTC" of scenario: Internal withdrawal FAILED
+Exception: Error of getting message id.
+ Error: Can not find message of Verify withdrawal for 2 mins: 66660: MainProcess
+ERROR: 18/05  13:36:09: Step: Then "User get new email with code" of scenario: Password Recovery FAILED
+Exception: 'int' object does not support item assignment: 66660: MainProcess
+ERROR: 18/05  13:36:34: Step: Given "ReRegistration mail on inbox after existing user pass registration" of scenario: ReRegistration FAILED
+Exception: saveTemplate() missing 1 required positional argument: 'html': 66660: MainProcess
+ERROR: 18/05  13:37:26: Step: When "User execute quote" of scenario: Make a swap FAILED
+Exception: 'data': 66660: MainProcess
+ERROR: 18/05  13:43:53: Step: Then "User has new record in operation history" of scenario: Make a transfer by phone FAILED
+Exception: assert 0.65 == ((1.3 / 2) * -1): 66660: MainProcess
+ERROR: 18/05  13:44:09: Step: Then "User has new record in operation history" of scenario: Make a transfer by phone FAILED
+Exception: assert 0.03 == ((0.06 / 2) * -1): 66660: MainProcess
+ERROR: 18/05  13:44:19: Step: Then "User has new record in operation history" of scenario: Make a transfer by phone FAILED
+Exception: assert 0.035 == ((0.07 / 2) * -1): 66660: MainProcess
+ERROR: 18/05  14:13:12: Step: Then "User can not make a transfer" of scenario: Blocker after password change FAILED
+Exception: Negative status code from https://wallet-api-uat.simple-spot.biz/api/v1/transfer/by-phone. Status code is 500: 68015: MainProcess
+ERROR: 18/05  14:13:16: Step: Given "User input incorrect password for 5 times" of scenario: Blocker after incorrect password FAILED
+Exception: 'str' object cannot be interpreted as an integer: 68015: MainProcess
+ERROR: 18/05  14:13:26: Step: When "User can not logIn by old password" of scenario: Change password FAILED
+Exception: 0: 68015: MainProcess
+ERROR: 18/05  14:31:28: Step: When "user create instruction (method 2)" of scenario: create instruction (method №2) - execute it FAILED
+Exception: Expected that response contains 'data' key. But response is:{'result': 'CannotExecuteQuoteRequest'}
+assert 'data' in dict_keys(['result'])
+ +  where dict_keys(['result']) = <built-in method keys of dict object at 0x7fc11762b700>()
+ +    where <built-in method keys of dict object at 0x7fc11762b700> = {'result': 'CannotExecuteQuoteRequest'}.keys: 68015: MainProcess
+ERROR: 18/05  14:43:43: Step: Given "User gets campaign with id: 7d132d2ac7c34b7ca787db703c9b8ee2" of scenario: Check campaign FAILED
+Exception: Something went wrong with getting all campaigns. Error: can not send request
+<_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known"
+	debug_error_string = "{"created":"@1652874223.603441000","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3218,"referenced_errors":[{"created":"@1652874223.603439000","description":"DNS resolution failed for bonuscampaign.spot-services.svc.cluster.local:80: UNKNOWN: nodename nor servname provided, or not known","file":"src/core/lib/transport/error_utils.cc","file_line":165,"grpc_status":14}]}"
+>: 68015: MainProcess
+ERROR: 18/05  14:43:56: Step: Given "User send request for chart with next data: ETHUSD, YEAR" of scenario: Receive chart data FAILED
+Exception: Expected count: 92 - 15. Returned: 23
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/2?Instruction=ETHUSD&BidOrAsk=0&FromDate=1621338235852&ToDate=1652787835852&MergeCandlesCount=4
+assert 23 >= (92 - 15)
+ +  where 23 = len([{'c': 3262.9, 'd': 1641945600000, 'h': 3412.7, 'l': 3241.5, ...}, {'c': 2568.2, 'd': 1642464000000, 'h': 3273.6, 'l': 3034, ...}, {'c': 2460.6, 'd': 1642809600000, 'h': 2626, 'l': 2508.8, ...}, {'c': 2603.2, 'd': 1643155200000, 'h': 2723, 'l': 2520.9, ...}, {'c': 2680.6, 'd': 1643500800000, 'h': 2814.9, 'l': 2640.3, ...}, {'c': 2893.44, 'd': 1643846400000, 'h': 3197.21, 'l': 2725, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:44:05: Step: Given "User send request for chart with next data: XLMUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 21
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=XLMUSD&BidOrAsk=0&FromDate=1650282244959&ToDate=1652787844959&MergeCandlesCount=8
+assert 21 >= (90 - 15)
+ +  where 21 = len([{'c': 0.1432, 'd': 1652191200000, 'h': 0.1528, 'l': 0.1483, ...}, {'c': 0.1458, 'd': 1652220000000, 'h': 0.1501, 'l': 0.1475, ...}, {'c': 0.1391, 'd': 1652248800000, 'h': 0.151, 'l': 0.142, ...}, {'c': 0.1232, 'd': 1652277600000, 'h': 0.1396, 'l': 0.124, ...}, {'c': 0.1079, 'd': 1652306400000, 'h': 0.1301, 'l': 0.111, ...}, {'c': 0.116, 'd': 1652335200000, 'h': 0.1195, 'l': 0.1142, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:44:17: Step: Given "User send request for chart with next data: LTCUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 48
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=LTCUSD&BidOrAsk=0&FromDate=1650282257443&ToDate=1652787857443&MergeCandlesCount=8
+assert 48 >= (90 - 15)
+ +  where 48 = len([{'c': 110.3, 'd': 1650283200000, 'h': 110.6, 'l': 107.4, ...}, {'c': 111.9, 'd': 1650312000000, 'h': 112.3, 'l': 110.7, ...}, {'c': 110.9, 'd': 1650340800000, 'h': 112.1, 'l': 111.2, ...}, {'c': 113.1, 'd': 1650369600000, 'h': 113.6, 'l': 111.9, ...}, {'c': 112.6, 'd': 1650398400000, 'h': 114.1, 'l': 112.6, ...}, {'c': 113.8, 'd': 1650427200000, 'h': 114.1, 'l': 112.6, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:44:20: Step: Given "User send request for chart with next data: LTCUSD, YEAR" of scenario: Receive chart data FAILED
+Exception: Expected count: 92 - 15. Returned: 21
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/2?Instruction=LTCUSD&BidOrAsk=0&FromDate=1621338260623&ToDate=1652787860623&MergeCandlesCount=4
+assert 21 >= (92 - 15)
+ +  where 21 = len([{'c': 151.06, 'd': 1641945600000, 'h': 151.64, 'l': 132.295, ...}, {'c': 114.49, 'd': 1642464000000, 'h': 148.45, 'l': 131.075, ...}, {'c': 107.82, 'd': 1642809600000, 'h': 117, 'l': 109.905, ...}, {'c': 110.755, 'd': 1643155200000, 'h': 116.49, 'l': 109.785, ...}, {'c': 108.31, 'd': 1643500800000, 'h': 116.86, 'l': 111.265, ...}, {'c': 116.3, 'd': 1643846400000, 'h': 132.6, 'l': 109.375, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:44:29: Step: Given "User send request for chart with next data: BTCUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 39
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=BTCUSD&BidOrAsk=0&FromDate=1650282269631&ToDate=1652787869631&MergeCandlesCount=8
+assert 39 >= (90 - 15)
+ +  where 39 = len([{'c': 39624.1, 'd': 1651687200000, 'h': 40020, 'l': 39699.99, ...}, {'c': 39477.33, 'd': 1651716000000, 'h': 39835.72, 'l': 39554.08, ...}, {'c': 36812.97, 'd': 1651744800000, 'h': 39613.27, 'l': 37155.26, ...}, {'c': 36298.75, 'd': 1651773600000, 'h': 36842.87, 'l': 36382.23, ...}, {'c': 36394.54, 'd': 1651802400000, 'h': 36541.79, 'l': 36415.57, ...}, {'c': 35885.22, 'd': 1651831200000, 'h': 36418.74, 'l': 36052.92, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:44:42: Step: Given "User send request for chart with next data: SOLUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 21
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=SOLUSD&BidOrAsk=0&FromDate=1650282281826&ToDate=1652787881826&MergeCandlesCount=8
+assert 21 >= (90 - 15)
+ +  where 21 = len([{'c': 65.57, 'd': 1651687200000, 'h': 87.06, 'l': 67.67, ...}, {'c': 65.38, 'd': 1652216400000, 'h': 68.29, 'l': 65.94, ...}, {'c': 49.35, 'd': 1652245200000, 'h': 68.4, 'l': 63.85, ...}, {'c': 44.02, 'd': 1652274000000, 'h': 59.99, 'l': 49.23, ...}, {'c': 43.88, 'd': 1652302800000, 'h': 54.01, 'l': 46.42, ...}, {'c': 44.63, 'd': 1652331600000, 'h': 47.12, 'l': 43.89, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:44:45: Step: Given "User send request for chart with next data: SOLUSD, YEAR" of scenario: Receive chart data FAILED
+Exception: Expected count: 92 - 15. Returned: 72
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/2?Instruction=SOLUSD&BidOrAsk=0&FromDate=1621338284905&ToDate=1652787884905&MergeCandlesCount=4
+assert 72 >= (92 - 15)
+ +  where 72 = len([{'c': 31.24, 'd': 1621382400000, 'h': 57.65, 'l': 42.02, ...}, {'c': 35.45, 'd': 1621728000000, 'h': 37.31, 'l': 32.29, ...}, {'c': 28.63, 'd': 1622073600000, 'h': 35.63, 'l': 29.8, ...}, {'c': 39.62, 'd': 1622419200000, 'h': 41.38, 'l': 33.02, ...}, {'c': 38.29, 'd': 1622764800000, 'h': 44.16, 'l': 39.71, ...}, {'c': 36.17, 'd': 1623110400000, 'h': 44, 'l': 41.39, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:44:54: Step: Given "User send request for chart with next data: BCHUSD, MOUNTH" of scenario: Receive chart data FAILED
+Exception: Expected count: 90 - 15. Returned: 21
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/1?Instruction=BCHUSD&BidOrAsk=0&FromDate=1650282294124&ToDate=1652787894124&MergeCandlesCount=8
+assert 21 >= (90 - 15)
+ +  where 21 = len([{'c': 221.7, 'd': 1652191200000, 'h': 238.3, 'l': 229.5, ...}, {'c': 229, 'd': 1652220000000, 'h': 233.8, 'l': 228.9, ...}, {'c': 221.4, 'd': 1652248800000, 'h': 249.8, 'l': 223.9, ...}, {'c': 194.1, 'd': 1652277600000, 'h': 226.7, 'l': 194.3, ...}, {'c': 166, 'd': 1652306400000, 'h': 199.7, 'l': 176.7, ...}, {'c': 190.5, 'd': 1652335200000, 'h': 200.8, 'l': 173.2, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:44:57: Step: Given "User send request for chart with next data: BCHUSD, YEAR" of scenario: Receive chart data FAILED
+Exception: Expected count: 92 - 15. Returned: 71
+  url for reproduce: https://candles-api-uat.simple-spot.biz/api/v3/Candles/Candles/2?Instruction=BCHUSD&BidOrAsk=0&FromDate=1621338297196&ToDate=1652787897196&MergeCandlesCount=4
+assert 71 >= (92 - 15)
+ +  where 71 = len([{'c': 630.35, 'd': 1621382400000, 'h': 1113.35, 'l': 722.54, ...}, {'c': 764.65, 'd': 1621728000000, 'h': 793.81, 'l': 660.36, ...}, {'c': 661.91, 'd': 1622073600000, 'h': 807.73, 'l': 689, ...}, {'c': 719.18, 'd': 1622419200000, 'h': 735.47, 'l': 711.47, ...}, {'c': 596.76, 'd': 1622764800000, 'h': 720.17, 'l': 670.08, ...}, {'c': 576.84, 'd': 1623110400000, 'h': 639.7, 'l': 605.12, ...}, ...]): 68015: MainProcess
+ERROR: 18/05  14:45:08: Step: Then "User create deposit via card" of scenario: Make a deposit by card FAILED
+Exception: /create-payment response is not ok. It's PaymentFailed
+assert 'PaymentFailed' == 'OK'
+  - OK
+  + PaymentFailed: 68015: MainProcess
+ERROR: 18/05  14:46:55: Step: Given "User has new email with code" of scenario: Email confirmation FAILED
+Exception: saveTemplate() missing 1 required positional argument: 'html': 68015: MainProcess
+ERROR: 18/05  14:47:28: Step: Given "User has new Success login email after login" of scenario: Success login FAILED
+Exception: saveTemplate() missing 1 required positional argument: 'html': 68015: MainProcess
+ERROR: 18/05  14:48:13: Step: Then "User get new email with code" of scenario: Password Recovery FAILED
+Exception: 'int' object does not support item assignment: 68015: MainProcess
+ERROR: 18/05  14:48:38: Step: Given "ReRegistration mail on inbox after existing user pass registration" of scenario: ReRegistration FAILED
+Exception: saveTemplate() missing 1 required positional argument: 'html': 68015: MainProcess
+ERROR: 18/05  14:51:35: Step: Given "User set to BTC min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:51:42: Step: Given "User set to XLM min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:51:49: Step: Given "User set to LTC min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:51:56: Step: Given "User set to BTC min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:52:03: Step: Given "User set to XLM min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:52:10: Step: Given "User set to LTC min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:52:18: Step: Given "User set to BTC min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:52:25: Step: Given "User set to XLM min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:52:32: Step: Given "User set to LTC min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:52:39: Step: Given "User set to BTC min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:52:46: Step: Given "User set to XLM min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  14:52:53: Step: Given "User set to LTC min and max amount" of scenario: Swap with min && max amount FAILED
+Exception: Error of getting asset
+assert None is not None: 68015: MainProcess
+ERROR: 18/05  18:54:51: Step: Then "User can not make a transfer" of scenario: Blocker after password change FAILED
+Exception: assert 'LowBalance' == 'OperationBlocked'
+  - OperationBlocked
+  + LowBalance: 3114: MainProcess
+ERROR: 18/05  18:54:55: Step: Given "User input incorrect password for 5 times" of scenario: Blocker after incorrect password FAILED
+Exception: 'str' object cannot be interpreted as an integer: 3114: MainProcess
+ERROR: 18/05  18:55:04: Step: When "User can not logIn by old password" of scenario: Change password FAILED
+Exception: 0: 3114: MainProcess
+ERROR: 18/05  18:59:44: Step: Then "User can not make a transfer" of scenario: Blocker after password change FAILED
+Exception: assert 'LowBalance' == 'OperationBlocked'
+  - OperationBlocked
+  + LowBalance: 3328: MainProcess
+ERROR: 18/05  18:59:49: Step: Given "User input incorrect password for 5 times" of scenario: Blocker after incorrect password FAILED
+Exception: 'str' object cannot be interpreted as an integer: 3328: MainProcess
+ERROR: 18/05  18:59:58: Step: When "User can not logIn by old password" of scenario: Change password FAILED
+Exception: 0: 3328: MainProcess
+ERROR: 18/05  19:11:54: Step: Then "User can not make a transfer" of scenario: Blocker after password change FAILED
+Exception: assert 'LowBalance' == 'OperationBlocked'
+  - OperationBlocked
+  + LowBalance: 3703: MainProcess
+ERROR: 18/05  19:11:58: Step: Given "User input incorrect password for 5 times" of scenario: Blocker after incorrect password FAILED
+Exception: 'str' object cannot be interpreted as an integer: 3703: MainProcess
+ERROR: 18/05  19:12:07: Step: When "User can not logIn by old password" of scenario: Change password FAILED
+Exception: Expected that status code will be 401 but returned: 200
+assert 200 == 401: 3703: MainProcess
+ERROR: 18/05  19:15:53: Step: Then "User can not make a transfer" of scenario: Blocker after password change FAILED
+Exception: assert 'LowBalance' == 'OperationBlocked'
+  - OperationBlocked
+  + LowBalance: 3814: MainProcess
+ERROR: 18/05  19:16:05: Step: Then "User has blocker for login" of scenario: Blocker after incorrect password FAILED
+Exception: assert 'InvalidUserNameOrPassword' == 'OperationBlocked'
+  - OperationBlocked
+  + InvalidUserNameOrPassword: 3814: MainProcess
+ERROR: 18/05  19:16:13: Step: When "User can not logIn by old password" of scenario: Change password FAILED
+Exception: Expected that status code will be 401 but returned: 200
+assert 200 == 401: 3814: MainProcess

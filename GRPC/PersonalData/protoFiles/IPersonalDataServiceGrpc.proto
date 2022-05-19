@@ -1,0 +1,137 @@
+syntax = "proto3";
+package Service.PersonalData.Grpc;
+import "empty.proto";
+import "bcl.proto"; // schema for protobuf-net's handling of core .NET types
+
+message AuditLogGrpcContract {
+   string TraderId = 1;
+   string Ip = 2;
+   string ServiceName = 3;
+   string ProcessId = 4;
+   string Context = 5;
+}
+message ConfirmGrpcModel {
+   string Id = 1;
+   .bcl.DateTime Confirm = 2;
+   AuditLogGrpcContract AuditLog = 3;
+}
+message ExternalDataGrpcModel {
+   string Key = 1;
+   string Value = 2;
+}
+message GetByEmailRequest {
+   string Email = 1;
+}
+message GetByIdRequest {
+   string Id = 1;
+}
+message GetByIdsRequest {
+   repeated string Ids = 1;
+}
+message GetByPhoneRequest {
+   string Phone = 1;
+}
+message GetPersonalDataByStatusRequest {
+   PersonalDataKYCEnum Status = 1;
+}
+message GetPersonalDataByStatusResponse {
+   repeated PersonalDataGrpcModel PersonalDataModels = 1;
+}
+message GetRequest {
+   int32 Limit = 1;
+   int32 Offset = 2;
+}
+message GetTotalResponse {
+   int32 TotalPersonalDatas = 1;
+}
+message PersonalDataBatchResponseContract {
+   repeated PersonalDataGrpcModel PersonalDatas = 1;
+}
+message PersonalDataGrpcModel {
+   string Id = 1;
+   string Email = 2;
+   string FirstName = 3;
+   string LastName = 4;
+   PersonalDataSexEnum Sex = 5;
+   .bcl.DateTime DateOfBirth = 6;
+   string CountryOfResidence = 7;
+   string CountryOfCitizenship = 8;
+   string City = 9;
+   string PostalCode = 10;
+   string Phone = 11;
+   PersonalDataKYCEnum KYC = 12;
+   .bcl.DateTime Confirm = 13;
+   AuditLogGrpcContract AuditLog = 14;
+   string Address = 15;
+   bool USCitizen = 16;
+   string CountryOfRegistration = 17;
+   string IpOfRegistration = 18;
+   repeated ExternalDataGrpcModel ExternalData = 19;
+   string BrandId = 20;
+   string PlatformType = 21;
+   .bcl.DateTime ConfirmPhone = 22;
+   .bcl.DateTime CreatedAt = 23;
+}
+message PersonalDataGrpcResponseContract {
+   PersonalDataGrpcModel PersonalData = 1;
+}
+enum PersonalDataKYCEnum {
+   NotVerified = 0;
+   OnVerification = 1;
+   Verified = 2;
+   Restricted = 3;
+}
+enum PersonalDataSexEnum {
+   Unknown = 0;
+   Male = 1;
+   Female = 2;
+}
+message RegisterPersonalDataGrpcModel {
+   string Id = 1;
+   string Email = 2;
+   string CountryOfResidence = 3;
+   string CountryOfRegistration = 4;
+   string IpOfRegistration = 5;
+   AuditLogGrpcContract AuditLog = 6;
+}
+message ResultGrpcResponse {
+   bool Ok = 1;
+}
+message SearchRequest {
+   string SearchText = 1;
+}
+message UpdateKycGrpcContract {
+   string Id = 1;
+   PersonalDataKYCEnum Kyc = 2;
+   AuditLogGrpcContract AuditLog = 3;
+}
+message UpdatePersonalDataGrpcContract {
+   string Id = 1;
+   string FirstName = 2;
+   string LastName = 3;
+   PersonalDataSexEnum Sex = 4;
+   .bcl.DateTime DateOfBirth = 5;
+   string CountryOfResidence = 6;
+   string CountryOfCitizenship = 7;
+   string City = 8;
+   string PostalCode = 9;
+   string Phone = 10;
+   AuditLogGrpcContract AuditLog = 11;
+   string Address = 12;
+   bool USCitizen = 13;
+}
+service PersonalDataServiceGrpc {
+   rpc Confirm (ConfirmGrpcModel) returns (.google.protobuf.Empty);
+   rpc ConfirmPhone (ConfirmGrpcModel) returns (.google.protobuf.Empty);
+   rpc Get (GetRequest) returns (PersonalDataBatchResponseContract);
+   rpc GetByEmail (GetByEmailRequest) returns (PersonalDataGrpcResponseContract);
+   rpc GetById (GetByIdRequest) returns (PersonalDataGrpcResponseContract);
+   rpc GetByIds (GetByIdsRequest) returns (PersonalDataBatchResponseContract);
+   rpc GetByPhone (GetByPhoneRequest) returns (PersonalDataGrpcResponseContract);
+   rpc GetPersonalDataByStatus (GetPersonalDataByStatusRequest) returns (GetPersonalDataByStatusResponse);
+   rpc GetTotal (.google.protobuf.Empty) returns (GetTotalResponse);
+   rpc Register (RegisterPersonalDataGrpcModel) returns (ResultGrpcResponse);
+   rpc Search (SearchRequest) returns (PersonalDataBatchResponseContract);
+   rpc Update (UpdatePersonalDataGrpcContract) returns (ResultGrpcResponse);
+   rpc UpdateKyc (UpdateKycGrpcContract) returns (.google.protobuf.Empty);
+}

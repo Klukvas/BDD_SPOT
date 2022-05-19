@@ -84,18 +84,19 @@ class CampaignWorker:
         return sorted_dict
 
     def get_condition_steps(self):
-        for condition in self.campaign['Conditions']:
-            if 'Type' not in condition.keys():
-                condition['Type'] = 'KYCCondition'
-            self.condition_steps[condition['Type']] = {'weight': ConditionWeightEnum[condition['Type']].value}
-            self.condition_steps[condition['Type']]['Steps'] = condition['Parameters']
-            self.condition_steps[condition['Type']]["Id"] = condition['ConditionId']
-            self.condition_steps[condition['Type']]["Passed"] = False
-            if 'Rewards' in condition.keys():
-                self.condition_steps[condition['Type']]['Rewards'] = self.get_rewards(condition['Rewards'])
-            else:
-                self.condition_steps[condition['Type']]['Rewards'] = {}
-        self.condition_steps = CampaignWorker.sort_dict_by_field(self.condition_steps, 'weight')
+        if 'Conditions' in self.campaign.keys():
+            for condition in self.campaign['Conditions']:
+                if 'Type' not in condition.keys():
+                    condition['Type'] = 'KYCCondition'
+                self.condition_steps[condition['Type']] = {'weight': ConditionWeightEnum[condition['Type']].value}
+                self.condition_steps[condition['Type']]['Steps'] = condition['Parameters']
+                self.condition_steps[condition['Type']]["Id"] = condition['ConditionId']
+                self.condition_steps[condition['Type']]["Passed"] = False
+                if 'Rewards' in condition.keys():
+                    self.condition_steps[condition['Type']]['Rewards'] = self.get_rewards(condition['Rewards'])
+                else:
+                    self.condition_steps[condition['Type']]['Rewards'] = {}
+            self.condition_steps = CampaignWorker.sort_dict_by_field(self.condition_steps, 'weight')
         return self.condition_steps
 
     def main(self):

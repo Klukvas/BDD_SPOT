@@ -83,11 +83,6 @@ base_user_data_transfer_to_phone = data['base_user_data']['transfer_to_phone']
 base_user_data_receive_email = data['base_user_data']['receive_email']
 base_user_data_circle_test_currency = data['base_user_data']['circle_test_currency']
 
-
-auth_tests_email_for_change_password = data['auth_tests']['email_for_change_password']
-auth_tests_password_for_change_password = data['auth_tests']['password_for_change_password']
-auth_tests_repeat_count = data['auth_tests']['repeat_count']
-
 scenarios_with_balance_change = data['scenarios_with_balance_change']
 
 url_signalr = data['urls']['signalr']

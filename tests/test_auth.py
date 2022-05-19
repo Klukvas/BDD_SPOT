@@ -38,8 +38,8 @@ def transfer_with_blocker(auth, change_password_blocker):
         token=token,
         request_id=uid,
         phone=settings.base_user_data_transfer_to_phone,
-        asset='USD',
-        amount=10
+        asset='BCH',
+        amount=0.0001
     )
     assert transfer_data['response']['result'] == 'OperationBlocked'
 
@@ -72,7 +72,7 @@ def login_with_enc_password(auth, register, repeat_count):
     auth_data = None
     email = "test_user_" + str(uuid.uuid4()) + '@mailinator.com'
     register(email, 'testpassword1')
-    for _ in range(repeat_count):
+    for _ in range(int(repeat_count)):
         auth_data = auth(
             email,
             "testpassword2",
@@ -116,9 +116,9 @@ def log_in_by_old_password(auth, password_changed):
         specific_case=True
     )
 
-    assert auth_data['status'] == 401, f"Expected that status code will be 401 but returned: {auth_data[0]}"
+    assert auth_data['status'] == 401, f"Expected that status code will be 401 but returned: {auth_data['status']}"
     assert auth_data['response']['message'] == "InvalidUserNameOrPassword", \
-        f"Expecte thatn auth resp will be: 'message': 'InvalidUserNameOrPassword' but returned: {auth_data[1]}"
+        f"Expecte thatn auth resp will be: 'message': 'InvalidUserNameOrPassword' but returned: {auth_data['response']['message']}"
 
 
 @then('User can logIn by new password')
