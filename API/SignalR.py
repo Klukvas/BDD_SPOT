@@ -1,9 +1,11 @@
 import logging
+from dataclasses import dataclass
 import pprint
 import time
 from signalrcore.protocol.json_hub_protocol import JsonHubProtocol
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 import settings
+
 
 # Uncomment this to enable debug logging
 # handler = logging.StreamHandler()
@@ -142,8 +144,16 @@ class SignalR:
 
 
 if __name__ == '__main__':
+    print('Start main')
+    @dataclass
+    class d_class:
+        url_signalr: str
+
+    settings = d_class(url_signalr='wss://wallet-api-uat.simple-spot.biz/signalr')
+    print(settings.url_signalr)
     sleep = 10
-    t = 'c4dlD1tnAUizWZ2dNZcpVSIp71/i0fRF1eRx1Rd2TRcHHawviQP8WYB2kzO4T9xLfqy4n5/i2phLPghwsx2APjp6FUczfCw4XXhaNXDwzg8GR6P8SgtLW23VZ4yYfBR6+h3fGabqxwDJEtwN1Pxv/kTIR2eCm3DTMf22k6Zz0mo='
+    t = 'rz+F7kmrWBrL0dIa9MZfgk/EnXXC6+h6G7ev0vmgZd8yA/xS/GFF5xB9U8tXzum6RLF18tBOAv/NDMkdEElhQG/3m99XO7iwX1hTHwqxMk8QtTvJmcncNdMwal2DSJkX62gPgXOzdF2ogHulxQemk6ygEyd5Eh0COXGHJL7kfFY='
+    print('Starting initialization')
     k = SignalR(t)
     print('SignalR initialized')
     print(f'waiting {sleep}s to parse hub responses')
