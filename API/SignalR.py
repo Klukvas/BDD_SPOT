@@ -80,6 +80,9 @@ class SignalR:
         self.hub_connection.on("campaigns-banners", lambda response: self.get_campaigns_banners(response))
         self.campaigns_banners = []
 
+        self.hub_connection.on("payment-methods", lambda response: self.get_payment_methods(response))
+        self.payment_methods = []
+
         self.hub_connection.start()
 
     def send_init(self):
@@ -93,6 +96,9 @@ class SignalR:
 
     def get_client_detail(self, response):
         self.client_detail.append(*response)
+
+    def get_payment_methods(self, response):
+        self.payment_methods.append(*response)
 
     def get_market_reference(self, response):
         self.market_reference.append(*response)
@@ -136,7 +142,8 @@ class SignalR:
                 'convert-price-settings': self.convert_price_settings,
                 'cards': self.cards,
                 'recurring-buys': self.recurring_buys,
-                'campaigns.py-banners': self.campaigns_banners}
+                'campaigns_banners': self.campaigns_banners,
+                'payment-methods': self.payment_methods}
 
     def close(self):
         self.exit = True
@@ -152,7 +159,7 @@ if __name__ == '__main__':
     settings = d_class(url_signalr='wss://wallet-api-uat.simple-spot.biz/signalr')
     print(settings.url_signalr)
     sleep = 10
-    t = 'rz+F7kmrWBrL0dIa9MZfgk/EnXXC6+h6G7ev0vmgZd8yA/xS/GFF5xB9U8tXzum6RLF18tBOAv/NDMkdEElhQG/3m99XO7iwX1hTHwqxMk8QtTvJmcncNdMwal2DSJkX62gPgXOzdF2ogHulxQemk6ygEyd5Eh0COXGHJL7kfFY='
+    t = '17PNy0altYxUaJdQTnhusiZc6WWIxtkpRYpbwIK/PVDn6WGTE6GtNirC9CGqPdN9aCxG71CuUfVSqOxYIPxT6SMY74M0hSVV5tzKDPDMU/TGA0dCRJvQAbVs+0wz3CvbT26/AwJrhQYsulHFB4lFJTw+dnrZOxKxMwHgm+b6954='
     print('Starting initialization')
     k = SignalR(t)
     print('SignalR initialized')
