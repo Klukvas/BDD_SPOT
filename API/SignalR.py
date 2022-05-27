@@ -1,9 +1,11 @@
 import logging
+from dataclasses import dataclass
 import pprint
 import time
 from signalrcore.protocol.json_hub_protocol import JsonHubProtocol
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 import settings
+
 
 # Uncomment this to enable debug logging
 # handler = logging.StreamHandler()
@@ -78,6 +80,9 @@ class SignalR:
         self.hub_connection.on("campaigns-banners", lambda response: self.get_campaigns_banners(response))
         self.campaigns_banners = []
 
+        self.hub_connection.on("payment-methods", lambda response: self.get_payment_methods(response))
+        self.payment_methods = []
+
         self.hub_connection.start()
 
     def send_init(self):
@@ -91,6 +96,9 @@ class SignalR:
 
     def get_client_detail(self, response):
         self.client_detail.append(*response)
+
+    def get_payment_methods(self, response):
+        self.payment_methods.append(*response)
 
     def get_market_reference(self, response):
         self.market_reference.append(*response)
@@ -134,7 +142,8 @@ class SignalR:
                 'convert-price-settings': self.convert_price_settings,
                 'cards': self.cards,
                 'recurring-buys': self.recurring_buys,
-                'campaigns.py-banners': self.campaigns_banners}
+                'campaigns_banners': self.campaigns_banners,
+                'payment-methods': self.payment_methods}
 
     def close(self):
         self.exit = True
@@ -142,8 +151,16 @@ class SignalR:
 
 
 if __name__ == '__main__':
+    print('Start main')
+    @dataclass
+    class d_class:
+        url_signalr: str
+
+    settings = d_class(url_signalr='wss://wallet-api-uat.simple-spot.biz/signalr')
+    print(settings.url_signalr)
     sleep = 10
-    t = 'c4dlD1tnAUizWZ2dNZcpVSIp71/i0fRF1eRx1Rd2TRcHHawviQP8WYB2kzO4T9xLfqy4n5/i2phLPghwsx2APjp6FUczfCw4XXhaNXDwzg8GR6P8SgtLW23VZ4yYfBR6+h3fGabqxwDJEtwN1Pxv/kTIR2eCm3DTMf22k6Zz0mo='
+    t = '17PNy0altYxUaJdQTnhusiZc6WWIxtkpRYpbwIK/PVDn6WGTE6GtNirC9CGqPdN9aCxG71CuUfVSqOxYIPxT6SMY74M0hSVV5tzKDPDMU/TGA0dCRJvQAbVs+0wz3CvbT26/AwJrhQYsulHFB4lFJTw+dnrZOxKxMwHgm+b6954='
+    print('Starting initialization')
     k = SignalR(t)
     print('SignalR initialized')
     print(f'waiting {sleep}s to parse hub responses')
